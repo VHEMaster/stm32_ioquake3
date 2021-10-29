@@ -1,6 +1,7 @@
-﻿#include <cmath>
-#include "Context.h"
-#include "VertexPipeline.h"
+﻿#include "VertexPipeline.hpp"
+
+#include <cmath>
+#include "Context.hpp"
 
 namespace SWGL {
 

@@ -100,5 +100,8 @@
 #undef __WIN32__
 #define __WIN32__	1
 #endif
+#if defined(Q3_STM32)
+#include "main.h"
+#endif
 
 #endif /* _SDL_platform_h */

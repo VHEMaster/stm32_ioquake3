@@ -66,7 +66,7 @@ typedef struct {
 	int			singleClient;		
 
 	qboolean	bmodel;				// if false, assume an explicit mins / maxs bounding box
-									// only set by trap_SetBrushModel
+									// only set by G_trap_SetBrushModel
 	vec3_t		mins, maxs;
 	int			contents;			// CONTENTS_TRIGGER, CONTENTS_SOLID, CONTENTS_BODY, etc
 									// a non-solid entity should set to 0
@@ -421,9 +421,14 @@ typedef enum {
 	GAME_CONSOLE_COMMAND,			// ( void );
 	// ConsoleCommand will be called when a command has been issued
 	// that is not recognized as a builtin function.
-	// The game can issue trap_argc() / trap_argv() commands to get the command
+	// The game can issue G_trap_argc() / G_trap_argv() commands to get the command
 	// and parameters.  Return qfalse if the game doesn't recognize it as a command.
 
 	BOTAI_START_FRAME				// ( int time );
 } gameExport_t;
+
+extern void G_dllEntry( intptr_t (QDECL *syscallptr)( intptr_t arg,... ) );
+extern intptr_t G_vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11  );
+
+
 

@@ -555,62 +555,12 @@ vm_t *VM_Create( const char *module, intptr_t (*systemCalls)(intptr_t *),
 	Q_strncpyz( vm->name, module, sizeof( vm->name ) );
 	vm->systemCall = systemCalls;
 
-	if ( interpret == VMI_NATIVE ) {
-		// try to load as a system dll
 		Com_Printf( "Loading dll file %s.\n", vm->name );
 		vm->dllHandle = Sys_LoadDll( module, vm->fqpath , &vm->entryPoint, VM_DllSyscall );
 		if ( vm->dllHandle ) {
 			return vm;
 		}
 
-		Com_Printf( "Failed to load dll, looking for qvm.\n" );
-		interpret = VMI_COMPILED;
-	}
-
-	// load the image
-	if( !( header = VM_LoadQVM( vm, qtrue ) ) ) {
-		return NULL;
-	}
-
-	// allocate space for the jump targets, which will be filled in by the compile/prep functions
-	vm->instructionPointersLength = header->instructionCount * 4;
-	vm->instructionPointers = Hunk_Alloc( vm->instructionPointersLength, h_high );
-
-	// copy or compile the instructions
-	vm->codeLength = header->codeLength;
-
-	vm->compiled = qfalse;
-
-#ifdef NO_VM_COMPILED
-	if(interpret >= VMI_COMPILED) {
-		Com_Printf("Architecture doesn't have a bytecode compiler, using interpreter\n");
-		interpret = VMI_BYTECODE;
-	}
-#else
-	if ( interpret >= VMI_COMPILED ) {
-		vm->compiled = qtrue;
-		VM_Compile( vm, header );
-	}
-#endif
-	// VM_Compile may have reset vm->compiled if compilation failed
-	if (!vm->compiled)
-	{
-		VM_PrepareInterpreter( vm, header );
-	}
-
-	// free the original file
-	FS_FreeFile( header );
-
-	// load the map file
-	VM_LoadSymbols( vm );
-
-	// the stack is implicitly at the end of the image
-	vm->programStack = vm->dataMask + 1;
-	vm->stackBottom = vm->programStack - STACK_SIZE;
-
-	Com_Printf("%s loaded in %d bytes on the hunk\n", module, remaining - Hunk_MemoryRemaining());
-
-	return vm;
 }
 
 /*
@@ -735,7 +685,7 @@ locals from sp
 
 intptr_t	QDECL VM_Call( vm_t *vm, int callnum, ... ) {
 	vm_t	*oldVM;
-	intptr_t r;
+	intptr_t r = 0;
 	int i;
 
 	if ( !vm ) {
@@ -765,34 +715,6 @@ intptr_t	QDECL VM_Call( vm_t *vm, int callnum, ... ) {
 		r = vm->entryPoint( callnum,  args[0],  args[1],  args[2], args[3],
                             args[4],  args[5],  args[6], args[7],
                             args[8],  args[9]);
-	} else {
-#if id386 || idsparc // i386/sparc calling convention doesn't need conversion
-#ifndef NO_VM_COMPILED
-		if ( vm->compiled )
-			r = VM_CallCompiled( vm, (int*)&callnum );
-		else
-#endif
-			r = VM_CallInterpreted( vm, (int*)&callnum );
-#else
-		struct {
-			int callnum;
-			int args[10];
-		} a;
-		va_list ap;
-
-		a.callnum = callnum;
-		va_start(ap, callnum);
-		for (i = 0; i < sizeof (a.args) / sizeof (a.args[0]); i++) {
-			a.args[i] = va_arg(ap, int);
-		}
-		va_end(ap);
-#ifndef NO_VM_COMPILED
-		if ( vm->compiled )
-			r = VM_CallCompiled( vm, &a.callnum );
-		else
-#endif
-			r = VM_CallInterpreted( vm, &a.callnum );
-#endif
 	}
 	--vm->callLevel;
 
@@ -906,12 +828,12 @@ Insert calls to this while debugging the vm compiler
 */
 void VM_LogSyscalls( int *args ) {
 	static	int		callnum;
-	static	FILE	*f;
+	static	FIL	*f;
 
 	if ( !f ) {
 		f = fopen("syscalls.log", "w" );
 	}
 	callnum++;
-	fprintf(f, "%i: %p (%i) = %i %i %i %i\n", callnum, (void*)(args - (int *)currentVM->dataBase),
+	f_printf(f, "%i: %p (%i) = %i %i %i %i\n", callnum, (void*)(args - (int *)currentVM->dataBase),
 		args[0], args[1], args[2], args[3], args[4] );
 }

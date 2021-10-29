@@ -81,9 +81,10 @@ static const SDL_VideoInfo *videoInfo = NULL;
 cvar_t *r_allowSoftwareGL; // Don't abort out if a hardware visual can't be obtained
 cvar_t *r_sdlDriver;
 
-void (APIENTRYP qglActiveTextureARB) (GLenum texture);
-void (APIENTRYP qglClientActiveTextureARB) (GLenum texture);
-void (APIENTRYP qglMultiTexCoord2fARB) (GLenum target, GLfloat s, GLfloat t);
+
+//void (APIENTRYP qglActiveTextureARB) (GLenum texture);
+//void (APIENTRYP qglClientActiveTextureARB) (GLenum texture);
+//void (APIENTRYP qglMultiTexCoord2fARB) (GLenum target, GLfloat s, GLfloat t);
 
 void (APIENTRYP qglLockArraysEXT) (GLint first, GLsizei count);
 void (APIENTRYP qglUnlockArraysEXT) (void);
@@ -241,6 +242,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen )
 
 		ri.Printf( PRINT_ALL, "Estimated display aspect: %.3f\n", displayAspect );
 	}
+
 #endif
 
 	ri.Printf (PRINT_ALL, "...setting mode %d:", mode );
@@ -251,6 +253,7 @@ static int GLimp_SetMode( int mode, qboolean fullscreen )
 		return RSERR_INVALID_MODE;
 	}
 	ri.Printf( PRINT_ALL, " %d %d\n", glConfig.vidWidth, glConfig.vidHeight);
+
 
 	if (fullscreen)
 	{
@@ -560,16 +563,16 @@ static void GLimp_InitExtensions( void )
 	}
 
 	// GL_ARB_multitexture
-	qglMultiTexCoord2fARB = NULL;
-	qglActiveTextureARB = NULL;
-	qglClientActiveTextureARB = NULL;
+	//qglMultiTexCoord2fARB = NULL;
+	//qglActiveTextureARB = NULL;
+	//qglClientActiveTextureARB = NULL;
 	if ( GLimp_HaveExtension( "GL_ARB_multitexture" ) )
 	{
 		if ( r_ext_multitexture->value )
 		{
-			qglMultiTexCoord2fARB = SDL_GL_GetProcAddress( "glMultiTexCoord2fARB" );
-			qglActiveTextureARB = SDL_GL_GetProcAddress( "glActiveTextureARB" );
-			qglClientActiveTextureARB = SDL_GL_GetProcAddress( "glClientActiveTextureARB" );
+			//qglMultiTexCoord2fARB = SDL_GL_GetProcAddress( "glMultiTexCoord2fARB" );
+			//qglActiveTextureARB = SDL_GL_GetProcAddress( "glActiveTextureARB" );
+			//qglClientActiveTextureARB = SDL_GL_GetProcAddress( "glClientActiveTextureARB" );
 
 			if ( qglActiveTextureARB )
 			{
@@ -582,9 +585,9 @@ static void GLimp_InitExtensions( void )
 				}
 				else
 				{
-					qglMultiTexCoord2fARB = NULL;
-					qglActiveTextureARB = NULL;
-					qglClientActiveTextureARB = NULL;
+					//qglMultiTexCoord2fARB = NULL;
+					//qglActiveTextureARB = NULL;
+					//qglClientActiveTextureARB = NULL;
 					ri.Printf( PRINT_ALL, "...not using GL_ARB_multitexture, < 2 texture units\n" );
 				}
 			}
@@ -609,7 +612,7 @@ static void GLimp_InitExtensions( void )
 			qglUnlockArraysEXT = ( void ( APIENTRY * )( void ) ) SDL_GL_GetProcAddress( "glUnlockArraysEXT" );
 			if (!qglLockArraysEXT || !qglUnlockArraysEXT)
 			{
-				ri.Error (ERR_FATAL, "bad getprocaddress");
+				//ri.Error (ERR_FATAL, "bad getprocaddress");
 			}
 		}
 		else

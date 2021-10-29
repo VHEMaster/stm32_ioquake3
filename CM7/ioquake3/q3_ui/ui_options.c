@@ -72,23 +72,23 @@ static void Options_Event( void* ptr, int event ) {
 
 	switch( ((menucommon_s*)ptr)->id ) {
 	case ID_GRAPHICS:
-		UI_GraphicsOptionsMenu();
+		Q3UI_GraphicsOptionsMenu();
 		break;
 
 	case ID_DISPLAY:
-		UI_DisplayOptionsMenu();
+		Q3UI_DisplayOptionsMenu();
 		break;
 
 	case ID_SOUND:
-		UI_SoundOptionsMenu();
+		Q3UI_SoundOptionsMenu();
 		break;
 
 	case ID_NETWORK:
-		UI_NetworkOptionsMenu();
+		Q3UI_NetworkOptionsMenu();
 		break;
 
 	case ID_BACK:
-		UI_PopMenu();
+		Q3UI_PopMenu();
 		break;
 	}
 }
@@ -100,10 +100,10 @@ SystemConfig_Cache
 ===============
 */
 void SystemConfig_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_FRAMEL );
-	trap_R_RegisterShaderNoMip( ART_FRAMER );
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
+	UI_trap_R_RegisterShaderNoMip( ART_FRAMEL );
+	UI_trap_R_RegisterShaderNoMip( ART_FRAMER );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK0 );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK1 );
 }
 
 /*
@@ -120,7 +120,7 @@ void Options_MenuInit( void ) {
 	SystemConfig_Cache();
 	s_options.menu.wrapAround = qtrue;
 
-	trap_GetClientState( &cstate );
+	UI_trap_GetClientState( &cstate );
 	if ( cstate.connState >= CA_CONNECTED ) {
 		s_options.menu.fullscreen = qfalse;
 	}
@@ -220,10 +220,10 @@ void Options_MenuInit( void ) {
 
 /*
 ===============
-UI_SystemConfigMenu
+Q3UI_SystemConfigMenu
 ===============
 */
-void UI_SystemConfigMenu( void ) {
+void Q3UI_SystemConfigMenu( void ) {
 	Options_MenuInit();
-	UI_PushMenu ( &s_options.menu );
+	Q3UI_PushMenu ( &s_options.menu );
 }

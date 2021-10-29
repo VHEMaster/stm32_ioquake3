@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
 
-  THIS ENTIRE FILE IS BACK END
+  THIS ENTIRE FIL IS BACK END
 
   This file deals with applying shaders to surface data in the tess struct.
 */

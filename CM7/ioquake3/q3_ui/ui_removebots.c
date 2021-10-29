@@ -81,15 +81,15 @@ static removeBotsMenuInfo_t	removeBotsMenuInfo;
 
 /*
 =================
-UI_RemoveBotsMenu_SetBotNames
+Q3UI_RemoveBotsMenu_SetBotNames
 =================
 */
-static void UI_RemoveBotsMenu_SetBotNames( void ) {
+static void Q3UI_RemoveBotsMenu_SetBotNames( void ) {
 	int		n;
 	char	info[MAX_INFO_STRING];
 
 	for ( n = 0; (n < 7) && (removeBotsMenuInfo.baseBotNum + n < removeBotsMenuInfo.numBots); n++ ) {
-		trap_GetConfigString( CS_PLAYERS + removeBotsMenuInfo.botClientNums[removeBotsMenuInfo.baseBotNum + n], info, MAX_INFO_STRING );
+		UI_trap_GetConfigString( CS_PLAYERS + removeBotsMenuInfo.botClientNums[removeBotsMenuInfo.baseBotNum + n], info, MAX_INFO_STRING );
 		Q_strncpyz( removeBotsMenuInfo.botnames[n], Info_ValueForKey( info, "n" ), sizeof(removeBotsMenuInfo.botnames[n]) );
 		Q_CleanStr( removeBotsMenuInfo.botnames[n] );
 	}
@@ -99,24 +99,24 @@ static void UI_RemoveBotsMenu_SetBotNames( void ) {
 
 /*
 =================
-UI_RemoveBotsMenu_DeleteEvent
+Q3UI_RemoveBotsMenu_DeleteEvent
 =================
 */
-static void UI_RemoveBotsMenu_DeleteEvent( void* ptr, int event ) {
+static void Q3UI_RemoveBotsMenu_DeleteEvent( void* ptr, int event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
 
-	trap_Cmd_ExecuteText( EXEC_APPEND, va("clientkick %i\n", removeBotsMenuInfo.botClientNums[removeBotsMenuInfo.baseBotNum + removeBotsMenuInfo.selectedBotNum]) );
+	UI_trap_Cmd_ExecuteText( EXEC_APPEND, va("clientkick %i\n", removeBotsMenuInfo.botClientNums[removeBotsMenuInfo.baseBotNum + removeBotsMenuInfo.selectedBotNum]) );
 }
 
 
 /*
 =================
-UI_RemoveBotsMenu_BotEvent
+Q3UI_RemoveBotsMenu_BotEvent
 =================
 */
-static void UI_RemoveBotsMenu_BotEvent( void* ptr, int event ) {
+static void Q3UI_RemoveBotsMenu_BotEvent( void* ptr, int event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
@@ -129,68 +129,68 @@ static void UI_RemoveBotsMenu_BotEvent( void* ptr, int event ) {
 
 /*
 =================
-UI_RemoveAddBotsMenu_BackEvent
+Q3UI_RemoveAddBotsMenu_BackEvent
 =================
 */
-static void UI_RemoveBotsMenu_BackEvent( void* ptr, int event ) {
+static void Q3UI_RemoveBotsMenu_BackEvent( void* ptr, int event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
-	UI_PopMenu();
+	Q3UI_PopMenu();
 }
 
 
 /*
 =================
-UI_RemoveBotsMenu_UpEvent
+Q3UI_RemoveBotsMenu_UpEvent
 =================
 */
-static void UI_RemoveBotsMenu_UpEvent( void* ptr, int event ) {
+static void Q3UI_RemoveBotsMenu_UpEvent( void* ptr, int event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
 
 	if( removeBotsMenuInfo.baseBotNum > 0 ) {
 		removeBotsMenuInfo.baseBotNum--;
-		UI_RemoveBotsMenu_SetBotNames();
+		Q3UI_RemoveBotsMenu_SetBotNames();
 	}
 }
 
 
 /*
 =================
-UI_RemoveBotsMenu_DownEvent
+Q3UI_RemoveBotsMenu_DownEvent
 =================
 */
-static void UI_RemoveBotsMenu_DownEvent( void* ptr, int event ) {
+static void Q3UI_RemoveBotsMenu_DownEvent( void* ptr, int event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
 
 	if( removeBotsMenuInfo.baseBotNum + 7 < removeBotsMenuInfo.numBots ) {
 		removeBotsMenuInfo.baseBotNum++;
-		UI_RemoveBotsMenu_SetBotNames();
+		Q3UI_RemoveBotsMenu_SetBotNames();
 	}
 }
 
 
 /*
 =================
-UI_RemoveBotsMenu_GetBots
+Q3UI_RemoveBotsMenu_GetBots
 =================
 */
-static void UI_RemoveBotsMenu_GetBots( void ) {
+static void Q3UI_RemoveBotsMenu_GetBots( void ) {
 	int		numPlayers;
 	int		isBot;
 	int		n;
 	char	info[MAX_INFO_STRING];
 
-	trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
+	UI_trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
 	numPlayers = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 	removeBotsMenuInfo.numBots = 0;
 
 	for( n = 0; n < numPlayers; n++ ) {
-		trap_GetConfigString( CS_PLAYERS + n, info, MAX_INFO_STRING );
+		UI_trap_GetConfigString( CS_PLAYERS + n, info, MAX_INFO_STRING );
 
 		isBot = atoi( Info_ValueForKey( info, "skill" ) );
 		if( !isBot ) {
@@ -205,24 +205,24 @@ static void UI_RemoveBotsMenu_GetBots( void ) {
 
 /*
 =================
-UI_RemoveBots_Cache
+Q3UI_RemoveBots_Cache
 =================
 */
-void UI_RemoveBots_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_BACKGROUND );
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
-	trap_R_RegisterShaderNoMip( ART_DELETE0 );
-	trap_R_RegisterShaderNoMip( ART_DELETE1 );
+void Q3UI_RemoveBots_Cache( void ) {
+	UI_trap_R_RegisterShaderNoMip( ART_BACKGROUND );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK0 );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK1 );
+	UI_trap_R_RegisterShaderNoMip( ART_DELETE0 );
+	UI_trap_R_RegisterShaderNoMip( ART_DELETE1 );
 }
 
 
 /*
 =================
-UI_RemoveBotsMenu_Init
+Q3UI_RemoveBotsMenu_Init
 =================
 */
-static void UI_RemoveBotsMenu_Init( void ) {
+static void Q3UI_RemoveBotsMenu_Init( void ) {
 	int		n;
 	int		count;
 	int		y;
@@ -231,10 +231,10 @@ static void UI_RemoveBotsMenu_Init( void ) {
 	removeBotsMenuInfo.menu.fullscreen = qfalse;
 	removeBotsMenuInfo.menu.wrapAround = qtrue;
 
-	UI_RemoveBots_Cache();
+	Q3UI_RemoveBots_Cache();
 
-	UI_RemoveBotsMenu_GetBots();
-	UI_RemoveBotsMenu_SetBotNames();
+	Q3UI_RemoveBotsMenu_GetBots();
+	Q3UI_RemoveBotsMenu_SetBotNames();
 	count = removeBotsMenuInfo.numBots < 7 ? removeBotsMenuInfo.numBots : 7;
 
 	removeBotsMenuInfo.banner.generic.type		= MTYPE_BTEXT;
@@ -265,7 +265,7 @@ static void UI_RemoveBotsMenu_Init( void ) {
 	removeBotsMenuInfo.up.generic.x				= 200;
 	removeBotsMenuInfo.up.generic.y				= 128;
 	removeBotsMenuInfo.up.generic.id			= ID_UP;
-	removeBotsMenuInfo.up.generic.callback		= UI_RemoveBotsMenu_UpEvent;
+	removeBotsMenuInfo.up.generic.callback		= Q3UI_RemoveBotsMenu_UpEvent;
 	removeBotsMenuInfo.up.width					= 64;
 	removeBotsMenuInfo.up.height				= 64;
 	removeBotsMenuInfo.up.focuspic				= ART_ARROWUP;
@@ -275,7 +275,7 @@ static void UI_RemoveBotsMenu_Init( void ) {
 	removeBotsMenuInfo.down.generic.x			= 200;
 	removeBotsMenuInfo.down.generic.y			= 128+64;
 	removeBotsMenuInfo.down.generic.id			= ID_DOWN;
-	removeBotsMenuInfo.down.generic.callback	= UI_RemoveBotsMenu_DownEvent;
+	removeBotsMenuInfo.down.generic.callback	= Q3UI_RemoveBotsMenu_DownEvent;
 	removeBotsMenuInfo.down.width				= 64;
 	removeBotsMenuInfo.down.height				= 64;
 	removeBotsMenuInfo.down.focuspic			= ART_ARROWDOWN;
@@ -286,7 +286,7 @@ static void UI_RemoveBotsMenu_Init( void ) {
 		removeBotsMenuInfo.bots[n].generic.id		= ID_BOTNAME0 + n;
 		removeBotsMenuInfo.bots[n].generic.x		= 320 - 56;
 		removeBotsMenuInfo.bots[n].generic.y		= y;
-		removeBotsMenuInfo.bots[n].generic.callback	= UI_RemoveBotsMenu_BotEvent;
+		removeBotsMenuInfo.bots[n].generic.callback	= Q3UI_RemoveBotsMenu_BotEvent;
 		removeBotsMenuInfo.bots[n].string			= removeBotsMenuInfo.botnames[n];
 		removeBotsMenuInfo.bots[n].color			= color_orange;
 		removeBotsMenuInfo.bots[n].style			= UI_LEFT|UI_SMALLFONT;
@@ -296,7 +296,7 @@ static void UI_RemoveBotsMenu_Init( void ) {
 	removeBotsMenuInfo.delete.generic.name		= ART_DELETE0;
 	removeBotsMenuInfo.delete.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	removeBotsMenuInfo.delete.generic.id		= ID_DELETE;
-	removeBotsMenuInfo.delete.generic.callback	= UI_RemoveBotsMenu_DeleteEvent;
+	removeBotsMenuInfo.delete.generic.callback	= Q3UI_RemoveBotsMenu_DeleteEvent;
 	removeBotsMenuInfo.delete.generic.x			= 320+128-128;
 	removeBotsMenuInfo.delete.generic.y			= 256+128-64;
 	removeBotsMenuInfo.delete.width  			= 128;
@@ -307,7 +307,7 @@ static void UI_RemoveBotsMenu_Init( void ) {
 	removeBotsMenuInfo.back.generic.name		= ART_BACK0;
 	removeBotsMenuInfo.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	removeBotsMenuInfo.back.generic.id			= ID_BACK;
-	removeBotsMenuInfo.back.generic.callback	= UI_RemoveBotsMenu_BackEvent;
+	removeBotsMenuInfo.back.generic.callback	= Q3UI_RemoveBotsMenu_BackEvent;
 	removeBotsMenuInfo.back.generic.x			= 320-128;
 	removeBotsMenuInfo.back.generic.y			= 256+128-64;
 	removeBotsMenuInfo.back.width				= 128;
@@ -333,10 +333,10 @@ static void UI_RemoveBotsMenu_Init( void ) {
 
 /*
 =================
-UI_RemoveBotsMenu
+Q3UI_RemoveBotsMenu
 =================
 */
-void UI_RemoveBotsMenu( void ) {
-	UI_RemoveBotsMenu_Init();
-	UI_PushMenu( &removeBotsMenuInfo.menu );
+void Q3UI_RemoveBotsMenu( void ) {
+	Q3UI_RemoveBotsMenu_Init();
+	Q3UI_PushMenu( &removeBotsMenuInfo.menu );
 }

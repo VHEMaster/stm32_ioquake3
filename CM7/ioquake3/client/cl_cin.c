@@ -1373,6 +1373,7 @@ e_status CIN_RunCinematic (int handle)
 	cinTable[currentHandle].tfps = ((((CL_ScaledMilliseconds()*com_timescale->value) - cinTable[currentHandle].startTime)*3)/100);
 
 	start = cinTable[currentHandle].startTime;
+	//TODO!! Must be 'while' here originally. Trying to play all frames instead of skipping some of them.
 	while(  (cinTable[currentHandle].tfps != cinTable[currentHandle].numQuads)
 		&& (cinTable[currentHandle].status == FMV_PLAY) ) 
 	{

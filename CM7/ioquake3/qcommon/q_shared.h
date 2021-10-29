@@ -23,15 +23,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef __Q_SHARED_H
 #define __Q_SHARED_H
 
+#include "cmsis_os.h"
+#include "fatfs.h"
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
 
 #ifdef STANDALONE
-  #define PRODUCT_NAME			"iofoo3"
-  #define BASEGAME			"foobar"
-  #define CLIENT_WINDOW_TITLE     	"changeme"
-  #define CLIENT_WINDOW_MIN_TITLE 	"changeme2"
-  #define GAMENAME_FOR_MASTER		"iofoo3"	// must NOT contain whitespaces
+  #define PRODUCT_NAME      "ioq3"
+  #define BASEGAME      "baseq3"
+  #define CLIENT_WINDOW_TITLE       "ioquake3"
+  #define CLIENT_WINDOW_MIN_TITLE   "ioq3"
+  #define GAMENAME_FOR_MASTER   "Quake3Arena"
 #else
   #define PRODUCT_NAME			"ioq3"
   #define BASEGAME			"baseq3"
@@ -40,9 +42,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   #define GAMENAME_FOR_MASTER		"Quake3Arena"
 #endif
 
-#ifdef _MSC_VER
+//#ifdef _MSC_VER
   #define PRODUCT_VERSION "1.35"
-#endif
+//#endif
 
 #define Q3_VERSION PRODUCT_NAME " " PRODUCT_VERSION
 
@@ -154,7 +156,7 @@ typedef int intptr_t;
 
 typedef unsigned char 		byte;
 
-typedef enum {qfalse, qtrue}	qboolean;
+typedef enum {qfalse, qtrue, qboolean32bit = INT_MAX} qboolean;
 
 typedef union {
 	float f;
@@ -204,11 +206,7 @@ typedef int		clipHandle_t;
 
 
 #define	MAX_QPATH			64		// max length of a quake game pathname
-#ifdef PATH_MAX
-#define MAX_OSPATH			PATH_MAX
-#else
-#define	MAX_OSPATH			256		// max length of a filesystem pathname
-#endif
+#define	MAX_OSPATH			64		// max length of a filesystem pathname
 
 #define	MAX_NAME_LENGTH		32		// max length of a client name
 

@@ -107,7 +107,7 @@ static int gametype_remap2[] = {0, 2, 0, 1, 3};
 // use ui_servers2.c definition
 extern const char* punkbuster_items[];
 
-static void UI_ServerOptionsMenu( qboolean multiplayer );
+static void Q3UI_ServerOptionsMenu( qboolean multiplayer );
 
 
 /*
@@ -254,14 +254,14 @@ static void StartServer_GametypeEvent( void* ptr, int event ) {
 		return;
 	}
 
-	count = UI_GetNumArenas();
+	count = Q3UI_GetNumArenas();
 	s_startserver.nummaps = 0;
 	matchbits = 1 << gametype_remap[s_startserver.gametype.curvalue];
 	if( gametype_remap[s_startserver.gametype.curvalue] == GT_FFA ) {
 		matchbits |= ( 1 << GT_SINGLE_PLAYER );
 	}
 	for( i = 0; i < count; i++ ) {
-		info = UI_GetArenaInfoByNumber( i );
+		info = Q3UI_GetArenaInfoByNumber( i );
 
 		gamebits = GametypeBits( Info_ValueForKey( info, "type") );
 		if( !( gamebits & matchbits ) ) {
@@ -307,12 +307,12 @@ static void StartServer_MenuEvent( void* ptr, int event ) {
 		break;
 
 	case ID_STARTSERVERNEXT:
-		trap_Cvar_SetValue( "g_gameType", gametype_remap[s_startserver.gametype.curvalue] );
-		UI_ServerOptionsMenu( s_startserver.multiplayer );
+		UI_trap_Cvar_SetValue( "g_gameType", gametype_remap[s_startserver.gametype.curvalue] );
+		Q3UI_ServerOptionsMenu( s_startserver.multiplayer );
 		break;
 
 	case ID_STARTSERVERBACK:
-		UI_PopMenu();
+		Q3UI_PopMenu();
 		break;
 	}
 }
@@ -338,14 +338,14 @@ static void StartServer_LevelshotDraw( void *self ) {
 	}
 
 	if( b->generic.name && !b->shader ) {
-		b->shader = trap_R_RegisterShaderNoMip( b->generic.name );
+		b->shader = UI_trap_R_RegisterShaderNoMip( b->generic.name );
 		if( !b->shader && b->errorpic ) {
-			b->shader = trap_R_RegisterShaderNoMip( b->errorpic );
+			b->shader = UI_trap_R_RegisterShaderNoMip( b->errorpic );
 		}
 	}
 
 	if( b->focuspic && !b->focusshader ) {
-		b->focusshader = trap_R_RegisterShaderNoMip( b->focuspic );
+		b->focusshader = UI_trap_R_RegisterShaderNoMip( b->focuspic );
 	}
 
 	x = b->generic.x;
@@ -353,24 +353,24 @@ static void StartServer_LevelshotDraw( void *self ) {
 	w = b->width;
 	h =	b->height;
 	if( b->shader ) {
-		UI_DrawHandlePic( x, y, w, h, b->shader );
+		Q3UI_DrawHandlePic( x, y, w, h, b->shader );
 	}
 
 	x = b->generic.x;
 	y = b->generic.y + b->height;
-	UI_FillRect( x, y, b->width, 28, colorBlack );
+	Q3UI_FillRect( x, y, b->width, 28, colorBlack );
 
 	x += b->width / 2;
 	y += 4;
 	n = s_startserver.page * MAX_MAPSPERPAGE + b->generic.id - ID_PICTURES;
-	UI_DrawString( x, y, s_startserver.maplist[n], UI_CENTER|UI_SMALLFONT, color_orange );
+	Q3UI_DrawString( x, y, s_startserver.maplist[n], UI_CENTER|UI_SMALLFONT, color_orange );
 
 	x = b->generic.x;
 	y = b->generic.y;
 	w = b->width;
 	h =	b->height + 28;
 	if( b->generic.flags & QMF_HIGHLIGHT ) {	
-		UI_DrawHandlePic( x, y, w, h, b->focusshader );
+		Q3UI_DrawHandlePic( x, y, w, h, b->focusshader );
 	}
 }
 
@@ -557,25 +557,25 @@ void StartServer_Cache( void )
 	qboolean		precache;
 	char			picname[64];
 
-	trap_R_RegisterShaderNoMip( GAMESERVER_BACK0 );	
-	trap_R_RegisterShaderNoMip( GAMESERVER_BACK1 );	
-	trap_R_RegisterShaderNoMip( GAMESERVER_NEXT0 );	
-	trap_R_RegisterShaderNoMip( GAMESERVER_NEXT1 );	
-	trap_R_RegisterShaderNoMip( GAMESERVER_FRAMEL );	
-	trap_R_RegisterShaderNoMip( GAMESERVER_FRAMER );	
-	trap_R_RegisterShaderNoMip( GAMESERVER_SELECT );	
-	trap_R_RegisterShaderNoMip( GAMESERVER_SELECTED );	
-	trap_R_RegisterShaderNoMip( GAMESERVER_UNKNOWNMAP );
-	trap_R_RegisterShaderNoMip( GAMESERVER_ARROWS );
-	trap_R_RegisterShaderNoMip( GAMESERVER_ARROWSL );
-	trap_R_RegisterShaderNoMip( GAMESERVER_ARROWSR );
+	UI_trap_R_RegisterShaderNoMip( GAMESERVER_BACK0 );	
+	UI_trap_R_RegisterShaderNoMip( GAMESERVER_BACK1 );	
+	UI_trap_R_RegisterShaderNoMip( GAMESERVER_NEXT0 );	
+	UI_trap_R_RegisterShaderNoMip( GAMESERVER_NEXT1 );	
+	UI_trap_R_RegisterShaderNoMip( GAMESERVER_FRAMEL );	
+	UI_trap_R_RegisterShaderNoMip( GAMESERVER_FRAMER );	
+	UI_trap_R_RegisterShaderNoMip( GAMESERVER_SELECT );	
+	UI_trap_R_RegisterShaderNoMip( GAMESERVER_SELECTED );	
+	UI_trap_R_RegisterShaderNoMip( GAMESERVER_UNKNOWNMAP );
+	UI_trap_R_RegisterShaderNoMip( GAMESERVER_ARROWS );
+	UI_trap_R_RegisterShaderNoMip( GAMESERVER_ARROWSL );
+	UI_trap_R_RegisterShaderNoMip( GAMESERVER_ARROWSR );
 
-	precache = trap_Cvar_VariableValue("com_buildscript");
+	precache = UI_trap_Cvar_VariableValue("com_buildscript");
 
-	s_startserver.nummaps = UI_GetNumArenas();
+	s_startserver.nummaps = Q3UI_GetNumArenas();
 
 	for( i = 0; i < s_startserver.nummaps; i++ ) {
-		info = UI_GetArenaInfoByNumber( i );
+		info = Q3UI_GetArenaInfoByNumber( i );
 
 		Q_strncpyz( s_startserver.maplist[i], Info_ValueForKey( info, "map"), MAX_NAMELENGTH );
 		Q_strupr( s_startserver.maplist[i] );
@@ -583,7 +583,7 @@ void StartServer_Cache( void )
 
 		if( precache ) {
 			Com_sprintf( picname, sizeof(picname), "levelshots/%s", s_startserver.maplist[i] );
-			trap_R_RegisterShaderNoMip(picname);
+			UI_trap_R_RegisterShaderNoMip(picname);
 		}
 	}
 
@@ -593,13 +593,13 @@ void StartServer_Cache( void )
 
 /*
 =================
-UI_StartServerMenu
+Q3UI_StartServerMenu
 =================
 */
-void UI_StartServerMenu( qboolean multiplayer ) {
+void Q3UI_StartServerMenu( qboolean multiplayer ) {
 	StartServer_MenuInit();
 	s_startserver.multiplayer = multiplayer;
-	UI_PushMenu( &s_startserver.menu );
+	Q3UI_PushMenu( &s_startserver.menu );
 }
 
 
@@ -756,44 +756,44 @@ static void ServerOptions_Start( void ) {
 	switch( s_serveroptions.gametype ) {
 	case GT_FFA:
 	default:
-		trap_Cvar_SetValue( "ui_ffa_fraglimit", fraglimit );
-		trap_Cvar_SetValue( "ui_ffa_timelimit", timelimit );
+		UI_trap_Cvar_SetValue( "ui_ffa_fraglimit", fraglimit );
+		UI_trap_Cvar_SetValue( "ui_ffa_timelimit", timelimit );
 		break;
 
 	case GT_TOURNAMENT:
-		trap_Cvar_SetValue( "ui_tourney_fraglimit", fraglimit );
-		trap_Cvar_SetValue( "ui_tourney_timelimit", timelimit );
+		UI_trap_Cvar_SetValue( "ui_tourney_fraglimit", fraglimit );
+		UI_trap_Cvar_SetValue( "ui_tourney_timelimit", timelimit );
 		break;
 
 	case GT_TEAM:
-		trap_Cvar_SetValue( "ui_team_fraglimit", fraglimit );
-		trap_Cvar_SetValue( "ui_team_timelimit", timelimit );
-		trap_Cvar_SetValue( "ui_team_friendlt", friendlyfire );
+		UI_trap_Cvar_SetValue( "ui_team_fraglimit", fraglimit );
+		UI_trap_Cvar_SetValue( "ui_team_timelimit", timelimit );
+		UI_trap_Cvar_SetValue( "ui_team_friendlt", friendlyfire );
 		break;
 
 	case GT_CTF:
-		trap_Cvar_SetValue( "ui_ctf_fraglimit", fraglimit );
-		trap_Cvar_SetValue( "ui_ctf_timelimit", timelimit );
-		trap_Cvar_SetValue( "ui_ctf_friendlt", friendlyfire );
+		UI_trap_Cvar_SetValue( "ui_ctf_fraglimit", fraglimit );
+		UI_trap_Cvar_SetValue( "ui_ctf_timelimit", timelimit );
+		UI_trap_Cvar_SetValue( "ui_ctf_friendlt", friendlyfire );
 		break;
 	}
 
-	trap_Cvar_SetValue( "sv_maxclients", Com_Clamp( 0, 12, maxclients ) );
-	trap_Cvar_SetValue( "dedicated", Com_Clamp( 0, 2, dedicated ) );
-	trap_Cvar_SetValue ("timelimit", Com_Clamp( 0, timelimit, timelimit ) );
-	trap_Cvar_SetValue ("fraglimit", Com_Clamp( 0, fraglimit, fraglimit ) );
-	trap_Cvar_SetValue ("capturelimit", Com_Clamp( 0, flaglimit, flaglimit ) );
-	trap_Cvar_SetValue( "g_friendlyfire", friendlyfire );
-	trap_Cvar_SetValue( "sv_pure", pure );
-	trap_Cvar_Set("sv_hostname", s_serveroptions.hostname.field.buffer );
+	UI_trap_Cvar_SetValue( "sv_maxclients", Com_Clamp( 0, 12, maxclients ) );
+	UI_trap_Cvar_SetValue( "dedicated", Com_Clamp( 0, 2, dedicated ) );
+	UI_trap_Cvar_SetValue ("timelimit", Com_Clamp( 0, timelimit, timelimit ) );
+	UI_trap_Cvar_SetValue ("fraglimit", Com_Clamp( 0, fraglimit, fraglimit ) );
+	UI_trap_Cvar_SetValue ("capturelimit", Com_Clamp( 0, flaglimit, flaglimit ) );
+	UI_trap_Cvar_SetValue( "g_friendlyfire", friendlyfire );
+	UI_trap_Cvar_SetValue( "sv_pure", pure );
+	UI_trap_Cvar_Set("sv_hostname", s_serveroptions.hostname.field.buffer );
 	
-	trap_Cvar_SetValue( "sv_punkbuster", s_serveroptions.punkbuster.curvalue );
+	UI_trap_Cvar_SetValue( "sv_punkbuster", s_serveroptions.punkbuster.curvalue );
 
 	// the wait commands will allow the dedicated to take effect
-	trap_Cmd_ExecuteText( EXEC_APPEND, va( "wait ; wait ; map %s\n", s_startserver.maplist[s_startserver.currentmap] ) );
+	UI_trap_Cmd_ExecuteText( EXEC_APPEND, va( "wait ; wait ; map %s\n", s_startserver.maplist[s_startserver.currentmap] ) );
 
 	// add bots
-	trap_Cmd_ExecuteText( EXEC_APPEND, "wait 3\n" );
+	UI_trap_Cmd_ExecuteText( EXEC_APPEND, "wait 3\n" );
 	for( n = 1; n < PLAYER_SLOTS; n++ ) {
 		if( s_serveroptions.playerType[n].curvalue != 1 ) {
 			continue;
@@ -811,12 +811,12 @@ static void ServerOptions_Start( void ) {
 		else {
 			Com_sprintf( buf, sizeof(buf), "addbot %s %i\n", s_serveroptions.playerNameBuffers[n], skill );
 		}
-		trap_Cmd_ExecuteText( EXEC_APPEND, buf );
+		UI_trap_Cmd_ExecuteText( EXEC_APPEND, buf );
 	}
 
 	// set player's team
 	if( dedicated == 0 && s_serveroptions.gametype >= GT_TEAM ) {
-		trap_Cmd_ExecuteText( EXEC_APPEND, va( "wait 5; team %s\n", playerTeam_list[s_serveroptions.playerTeam[0].curvalue] ) );
+		UI_trap_Cmd_ExecuteText( EXEC_APPEND, va( "wait 5; team %s\n", playerTeam_list[s_serveroptions.playerTeam[0].curvalue] ) );
 	}
 }
 
@@ -853,7 +853,7 @@ static void ServerOptions_InitPlayerItems( void ) {
 		// human
 		s_serveroptions.playerType[0].generic.flags |= QMF_INACTIVE;
 		s_serveroptions.playerType[0].curvalue = 0;
-		trap_Cvar_VariableStringBuffer( "name", s_serveroptions.playerNameBuffers[0], sizeof(s_serveroptions.playerNameBuffers[0]) );
+		UI_trap_Cvar_VariableStringBuffer( "name", s_serveroptions.playerNameBuffers[0], sizeof(s_serveroptions.playerNameBuffers[0]) );
 		Q_CleanStr( s_serveroptions.playerNameBuffers[0] );
 	}
 
@@ -963,7 +963,7 @@ static void ServerOptions_Event( void* ptr, int event ) {
 		if( event != QM_ACTIVATED ) {
 			break;
 		}
-		UI_PopMenu();
+		Q3UI_PopMenu();
 		break;
 	}
 }
@@ -977,7 +977,7 @@ static void ServerOptions_PlayerNameEvent( void* ptr, int event ) {
 	}
 	n = ((menutext_s*)ptr)->generic.id;
 	s_serveroptions.newBotIndex = n;
-	UI_BotSelectMenu( s_serveroptions.playerNameBuffers[n] );
+	Q3UI_BotSelectMenu( s_serveroptions.playerNameBuffers[n] );
 }
 
 
@@ -989,7 +989,7 @@ ServerOptions_StatusBar
 static void ServerOptions_StatusBar( void* ptr ) {
 	switch( ((menucommon_s*)ptr)->id ) {
 	default:
-		UI_DrawString( 320, 440, "0 = NO LIMIT", UI_CENTER|UI_SMALLFONT, colorWhite );
+		Q3UI_DrawString( 320, 440, "0 = NO LIMIT", UI_CENTER|UI_SMALLFONT, colorWhite );
 		break;
 	}
 }
@@ -1017,14 +1017,14 @@ static void ServerOptions_LevelshotDraw( void *self ) {
 
 	x = b->generic.x;
 	y = b->generic.y + b->height;
-	UI_FillRect( x, y, b->width, 40, colorBlack );
+	Q3UI_FillRect( x, y, b->width, 40, colorBlack );
 
 	x += b->width / 2;
 	y += 4;
-	UI_DrawString( x, y, s_serveroptions.mapnamebuffer, UI_CENTER|UI_SMALLFONT, color_orange );
+	Q3UI_DrawString( x, y, s_serveroptions.mapnamebuffer, UI_CENTER|UI_SMALLFONT, color_orange );
 
 	y += SMALLCHAR_HEIGHT;
-	UI_DrawString( x, y, gametype_items[gametype_remap2[s_serveroptions.gametype]], UI_CENTER|UI_SMALLFONT, color_orange );
+	Q3UI_DrawString( x, y, gametype_items[gametype_remap2[s_serveroptions.gametype]], UI_CENTER|UI_SMALLFONT, color_orange );
 }
 
 
@@ -1067,7 +1067,7 @@ static void ServerOptions_InitBotNames( void ) {
 	count = 1;	// skip the first slot, reserved for a human
 
 	// get info for this map
-	arenaInfo = UI_GetArenaInfoByMap( s_serveroptions.mapnamebuffer );
+	arenaInfo = Q3UI_GetArenaInfoByMap( s_serveroptions.mapnamebuffer );
 
 	// get the bot info - we'll seed with them if any are listed
 	Q_strncpyz( bots, Info_ValueForKey( arenaInfo, "bots" ), sizeof(bots) );
@@ -1092,7 +1092,7 @@ static void ServerOptions_InitBotNames( void ) {
 			*p++ = 0;
 		}
 
-		botInfo = UI_GetBotInfoByName( bot );
+		botInfo = Q3UI_GetBotInfoByName( bot );
 		bot = Info_ValueForKey( botInfo, "name" );
 
 		Q_strncpyz( s_serveroptions.playerNameBuffers[count], bot, sizeof(s_serveroptions.playerNameBuffers[count]) );
@@ -1129,30 +1129,30 @@ static void ServerOptions_SetMenuItems( void ) {
 	switch( s_serveroptions.gametype ) {
 	case GT_FFA:
 	default:
-		Com_sprintf( s_serveroptions.fraglimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_ffa_fraglimit" ) ) );
-		Com_sprintf( s_serveroptions.timelimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_ffa_timelimit" ) ) );
+		Com_sprintf( s_serveroptions.fraglimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, UI_trap_Cvar_VariableValue( "ui_ffa_fraglimit" ) ) );
+		Com_sprintf( s_serveroptions.timelimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, UI_trap_Cvar_VariableValue( "ui_ffa_timelimit" ) ) );
 		break;
 
 	case GT_TOURNAMENT:
-		Com_sprintf( s_serveroptions.fraglimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_tourney_fraglimit" ) ) );
-		Com_sprintf( s_serveroptions.timelimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_tourney_timelimit" ) ) );
+		Com_sprintf( s_serveroptions.fraglimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, UI_trap_Cvar_VariableValue( "ui_tourney_fraglimit" ) ) );
+		Com_sprintf( s_serveroptions.timelimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, UI_trap_Cvar_VariableValue( "ui_tourney_timelimit" ) ) );
 		break;
 
 	case GT_TEAM:
-		Com_sprintf( s_serveroptions.fraglimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_team_fraglimit" ) ) );
-		Com_sprintf( s_serveroptions.timelimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_team_timelimit" ) ) );
-		s_serveroptions.friendlyfire.curvalue = (int)Com_Clamp( 0, 1, trap_Cvar_VariableValue( "ui_team_friendly" ) );
+		Com_sprintf( s_serveroptions.fraglimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, UI_trap_Cvar_VariableValue( "ui_team_fraglimit" ) ) );
+		Com_sprintf( s_serveroptions.timelimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, UI_trap_Cvar_VariableValue( "ui_team_timelimit" ) ) );
+		s_serveroptions.friendlyfire.curvalue = (int)Com_Clamp( 0, 1, UI_trap_Cvar_VariableValue( "ui_team_friendly" ) );
 		break;
 
 	case GT_CTF:
-		Com_sprintf( s_serveroptions.flaglimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 100, trap_Cvar_VariableValue( "ui_ctf_capturelimit" ) ) );
-		Com_sprintf( s_serveroptions.timelimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, trap_Cvar_VariableValue( "ui_ctf_timelimit" ) ) );
-		s_serveroptions.friendlyfire.curvalue = (int)Com_Clamp( 0, 1, trap_Cvar_VariableValue( "ui_ctf_friendly" ) );
+		Com_sprintf( s_serveroptions.flaglimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 100, UI_trap_Cvar_VariableValue( "ui_ctf_capturelimit" ) ) );
+		Com_sprintf( s_serveroptions.timelimit.field.buffer, 4, "%i", (int)Com_Clamp( 0, 999, UI_trap_Cvar_VariableValue( "ui_ctf_timelimit" ) ) );
+		s_serveroptions.friendlyfire.curvalue = (int)Com_Clamp( 0, 1, UI_trap_Cvar_VariableValue( "ui_ctf_friendly" ) );
 		break;
 	}
 
-	Q_strncpyz( s_serveroptions.hostname.field.buffer, UI_Cvar_VariableString( "sv_hostname" ), sizeof( s_serveroptions.hostname.field.buffer ) );
-	s_serveroptions.pure.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "sv_pure" ) );
+	Q_strncpyz( s_serveroptions.hostname.field.buffer, Q3UI_Cvar_VariableString( "sv_hostname" ), sizeof( s_serveroptions.hostname.field.buffer ) );
+	s_serveroptions.pure.curvalue = Com_Clamp( 0, 1, UI_trap_Cvar_VariableValue( "sv_pure" ) );
 
 	// set the map pic
 	Com_sprintf( picname, 64, "levelshots/%s", s_startserver.maplist[s_startserver.currentmap] );
@@ -1209,12 +1209,12 @@ static void PlayerName_Draw( void *item ) {
 	if ( focus )
 	{
 		// draw cursor
-		UI_FillRect( s->generic.left, s->generic.top, s->generic.right-s->generic.left+1, s->generic.bottom-s->generic.top+1, listbar_color ); 
-		UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color);
+		Q3UI_FillRect( s->generic.left, s->generic.top, s->generic.right-s->generic.left+1, s->generic.bottom-s->generic.top+1, listbar_color ); 
+		Q3UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color);
 	}
 
-	UI_DrawString( x - SMALLCHAR_WIDTH, y, s->generic.name, style|UI_RIGHT, color );
-	UI_DrawString( x + SMALLCHAR_WIDTH, y, s->string, style|UI_LEFT, color );
+	Q3UI_DrawString( x - SMALLCHAR_WIDTH, y, s->generic.name, style|UI_RIGHT, color );
+	Q3UI_DrawString( x + SMALLCHAR_WIDTH, y, s->string, style|UI_LEFT, color );
 }
 
 
@@ -1231,8 +1231,8 @@ static void ServerOptions_MenuInit( qboolean multiplayer ) {
 
 	memset( &s_serveroptions, 0 ,sizeof(serveroptions_t) );
 	s_serveroptions.multiplayer = multiplayer;
-	s_serveroptions.gametype = (int)Com_Clamp( 0, 5, trap_Cvar_VariableValue( "g_gameType" ) );
-	s_serveroptions.punkbuster.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "sv_punkbuster" ) );
+	s_serveroptions.gametype = (int)Com_Clamp( 0, 5, UI_trap_Cvar_VariableValue( "g_gameType" ) );
+	s_serveroptions.punkbuster.curvalue = Com_Clamp( 0, 1, UI_trap_Cvar_VariableValue( "sv_punkbuster" ) );
 
 	ServerOptions_Cache();
 
@@ -1477,23 +1477,23 @@ ServerOptions_Cache
 =================
 */
 void ServerOptions_Cache( void ) {
-	trap_R_RegisterShaderNoMip( GAMESERVER_BACK0 );
-	trap_R_RegisterShaderNoMip( GAMESERVER_BACK1 );
-	trap_R_RegisterShaderNoMip( GAMESERVER_FIGHT0 );
-	trap_R_RegisterShaderNoMip( GAMESERVER_FIGHT1 );
-	trap_R_RegisterShaderNoMip( GAMESERVER_SELECT );
-	trap_R_RegisterShaderNoMip( GAMESERVER_UNKNOWNMAP );
+	UI_trap_R_RegisterShaderNoMip( GAMESERVER_BACK0 );
+	UI_trap_R_RegisterShaderNoMip( GAMESERVER_BACK1 );
+	UI_trap_R_RegisterShaderNoMip( GAMESERVER_FIGHT0 );
+	UI_trap_R_RegisterShaderNoMip( GAMESERVER_FIGHT1 );
+	UI_trap_R_RegisterShaderNoMip( GAMESERVER_SELECT );
+	UI_trap_R_RegisterShaderNoMip( GAMESERVER_UNKNOWNMAP );
 }
 
 
 /*
 =================
-UI_ServerOptionsMenu
+Q3UI_ServerOptionsMenu
 =================
 */
-static void UI_ServerOptionsMenu( qboolean multiplayer ) {
+static void Q3UI_ServerOptionsMenu( qboolean multiplayer ) {
 	ServerOptions_MenuInit( multiplayer );
-	UI_PushMenu( &s_serveroptions.menu );
+	Q3UI_PushMenu( &s_serveroptions.menu );
 }
 
 
@@ -1552,10 +1552,10 @@ static botSelectInfo_t	botSelectInfo;
 
 /*
 =================
-UI_BotSelectMenu_SortCompare
+Q3UI_BotSelectMenu_SortCompare
 =================
 */
-static int QDECL UI_BotSelectMenu_SortCompare( const void *arg1, const void *arg2 ) {
+static int QDECL Q3UI_BotSelectMenu_SortCompare( const void *arg1, const void *arg2 ) {
 	int			num1, num2;
 	const char	*info1, *info2;
 	const char	*name1, *name2;
@@ -1563,8 +1563,8 @@ static int QDECL UI_BotSelectMenu_SortCompare( const void *arg1, const void *arg
 	num1 = *(int *)arg1;
 	num2 = *(int *)arg2;
 
-	info1 = UI_GetBotInfoByNumber( num1 );
-	info2 = UI_GetBotInfoByNumber( num2 );
+	info1 = Q3UI_GetBotInfoByNumber( num1 );
+	info2 = Q3UI_GetBotInfoByNumber( num2 );
 
 	name1 = Info_ValueForKey( info1, "name" );
 	name2 = Info_ValueForKey( info2, "name" );
@@ -1575,14 +1575,14 @@ static int QDECL UI_BotSelectMenu_SortCompare( const void *arg1, const void *arg
 
 /*
 =================
-UI_BotSelectMenu_BuildList
+Q3UI_BotSelectMenu_BuildList
 =================
 */
-static void UI_BotSelectMenu_BuildList( void ) {
+static void Q3UI_BotSelectMenu_BuildList( void ) {
 	int		n;
 
 	botSelectInfo.modelpage = 0;
-	botSelectInfo.numBots = UI_GetNumBots();
+	botSelectInfo.numBots = Q3UI_GetNumBots();
 	botSelectInfo.numpages = botSelectInfo.numBots / MAX_MODELSPERPAGE;
 	if( botSelectInfo.numBots % MAX_MODELSPERPAGE ) {
 		botSelectInfo.numpages++;
@@ -1594,7 +1594,7 @@ static void UI_BotSelectMenu_BuildList( void ) {
 	}
 
 	// now sort it
-	qsort( botSelectInfo.sortedBotNums, botSelectInfo.numBots, sizeof(botSelectInfo.sortedBotNums[0]), UI_BotSelectMenu_SortCompare );
+	qsort( botSelectInfo.sortedBotNums, botSelectInfo.numBots, sizeof(botSelectInfo.sortedBotNums[0]), Q3UI_BotSelectMenu_SortCompare );
 }
 
 
@@ -1618,7 +1618,7 @@ static void ServerPlayerIcon( const char *modelAndSkin, char *iconName, int icon
 
 	Com_sprintf(iconName, iconNameMaxSize, "models/players/%s/icon_%s.tga", model, skin );
 
-	if( !trap_R_RegisterShaderNoMip( iconName ) && Q_stricmp( skin, "default" ) != 0 ) {
+	if( !UI_trap_R_RegisterShaderNoMip( iconName ) && Q_stricmp( skin, "default" ) != 0 ) {
 		Com_sprintf(iconName, iconNameMaxSize, "models/players/%s/icon_default.tga", model );
 	}
 }
@@ -1626,10 +1626,10 @@ static void ServerPlayerIcon( const char *modelAndSkin, char *iconName, int icon
 
 /*
 =================
-UI_BotSelectMenu_UpdateGrid
+Q3UI_BotSelectMenu_UpdateGrid
 =================
 */
-static void UI_BotSelectMenu_UpdateGrid( void ) {
+static void Q3UI_BotSelectMenu_UpdateGrid( void ) {
 	const char	*info;
 	int			i;
     int			j;
@@ -1637,7 +1637,7 @@ static void UI_BotSelectMenu_UpdateGrid( void ) {
 	j = botSelectInfo.modelpage * MAX_MODELSPERPAGE;
 	for( i = 0; i < (PLAYERGRID_ROWS * PLAYERGRID_COLS); i++, j++) {
 		if( j < botSelectInfo.numBots ) { 
-			info = UI_GetBotInfoByNumber( botSelectInfo.sortedBotNums[j] );
+			info = Q3UI_GetBotInfoByNumber( botSelectInfo.sortedBotNums[j] );
 			ServerPlayerIcon( Info_ValueForKey( info, "model" ), botSelectInfo.boticons[i], MAX_QPATH );
 			Q_strncpyz( botSelectInfo.botnames[i], Info_ValueForKey( info, "name" ), 16 );
 			Q_CleanStr( botSelectInfo.botnames[i] );
@@ -1692,17 +1692,17 @@ static void UI_BotSelectMenu_UpdateGrid( void ) {
 
 /*
 =================
-UI_BotSelectMenu_Default
+Q3UI_BotSelectMenu_Default
 =================
 */
-static void UI_BotSelectMenu_Default( char *bot ) {
+static void Q3UI_BotSelectMenu_Default( char *bot ) {
 	const char	*botInfo;
 	const char	*test;
 	int			n;
 	int			i;
 
 	for( n = 0; n < botSelectInfo.numBots; n++ ) {
-		botInfo = UI_GetBotInfoByNumber( n );
+		botInfo = Q3UI_GetBotInfoByNumber( n );
 		test = Info_ValueForKey( botInfo, "name" );
 		if( Q_stricmp( bot, test ) == 0 ) {
 			break;
@@ -1729,44 +1729,44 @@ static void UI_BotSelectMenu_Default( char *bot ) {
 
 /*
 =================
-UI_BotSelectMenu_LeftEvent
+Q3UI_BotSelectMenu_LeftEvent
 =================
 */
-static void UI_BotSelectMenu_LeftEvent( void* ptr, int event ) {
+static void Q3UI_BotSelectMenu_LeftEvent( void* ptr, int event ) {
 	if( event != QM_ACTIVATED ) {
 		return;
 	}
 	if( botSelectInfo.modelpage > 0 ) {
 		botSelectInfo.modelpage--;
 		botSelectInfo.selectedmodel = botSelectInfo.modelpage * MAX_MODELSPERPAGE;
-		UI_BotSelectMenu_UpdateGrid();
+		Q3UI_BotSelectMenu_UpdateGrid();
 	}
 }
 
 
 /*
 =================
-UI_BotSelectMenu_RightEvent
+Q3UI_BotSelectMenu_RightEvent
 =================
 */
-static void UI_BotSelectMenu_RightEvent( void* ptr, int event ) {
+static void Q3UI_BotSelectMenu_RightEvent( void* ptr, int event ) {
 	if( event != QM_ACTIVATED ) {
 		return;
 	}
 	if( botSelectInfo.modelpage < botSelectInfo.numpages - 1 ) {
 		botSelectInfo.modelpage++;
 		botSelectInfo.selectedmodel = botSelectInfo.modelpage * MAX_MODELSPERPAGE;
-		UI_BotSelectMenu_UpdateGrid();
+		Q3UI_BotSelectMenu_UpdateGrid();
 	}
 }
 
 
 /*
 =================
-UI_BotSelectMenu_BotEvent
+Q3UI_BotSelectMenu_BotEvent
 =================
 */
-static void UI_BotSelectMenu_BotEvent( void* ptr, int event ) {
+static void Q3UI_BotSelectMenu_BotEvent( void* ptr, int event ) {
 	int		i;
 
 	if( event != QM_ACTIVATED ) {
@@ -1788,27 +1788,27 @@ static void UI_BotSelectMenu_BotEvent( void* ptr, int event ) {
 
 /*
 =================
-UI_BotSelectMenu_BackEvent
+Q3UI_BotSelectMenu_BackEvent
 =================
 */
-static void UI_BotSelectMenu_BackEvent( void* ptr, int event ) {
+static void Q3UI_BotSelectMenu_BackEvent( void* ptr, int event ) {
 	if( event != QM_ACTIVATED ) {
 		return;
 	}
-	UI_PopMenu();
+	Q3UI_PopMenu();
 }
 
 
 /*
 =================
-UI_BotSelectMenu_SelectEvent
+Q3UI_BotSelectMenu_SelectEvent
 =================
 */
-static void UI_BotSelectMenu_SelectEvent( void* ptr, int event ) {
+static void Q3UI_BotSelectMenu_SelectEvent( void* ptr, int event ) {
 	if( event != QM_ACTIVATED ) {
 		return;
 	}
-	UI_PopMenu();
+	Q3UI_PopMenu();
 
 	s_serveroptions.newBot = qtrue;
 	Q_strncpyz( s_serveroptions.newBotName, botSelectInfo.botnames[botSelectInfo.selectedmodel % MAX_MODELSPERPAGE], 16 );
@@ -1817,23 +1817,23 @@ static void UI_BotSelectMenu_SelectEvent( void* ptr, int event ) {
 
 /*
 =================
-UI_BotSelectMenu_Cache
+Q3UI_BotSelectMenu_Cache
 =================
 */
-void UI_BotSelectMenu_Cache( void ) {
-	trap_R_RegisterShaderNoMip( BOTSELECT_BACK0 );
-	trap_R_RegisterShaderNoMip( BOTSELECT_BACK1 );
-	trap_R_RegisterShaderNoMip( BOTSELECT_ACCEPT0 );
-	trap_R_RegisterShaderNoMip( BOTSELECT_ACCEPT1 );
-	trap_R_RegisterShaderNoMip( BOTSELECT_SELECT );
-	trap_R_RegisterShaderNoMip( BOTSELECT_SELECTED );
-	trap_R_RegisterShaderNoMip( BOTSELECT_ARROWS );
-	trap_R_RegisterShaderNoMip( BOTSELECT_ARROWSL );
-	trap_R_RegisterShaderNoMip( BOTSELECT_ARROWSR );
+void Q3UI_BotSelectMenu_Cache( void ) {
+	UI_trap_R_RegisterShaderNoMip( BOTSELECT_BACK0 );
+	UI_trap_R_RegisterShaderNoMip( BOTSELECT_BACK1 );
+	UI_trap_R_RegisterShaderNoMip( BOTSELECT_ACCEPT0 );
+	UI_trap_R_RegisterShaderNoMip( BOTSELECT_ACCEPT1 );
+	UI_trap_R_RegisterShaderNoMip( BOTSELECT_SELECT );
+	UI_trap_R_RegisterShaderNoMip( BOTSELECT_SELECTED );
+	UI_trap_R_RegisterShaderNoMip( BOTSELECT_ARROWS );
+	UI_trap_R_RegisterShaderNoMip( BOTSELECT_ARROWSL );
+	UI_trap_R_RegisterShaderNoMip( BOTSELECT_ARROWSR );
 }
 
 
-static void UI_BotSelectMenu_Init( char *bot ) {
+static void Q3UI_BotSelectMenu_Init( char *bot ) {
 	int		i, j, k;
 	int		x, y;
 
@@ -1841,7 +1841,7 @@ static void UI_BotSelectMenu_Init( char *bot ) {
 	botSelectInfo.menu.wrapAround = qtrue;
 	botSelectInfo.menu.fullscreen = qtrue;
 
-	UI_BotSelectMenu_Cache();
+	Q3UI_BotSelectMenu_Cache();
 
 	botSelectInfo.banner.generic.type	= MTYPE_BTEXT;
 	botSelectInfo.banner.generic.x		= 320;
@@ -1866,7 +1866,7 @@ static void UI_BotSelectMenu_Init( char *bot ) {
 
 			botSelectInfo.picbuttons[k].generic.type		= MTYPE_BITMAP;
 			botSelectInfo.picbuttons[k].generic.flags		= QMF_LEFT_JUSTIFY|QMF_NODEFAULTINIT|QMF_PULSEIFFOCUS;
-			botSelectInfo.picbuttons[k].generic.callback	= UI_BotSelectMenu_BotEvent;
+			botSelectInfo.picbuttons[k].generic.callback	= Q3UI_BotSelectMenu_BotEvent;
 			botSelectInfo.picbuttons[k].generic.id			= k;
 			botSelectInfo.picbuttons[k].generic.x			= x - 16;
 			botSelectInfo.picbuttons[k].generic.y			= y - 16;
@@ -1902,7 +1902,7 @@ static void UI_BotSelectMenu_Init( char *bot ) {
 
 	botSelectInfo.left.generic.type			= MTYPE_BITMAP;
 	botSelectInfo.left.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
-	botSelectInfo.left.generic.callback		= UI_BotSelectMenu_LeftEvent;
+	botSelectInfo.left.generic.callback		= Q3UI_BotSelectMenu_LeftEvent;
 	botSelectInfo.left.generic.x			= 260;
 	botSelectInfo.left.generic.y			= 440;
 	botSelectInfo.left.width  				= 64;
@@ -1911,7 +1911,7 @@ static void UI_BotSelectMenu_Init( char *bot ) {
 
 	botSelectInfo.right.generic.type	    = MTYPE_BITMAP;
 	botSelectInfo.right.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
-	botSelectInfo.right.generic.callback	= UI_BotSelectMenu_RightEvent;
+	botSelectInfo.right.generic.callback	= Q3UI_BotSelectMenu_RightEvent;
 	botSelectInfo.right.generic.x			= 321;
 	botSelectInfo.right.generic.y			= 440;
 	botSelectInfo.right.width  				= 64;
@@ -1921,7 +1921,7 @@ static void UI_BotSelectMenu_Init( char *bot ) {
 	botSelectInfo.back.generic.type		= MTYPE_BITMAP;
 	botSelectInfo.back.generic.name		= BOTSELECT_BACK0;
 	botSelectInfo.back.generic.flags	= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
-	botSelectInfo.back.generic.callback	= UI_BotSelectMenu_BackEvent;
+	botSelectInfo.back.generic.callback	= Q3UI_BotSelectMenu_BackEvent;
 	botSelectInfo.back.generic.x		= 0;
 	botSelectInfo.back.generic.y		= 480-64;
 	botSelectInfo.back.width			= 128;
@@ -1931,7 +1931,7 @@ static void UI_BotSelectMenu_Init( char *bot ) {
 	botSelectInfo.go.generic.type		= MTYPE_BITMAP;
 	botSelectInfo.go.generic.name		= BOTSELECT_ACCEPT0;
 	botSelectInfo.go.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
-	botSelectInfo.go.generic.callback	= UI_BotSelectMenu_SelectEvent;
+	botSelectInfo.go.generic.callback	= Q3UI_BotSelectMenu_SelectEvent;
 	botSelectInfo.go.generic.x			= 640;
 	botSelectInfo.go.generic.y			= 480-64;
 	botSelectInfo.go.width				= 128;
@@ -1950,19 +1950,19 @@ static void UI_BotSelectMenu_Init( char *bot ) {
 	Menu_AddItem( &botSelectInfo.menu, &botSelectInfo.back );
 	Menu_AddItem( &botSelectInfo.menu, &botSelectInfo.go );
 
-	UI_BotSelectMenu_BuildList();
-	UI_BotSelectMenu_Default( bot );
+	Q3UI_BotSelectMenu_BuildList();
+	Q3UI_BotSelectMenu_Default( bot );
 	botSelectInfo.modelpage = botSelectInfo.selectedmodel / MAX_MODELSPERPAGE;
-	UI_BotSelectMenu_UpdateGrid();
+	Q3UI_BotSelectMenu_UpdateGrid();
 }
 
 
 /*
 =================
-UI_BotSelectMenu
+Q3UI_BotSelectMenu
 =================
 */
-void UI_BotSelectMenu( char *bot ) {
-	UI_BotSelectMenu_Init( bot );
-	UI_PushMenu( &botSelectInfo.menu );
+void Q3UI_BotSelectMenu( char *bot ) {
+	Q3UI_BotSelectMenu_Init( bot );
+	Q3UI_PushMenu( &botSelectInfo.menu );
 }

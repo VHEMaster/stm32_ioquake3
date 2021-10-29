@@ -40,43 +40,43 @@ This is the only way control passes into the module.
 This must be the very first function compiled into the .qvm file
 ================
 */
-intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11  ) {
+intptr_t Q3UI_vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11  ) {
 	switch ( command ) {
 	case UI_GETAPIVERSION:
-		return UI_API_VERSION;
+		return Q3UI_API_VERSION;
 
 	case UI_INIT:
-		UI_Init();
+		Q3UI_Init();
 		return 0;
 
 	case UI_SHUTDOWN:
-		UI_Shutdown();
+		Q3UI_Shutdown();
 		return 0;
 
 	case UI_KEY_EVENT:
-		UI_KeyEvent( arg0, arg1 );
+		Q3UI_KeyEvent( arg0, arg1 );
 		return 0;
 
 	case UI_MOUSE_EVENT:
-		UI_MouseEvent( arg0, arg1 );
+		Q3UI_MouseEvent( arg0, arg1 );
 		return 0;
 
 	case UI_REFRESH:
-		UI_Refresh( arg0 );
+		Q3UI_Refresh( arg0 );
 		return 0;
 
 	case UI_IS_FULLSCREEN:
-		return UI_IsFullscreen();
+		return Q3UI_IsFullscreen();
 
 	case UI_SET_ACTIVE_MENU:
-		UI_SetActiveMenu( arg0 );
+		Q3UI_SetActiveMenu( arg0 );
 		return 0;
 
 	case UI_CONSOLE_COMMAND:
-		return UI_ConsoleCommand(arg0);
+		return Q3UI_ConsoleCommand(arg0);
 
 	case UI_DRAW_CONNECT_SCREEN:
-		UI_DrawConnectScreen( arg0 );
+		Q3UI_DrawConnectScreen( arg0 );
 		return 0;
 	case UI_HASUNIQUECDKEY:				// mod authors need to observe this
 		return qtrue;  // change this to qfalse for mods!
@@ -222,28 +222,28 @@ static int cvarTableSize = sizeof(cvarTable) / sizeof(cvarTable[0]);
 
 /*
 =================
-UI_RegisterCvars
+Q3UI_RegisterCvars
 =================
 */
-void UI_RegisterCvars( void ) {
+void Q3UI_RegisterCvars( void ) {
 	int			i;
 	cvarTable_t	*cv;
 
 	for ( i = 0, cv = cvarTable ; i < cvarTableSize ; i++, cv++ ) {
-		trap_Cvar_Register( cv->vmCvar, cv->cvarName, cv->defaultString, cv->cvarFlags );
+		UI_trap_Cvar_Register( cv->vmCvar, cv->cvarName, cv->defaultString, cv->cvarFlags );
 	}
 }
 
 /*
 =================
-UI_UpdateCvars
+Q3UI_UpdateCvars
 =================
 */
-void UI_UpdateCvars( void ) {
+void Q3UI_UpdateCvars( void ) {
 	int			i;
 	cvarTable_t	*cv;
 
 	for ( i = 0, cv = cvarTable ; i < cvarTableSize ; i++, cv++ ) {
-		trap_Cvar_Update( cv->vmCvar );
+		UI_trap_Cvar_Update( cv->vmCvar );
 	}
 }

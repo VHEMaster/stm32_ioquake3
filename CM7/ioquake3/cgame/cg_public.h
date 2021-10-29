@@ -235,4 +235,8 @@ typedef enum {
 //	void (*CG_EventHandling)(int type);
 } cgameExport_t;
 
+extern void CG_dllEntry( intptr_t (QDECL  *syscallptr)( intptr_t arg,... ) );
+extern intptr_t CG_vmMain( int command, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10, int arg11  );
+
+
 //----------------------------------------------

@@ -56,17 +56,17 @@ void Reset_MenuEvent(void* ptr, int event) {
 		return;
 	}
 
-	UI_PopMenu();
+	Q3UI_PopMenu();
 
 	if( ((menucommon_s*)ptr)->id == ID_NO ) {
 		return;
 	}
 
 	// reset the game, pop the level menu and restart it so it updates
-	UI_NewGame();
-	trap_Cvar_SetValue( "ui_spSelection", 0 );
-	UI_PopMenu();
-	UI_SPLevelMenu();
+	Q3UI_NewGame();
+	UI_trap_Cvar_SetValue( "ui_spSelection", 0 );
+	Q3UI_PopMenu();
+	Q3UI_SPLevelMenu();
 }
 
 
@@ -105,15 +105,15 @@ Reset_MenuDraw
 =================
 */
 static void Reset_MenuDraw( void ) {
-	UI_DrawNamedPic( 142, 118, 359, 256, ART_FRAME );
-	UI_DrawProportionalString( 320, 194 + 10, "RESET GAME?", UI_CENTER|UI_INVERSE, color_red );
-	UI_DrawProportionalString( s_reset.slashX, 265, "/", UI_LEFT|UI_INVERSE, color_red );
+	Q3UI_DrawNamedPic( 142, 118, 359, 256, ART_FRAME );
+	Q3UI_DrawProportionalString( 320, 194 + 10, "RESET GAME?", UI_CENTER|UI_INVERSE, color_red );
+	Q3UI_DrawProportionalString( s_reset.slashX, 265, "/", UI_LEFT|UI_INVERSE, color_red );
 	Menu_Draw( &s_reset.menu );
 
-	UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 0, "WARNING: This resets all of the", UI_CENTER|UI_SMALLFONT, color_yellow );
-	UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 1, "single player game variables.", UI_CENTER|UI_SMALLFONT, color_yellow );
-	UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 2, "Do this only if you want to", UI_CENTER|UI_SMALLFONT, color_yellow );
-	UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 3, "start over from the beginning.", UI_CENTER|UI_SMALLFONT, color_yellow );
+	Q3UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 0, "WARNING: This resets all of the", UI_CENTER|UI_SMALLFONT, color_yellow );
+	Q3UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 1, "single player game variables.", UI_CENTER|UI_SMALLFONT, color_yellow );
+	Q3UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 2, "Do this only if you want to", UI_CENTER|UI_SMALLFONT, color_yellow );
+	Q3UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 3, "start over from the beginning.", UI_CENTER|UI_SMALLFONT, color_yellow );
 }
 
 
@@ -123,16 +123,16 @@ Reset_Cache
 =================
 */
 void Reset_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_FRAME );
+	UI_trap_R_RegisterShaderNoMip( ART_FRAME );
 }
 
 
 /*
 =================
-UI_ResetMenu
+Q3UI_ResetMenu
 =================
 */
-void UI_ResetMenu(void) {
+void Q3UI_ResetMenu(void) {
 	uiClientState_t	cstate;
 	int	n1, n2, n3;
 	int	l1, l2, l3;
@@ -142,9 +142,9 @@ void UI_ResetMenu(void) {
 
 	Reset_Cache();
 
-	n1 = UI_ProportionalStringWidth( "YES/NO" );
-	n2 = UI_ProportionalStringWidth( "YES" ) + PROP_GAP_WIDTH;
-	n3 = UI_ProportionalStringWidth( "/" )  + PROP_GAP_WIDTH;
+	n1 = Q3UI_ProportionalStringWidth( "YES/NO" );
+	n2 = Q3UI_ProportionalStringWidth( "YES" ) + PROP_GAP_WIDTH;
+	n3 = Q3UI_ProportionalStringWidth( "/" )  + PROP_GAP_WIDTH;
 	l1 = 320 - ( n1 / 2 );
 	l2 = l1 + n2;
 	l3 = l2 + n3;
@@ -154,7 +154,7 @@ void UI_ResetMenu(void) {
 	s_reset.menu.key        = Reset_MenuKey;
 	s_reset.menu.wrapAround = qtrue;
 
-	trap_GetClientState( &cstate );
+	UI_trap_GetClientState( &cstate );
 
 	if ( cstate.connState >= CA_CONNECTED ) {
 		// float on top of running game
@@ -188,7 +188,7 @@ void UI_ResetMenu(void) {
 	Menu_AddItem( &s_reset.menu,	&s_reset.yes );             
 	Menu_AddItem( &s_reset.menu,	&s_reset.no );
 
-	UI_PushMenu( &s_reset.menu );
+	Q3UI_PushMenu( &s_reset.menu );
 
 	Menu_SetCursorToItem( &s_reset.menu, &s_reset.no );
 }

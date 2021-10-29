@@ -127,7 +127,7 @@ typedef enum {
 	DUMMY_ENUM_VALUE
 } SDL_DUMMY_ENUM;
 
-SDL_COMPILE_TIME_ASSERT(enum, sizeof(SDL_DUMMY_ENUM) == sizeof(int));
+//SDL_COMPILE_TIME_ASSERT(enum, sizeof(SDL_DUMMY_ENUM) == sizeof(int));
 
 
 #include "begin_code.h"
@@ -137,25 +137,25 @@ extern "C" {
 #endif
 
 #ifdef HAVE_MALLOC
-#define SDL_malloc	malloc
+#define SDL_malloc	pvPortMalloc
 #else
 extern DECLSPEC void * SDLCALL SDL_malloc(size_t size);
 #endif
 
 #ifdef HAVE_CALLOC
-#define SDL_calloc	calloc
+#define SDL_calloc(x,y)	pvPortMalloc((x)*(y))
 #else
 extern DECLSPEC void * SDLCALL SDL_calloc(size_t nmemb, size_t size);
 #endif
 
 #ifdef HAVE_REALLOC
-#define SDL_realloc	realloc
+#define SDL_realloc	pvPortRealloc
 #else
 extern DECLSPEC void * SDLCALL SDL_realloc(void *mem, size_t size);
 #endif
 
 #ifdef HAVE_FREE
-#define SDL_free	free
+#define SDL_free	vPortFree
 #else
 extern DECLSPEC void SDLCALL SDL_free(void *mem);
 #endif

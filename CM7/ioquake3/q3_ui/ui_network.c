@@ -75,28 +75,28 @@ static networkOptionsInfo_t	networkOptionsInfo;
 
 /*
 =================
-UI_NetworkOptionsMenu_Event
+Q3UI_NetworkOptionsMenu_Event
 =================
 */
-static void UI_NetworkOptionsMenu_Event( void* ptr, int event ) {
+static void Q3UI_NetworkOptionsMenu_Event( void* ptr, int event ) {
 	if( event != QM_ACTIVATED ) {
 		return;
 	}
 
 	switch( ((menucommon_s*)ptr)->id ) {
 	case ID_GRAPHICS:
-		UI_PopMenu();
-		UI_GraphicsOptionsMenu();
+		Q3UI_PopMenu();
+		Q3UI_GraphicsOptionsMenu();
 		break;
 
 	case ID_DISPLAY:
-		UI_PopMenu();
-		UI_DisplayOptionsMenu();
+		Q3UI_PopMenu();
+		Q3UI_DisplayOptionsMenu();
 		break;
 
 	case ID_SOUND:
-		UI_PopMenu();
-		UI_SoundOptionsMenu();
+		Q3UI_PopMenu();
+		Q3UI_SoundOptionsMenu();
 		break;
 
 	case ID_NETWORK:
@@ -104,24 +104,24 @@ static void UI_NetworkOptionsMenu_Event( void* ptr, int event ) {
 
 	case ID_RATE:
 		if( networkOptionsInfo.rate.curvalue == 0 ) {
-			trap_Cvar_SetValue( "rate", 2500 );
+			UI_trap_Cvar_SetValue( "rate", 2500 );
 		}
 		else if( networkOptionsInfo.rate.curvalue == 1 ) {
-			trap_Cvar_SetValue( "rate", 3000 );
+			UI_trap_Cvar_SetValue( "rate", 3000 );
 		}
 		else if( networkOptionsInfo.rate.curvalue == 2 ) {
-			trap_Cvar_SetValue( "rate", 4000 );
+			UI_trap_Cvar_SetValue( "rate", 4000 );
 		}
 		else if( networkOptionsInfo.rate.curvalue == 3 ) {
-			trap_Cvar_SetValue( "rate", 5000 );
+			UI_trap_Cvar_SetValue( "rate", 5000 );
 		}
 		else if( networkOptionsInfo.rate.curvalue == 4 ) {
-			trap_Cvar_SetValue( "rate", 25000 );
+			UI_trap_Cvar_SetValue( "rate", 25000 );
 		}
 		break;
 
 	case ID_BACK:
-		UI_PopMenu();
+		Q3UI_PopMenu();
 		break;
 	}
 }
@@ -129,16 +129,16 @@ static void UI_NetworkOptionsMenu_Event( void* ptr, int event ) {
 
 /*
 ===============
-UI_NetworkOptionsMenu_Init
+Q3UI_NetworkOptionsMenu_Init
 ===============
 */
-static void UI_NetworkOptionsMenu_Init( void ) {
+static void Q3UI_NetworkOptionsMenu_Init( void ) {
 	int		y;
 	int		rate;
 
 	memset( &networkOptionsInfo, 0, sizeof(networkOptionsInfo) );
 
-	UI_NetworkOptionsMenu_Cache();
+	Q3UI_NetworkOptionsMenu_Cache();
 	networkOptionsInfo.menu.wrapAround = qtrue;
 	networkOptionsInfo.menu.fullscreen = qtrue;
 
@@ -169,7 +169,7 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 	networkOptionsInfo.graphics.generic.type		= MTYPE_PTEXT;
 	networkOptionsInfo.graphics.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	networkOptionsInfo.graphics.generic.id			= ID_GRAPHICS;
-	networkOptionsInfo.graphics.generic.callback	= UI_NetworkOptionsMenu_Event;
+	networkOptionsInfo.graphics.generic.callback	= Q3UI_NetworkOptionsMenu_Event;
 	networkOptionsInfo.graphics.generic.x			= 216;
 	networkOptionsInfo.graphics.generic.y			= 240 - 2 * PROP_HEIGHT;
 	networkOptionsInfo.graphics.string				= "GRAPHICS";
@@ -179,7 +179,7 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 	networkOptionsInfo.display.generic.type			= MTYPE_PTEXT;
 	networkOptionsInfo.display.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	networkOptionsInfo.display.generic.id			= ID_DISPLAY;
-	networkOptionsInfo.display.generic.callback		= UI_NetworkOptionsMenu_Event;
+	networkOptionsInfo.display.generic.callback		= Q3UI_NetworkOptionsMenu_Event;
 	networkOptionsInfo.display.generic.x			= 216;
 	networkOptionsInfo.display.generic.y			= 240 - PROP_HEIGHT;
 	networkOptionsInfo.display.string				= "DISPLAY";
@@ -189,7 +189,7 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 	networkOptionsInfo.sound.generic.type			= MTYPE_PTEXT;
 	networkOptionsInfo.sound.generic.flags			= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	networkOptionsInfo.sound.generic.id				= ID_SOUND;
-	networkOptionsInfo.sound.generic.callback		= UI_NetworkOptionsMenu_Event;
+	networkOptionsInfo.sound.generic.callback		= Q3UI_NetworkOptionsMenu_Event;
 	networkOptionsInfo.sound.generic.x				= 216;
 	networkOptionsInfo.sound.generic.y				= 240;
 	networkOptionsInfo.sound.string					= "SOUND";
@@ -199,7 +199,7 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 	networkOptionsInfo.network.generic.type			= MTYPE_PTEXT;
 	networkOptionsInfo.network.generic.flags		= QMF_RIGHT_JUSTIFY;
 	networkOptionsInfo.network.generic.id			= ID_NETWORK;
-	networkOptionsInfo.network.generic.callback		= UI_NetworkOptionsMenu_Event;
+	networkOptionsInfo.network.generic.callback		= Q3UI_NetworkOptionsMenu_Event;
 	networkOptionsInfo.network.generic.x			= 216;
 	networkOptionsInfo.network.generic.y			= 240 + PROP_HEIGHT;
 	networkOptionsInfo.network.string				= "NETWORK";
@@ -210,7 +210,7 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 	networkOptionsInfo.rate.generic.type		= MTYPE_SPINCONTROL;
 	networkOptionsInfo.rate.generic.name		= "Data Rate:";
 	networkOptionsInfo.rate.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	networkOptionsInfo.rate.generic.callback	= UI_NetworkOptionsMenu_Event;
+	networkOptionsInfo.rate.generic.callback	= Q3UI_NetworkOptionsMenu_Event;
 	networkOptionsInfo.rate.generic.id			= ID_RATE;
 	networkOptionsInfo.rate.generic.x			= 400;
 	networkOptionsInfo.rate.generic.y			= y;
@@ -219,7 +219,7 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 	networkOptionsInfo.back.generic.type		= MTYPE_BITMAP;
 	networkOptionsInfo.back.generic.name		= ART_BACK0;
 	networkOptionsInfo.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
-	networkOptionsInfo.back.generic.callback	= UI_NetworkOptionsMenu_Event;
+	networkOptionsInfo.back.generic.callback	= Q3UI_NetworkOptionsMenu_Event;
 	networkOptionsInfo.back.generic.id			= ID_BACK;
 	networkOptionsInfo.back.generic.x			= 0;
 	networkOptionsInfo.back.generic.y			= 480-64;
@@ -237,7 +237,7 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 	Menu_AddItem( &networkOptionsInfo.menu, ( void * ) &networkOptionsInfo.rate );
 	Menu_AddItem( &networkOptionsInfo.menu, ( void * ) &networkOptionsInfo.back );
 
-	rate = trap_Cvar_VariableValue( "rate" );
+	rate = UI_trap_Cvar_VariableValue( "rate" );
 	if( rate <= 2500 ) {
 		networkOptionsInfo.rate.curvalue = 0;
 	}
@@ -258,24 +258,24 @@ static void UI_NetworkOptionsMenu_Init( void ) {
 
 /*
 ===============
-UI_NetworkOptionsMenu_Cache
+Q3UI_NetworkOptionsMenu_Cache
 ===============
 */
-void UI_NetworkOptionsMenu_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_FRAMEL );
-	trap_R_RegisterShaderNoMip( ART_FRAMER );
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
+void Q3UI_NetworkOptionsMenu_Cache( void ) {
+	UI_trap_R_RegisterShaderNoMip( ART_FRAMEL );
+	UI_trap_R_RegisterShaderNoMip( ART_FRAMER );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK0 );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK1 );
 }
 
 
 /*
 ===============
-UI_NetworkOptionsMenu
+Q3UI_NetworkOptionsMenu
 ===============
 */
-void UI_NetworkOptionsMenu( void ) {
-	UI_NetworkOptionsMenu_Init();
-	UI_PushMenu( &networkOptionsInfo.menu );
+void Q3UI_NetworkOptionsMenu( void ) {
+	Q3UI_NetworkOptionsMenu_Init();
+	Q3UI_PushMenu( &networkOptionsInfo.menu );
 	Menu_SetCursorToItem( &networkOptionsInfo.menu, &networkOptionsInfo.network );
 }

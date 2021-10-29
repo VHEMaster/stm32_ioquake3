@@ -106,7 +106,7 @@ int	overflows;
 // negative bit values include signs
 void MSG_WriteBits( msg_t *msg, int value, int bits ) {
 	int	i;
-//	FILE*	fp;
+//	FIL*	fp;
 
 	oldsize += bits;
 
@@ -186,7 +186,7 @@ int MSG_ReadBits( msg_t *msg, int bits ) {
 	int			get;
 	qboolean	sgn;
 	int			i, nbits;
-//	FILE*	fp;
+//	FIL*	fp;
 
 	value = 0;
 

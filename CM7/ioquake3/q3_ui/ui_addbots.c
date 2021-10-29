@@ -81,10 +81,10 @@ static addBotsMenuInfo_t	addBotsMenuInfo;
 
 /*
 =================
-UI_AddBotsMenu_FightEvent
+Q3UI_AddBotsMenu_FightEvent
 =================
 */
-static void UI_AddBotsMenu_FightEvent( void* ptr, int event ) {
+static void Q3UI_AddBotsMenu_FightEvent( void* ptr, int event ) {
 	const char	*team;
 	int			skill;
 
@@ -95,7 +95,7 @@ static void UI_AddBotsMenu_FightEvent( void* ptr, int event ) {
 	team = addBotsMenuInfo.team.itemnames[addBotsMenuInfo.team.curvalue];
 	skill = addBotsMenuInfo.skill.curvalue + 1;
 
-	trap_Cmd_ExecuteText( EXEC_APPEND, va("addbot %s %i %s %i\n",
+	UI_trap_Cmd_ExecuteText( EXEC_APPEND, va("addbot %s %i %s %i\n",
 		addBotsMenuInfo.botnames[addBotsMenuInfo.selectedBotNum], skill, team, addBotsMenuInfo.delay) );
 
 	addBotsMenuInfo.delay += 1500;
@@ -104,10 +104,10 @@ static void UI_AddBotsMenu_FightEvent( void* ptr, int event ) {
 
 /*
 =================
-UI_AddBotsMenu_BotEvent
+Q3UI_AddBotsMenu_BotEvent
 =================
 */
-static void UI_AddBotsMenu_BotEvent( void* ptr, int event ) {
+static void Q3UI_AddBotsMenu_BotEvent( void* ptr, int event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
@@ -120,28 +120,28 @@ static void UI_AddBotsMenu_BotEvent( void* ptr, int event ) {
 
 /*
 =================
-UI_AddBotsMenu_BackEvent
+Q3UI_AddBotsMenu_BackEvent
 =================
 */
-static void UI_AddBotsMenu_BackEvent( void* ptr, int event ) {
+static void Q3UI_AddBotsMenu_BackEvent( void* ptr, int event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
-	UI_PopMenu();
+	Q3UI_PopMenu();
 }
 
 
 /*
 =================
-UI_AddBotsMenu_SetBotNames
+Q3UI_AddBotsMenu_SetBotNames
 =================
 */
-static void UI_AddBotsMenu_SetBotNames( void ) {
+static void Q3UI_AddBotsMenu_SetBotNames( void ) {
 	int			n;
 	const char	*info;
 
 	for ( n = 0; n < 7; n++ ) {
-		info = UI_GetBotInfoByNumber( addBotsMenuInfo.sortedBotNums[addBotsMenuInfo.baseBotNum + n] );
+		info = Q3UI_GetBotInfoByNumber( addBotsMenuInfo.sortedBotNums[addBotsMenuInfo.baseBotNum + n] );
 		Q_strncpyz( addBotsMenuInfo.botnames[n], Info_ValueForKey( info, "name" ), sizeof(addBotsMenuInfo.botnames[n]) );
 	}
 
@@ -150,44 +150,44 @@ static void UI_AddBotsMenu_SetBotNames( void ) {
 
 /*
 =================
-UI_AddBotsMenu_UpEvent
+Q3UI_AddBotsMenu_UpEvent
 =================
 */
-static void UI_AddBotsMenu_UpEvent( void* ptr, int event ) {
+static void Q3UI_AddBotsMenu_UpEvent( void* ptr, int event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
 
 	if( addBotsMenuInfo.baseBotNum > 0 ) {
 		addBotsMenuInfo.baseBotNum--;
-		UI_AddBotsMenu_SetBotNames();
+		Q3UI_AddBotsMenu_SetBotNames();
 	}
 }
 
 
 /*
 =================
-UI_AddBotsMenu_DownEvent
+Q3UI_AddBotsMenu_DownEvent
 =================
 */
-static void UI_AddBotsMenu_DownEvent( void* ptr, int event ) {
+static void Q3UI_AddBotsMenu_DownEvent( void* ptr, int event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
 
 	if( addBotsMenuInfo.baseBotNum + 7 < addBotsMenuInfo.numBots ) {
 		addBotsMenuInfo.baseBotNum++;
-		UI_AddBotsMenu_SetBotNames();
+		Q3UI_AddBotsMenu_SetBotNames();
 	}
 }
 
 
 /*
 =================
-UI_AddBotsMenu_GetSortedBotNums
+Q3UI_AddBotsMenu_GetSortedBotNums
 =================
 */
-static int QDECL UI_AddBotsMenu_SortCompare( const void *arg1, const void *arg2 ) {
+static int QDECL Q3UI_AddBotsMenu_SortCompare( const void *arg1, const void *arg2 ) {
 	int			num1, num2;
 	const char	*info1, *info2;
 	const char	*name1, *name2;
@@ -195,8 +195,8 @@ static int QDECL UI_AddBotsMenu_SortCompare( const void *arg1, const void *arg2 
 	num1 = *(int *)arg1;
 	num2 = *(int *)arg2;
 
-	info1 = UI_GetBotInfoByNumber( num1 );
-	info2 = UI_GetBotInfoByNumber( num2 );
+	info1 = Q3UI_GetBotInfoByNumber( num1 );
+	info2 = Q3UI_GetBotInfoByNumber( num2 );
 
 	name1 = Info_ValueForKey( info1, "name" );
 	name2 = Info_ValueForKey( info2, "name" );
@@ -204,7 +204,7 @@ static int QDECL UI_AddBotsMenu_SortCompare( const void *arg1, const void *arg2 
 	return Q_stricmp( name1, name2 );
 }
 
-static void UI_AddBotsMenu_GetSortedBotNums( void ) {
+static void Q3UI_AddBotsMenu_GetSortedBotNums( void ) {
 	int		n;
 
 	// initialize the array
@@ -212,18 +212,18 @@ static void UI_AddBotsMenu_GetSortedBotNums( void ) {
 		addBotsMenuInfo.sortedBotNums[n] = n;
 	}
 
-	qsort( addBotsMenuInfo.sortedBotNums, addBotsMenuInfo.numBots, sizeof(addBotsMenuInfo.sortedBotNums[0]), UI_AddBotsMenu_SortCompare );
+	qsort( addBotsMenuInfo.sortedBotNums, addBotsMenuInfo.numBots, sizeof(addBotsMenuInfo.sortedBotNums[0]), Q3UI_AddBotsMenu_SortCompare );
 }
 
 
 /*
 =================
-UI_AddBotsMenu_Draw
+Q3UI_AddBotsMenu_Draw
 =================
 */
-static void UI_AddBotsMenu_Draw( void ) {
-	UI_DrawBannerString( 320, 16, "ADD BOTS", UI_CENTER, color_white );
-	UI_DrawNamedPic( 320-233, 240-166, 466, 332, ART_BACKGROUND );
+static void Q3UI_AddBotsMenu_Draw( void ) {
+	Q3UI_DrawBannerString( 320, 16, "ADD BOTS", UI_CENTER, color_white );
+	Q3UI_DrawNamedPic( 320-233, 240-166, 466, 332, ART_BACKGROUND );
 
 	// standard menu drawing
 	Menu_Draw( &addBotsMenuInfo.menu );
@@ -232,7 +232,7 @@ static void UI_AddBotsMenu_Draw( void ) {
 	
 /*
 =================
-UI_AddBotsMenu_Init
+Q3UI_AddBotsMenu_Init
 =================
 */
 static const char *skillNames[] = {
@@ -255,25 +255,25 @@ static const char *teamNames2[] = {
 	NULL
 };
 
-static void UI_AddBotsMenu_Init( void ) {
+static void Q3UI_AddBotsMenu_Init( void ) {
 	int		n;
 	int		y;
 	int		gametype;
 	int		count;
 	char	info[MAX_INFO_STRING];
 
-	trap_GetConfigString(CS_SERVERINFO, info, MAX_INFO_STRING);   
+	UI_trap_GetConfigString(CS_SERVERINFO, info, MAX_INFO_STRING);   
 	gametype = atoi( Info_ValueForKey( info,"g_gametype" ) );
 
 	memset( &addBotsMenuInfo, 0 ,sizeof(addBotsMenuInfo) );
-	addBotsMenuInfo.menu.draw = UI_AddBotsMenu_Draw;
+	addBotsMenuInfo.menu.draw = Q3UI_AddBotsMenu_Draw;
 	addBotsMenuInfo.menu.fullscreen = qfalse;
 	addBotsMenuInfo.menu.wrapAround = qtrue;
 	addBotsMenuInfo.delay = 1000;
 
-	UI_AddBots_Cache();
+	Q3UI_AddBots_Cache();
 
-	addBotsMenuInfo.numBots = UI_GetNumBots();
+	addBotsMenuInfo.numBots = Q3UI_GetNumBots();
 	count = addBotsMenuInfo.numBots < 7 ? addBotsMenuInfo.numBots : 7;
 
 	addBotsMenuInfo.arrows.generic.type  = MTYPE_BITMAP;
@@ -289,7 +289,7 @@ static void UI_AddBotsMenu_Init( void ) {
 	addBotsMenuInfo.up.generic.x		= 200;
 	addBotsMenuInfo.up.generic.y		= 128;
 	addBotsMenuInfo.up.generic.id	    = ID_UP;
-	addBotsMenuInfo.up.generic.callback = UI_AddBotsMenu_UpEvent;
+	addBotsMenuInfo.up.generic.callback = Q3UI_AddBotsMenu_UpEvent;
 	addBotsMenuInfo.up.width  		    = 64;
 	addBotsMenuInfo.up.height  		    = 64;
 	addBotsMenuInfo.up.focuspic         = ART_ARROWUP;
@@ -299,7 +299,7 @@ static void UI_AddBotsMenu_Init( void ) {
 	addBotsMenuInfo.down.generic.x		  = 200;
 	addBotsMenuInfo.down.generic.y		  = 128+64;
 	addBotsMenuInfo.down.generic.id	      = ID_DOWN;
-	addBotsMenuInfo.down.generic.callback = UI_AddBotsMenu_DownEvent;
+	addBotsMenuInfo.down.generic.callback = Q3UI_AddBotsMenu_DownEvent;
 	addBotsMenuInfo.down.width  		  = 64;
 	addBotsMenuInfo.down.height  		  = 64;
 	addBotsMenuInfo.down.focuspic         = ART_ARROWDOWN;
@@ -310,7 +310,7 @@ static void UI_AddBotsMenu_Init( void ) {
 		addBotsMenuInfo.bots[n].generic.id			= ID_BOTNAME0 + n;
 		addBotsMenuInfo.bots[n].generic.x			= 320 - 56;
 		addBotsMenuInfo.bots[n].generic.y			= y;
-		addBotsMenuInfo.bots[n].generic.callback	= UI_AddBotsMenu_BotEvent;
+		addBotsMenuInfo.bots[n].generic.callback	= Q3UI_AddBotsMenu_BotEvent;
 		addBotsMenuInfo.bots[n].string				= addBotsMenuInfo.botnames[n];
 		addBotsMenuInfo.bots[n].color				= color_orange;
 		addBotsMenuInfo.bots[n].style				= UI_LEFT|UI_SMALLFONT;
@@ -324,7 +324,7 @@ static void UI_AddBotsMenu_Init( void ) {
 	addBotsMenuInfo.skill.generic.name		= "Skill:";
 	addBotsMenuInfo.skill.generic.id		= ID_SKILL;
 	addBotsMenuInfo.skill.itemnames			= skillNames;
-	addBotsMenuInfo.skill.curvalue			= Com_Clamp( 0, 4, (int)trap_Cvar_VariableValue( "g_spSkill" ) - 1 );
+	addBotsMenuInfo.skill.curvalue			= Com_Clamp( 0, 4, (int)UI_trap_Cvar_VariableValue( "g_spSkill" ) - 1 );
 
 	y += SMALLCHAR_HEIGHT;
 	addBotsMenuInfo.team.generic.type		= MTYPE_SPINCONTROL;
@@ -345,7 +345,7 @@ static void UI_AddBotsMenu_Init( void ) {
 	addBotsMenuInfo.go.generic.name			= ART_FIGHT0;
 	addBotsMenuInfo.go.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	addBotsMenuInfo.go.generic.id			= ID_GO;
-	addBotsMenuInfo.go.generic.callback		= UI_AddBotsMenu_FightEvent;
+	addBotsMenuInfo.go.generic.callback		= Q3UI_AddBotsMenu_FightEvent;
 	addBotsMenuInfo.go.generic.x			= 320+128-128;
 	addBotsMenuInfo.go.generic.y			= 256+128-64;
 	addBotsMenuInfo.go.width  				= 128;
@@ -356,7 +356,7 @@ static void UI_AddBotsMenu_Init( void ) {
 	addBotsMenuInfo.back.generic.name		= ART_BACK0;
 	addBotsMenuInfo.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	addBotsMenuInfo.back.generic.id			= ID_BACK;
-	addBotsMenuInfo.back.generic.callback	= UI_AddBotsMenu_BackEvent;
+	addBotsMenuInfo.back.generic.callback	= Q3UI_AddBotsMenu_BackEvent;
 	addBotsMenuInfo.back.generic.x			= 320-128;
 	addBotsMenuInfo.back.generic.y			= 256+128-64;
 	addBotsMenuInfo.back.width				= 128;
@@ -367,8 +367,8 @@ static void UI_AddBotsMenu_Init( void ) {
 	addBotsMenuInfo.selectedBotNum = 0;
 	addBotsMenuInfo.bots[0].color = color_white;
 
-	UI_AddBotsMenu_GetSortedBotNums();
-	UI_AddBotsMenu_SetBotNames();
+	Q3UI_AddBotsMenu_GetSortedBotNums();
+	Q3UI_AddBotsMenu_SetBotNames();
 
 	Menu_AddItem( &addBotsMenuInfo.menu, &addBotsMenuInfo.arrows );
 
@@ -386,27 +386,27 @@ static void UI_AddBotsMenu_Init( void ) {
 
 /*
 =================
-UI_AddBots_Cache
+Q3UI_AddBots_Cache
 =================
 */
-void UI_AddBots_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
-	trap_R_RegisterShaderNoMip( ART_FIGHT0 );
-	trap_R_RegisterShaderNoMip( ART_FIGHT1 );
-	trap_R_RegisterShaderNoMip( ART_BACKGROUND );
-	trap_R_RegisterShaderNoMip( ART_ARROWS );
-	trap_R_RegisterShaderNoMip( ART_ARROWUP );
-	trap_R_RegisterShaderNoMip( ART_ARROWDOWN );
+void Q3UI_AddBots_Cache( void ) {
+	UI_trap_R_RegisterShaderNoMip( ART_BACK0 );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK1 );
+	UI_trap_R_RegisterShaderNoMip( ART_FIGHT0 );
+	UI_trap_R_RegisterShaderNoMip( ART_FIGHT1 );
+	UI_trap_R_RegisterShaderNoMip( ART_BACKGROUND );
+	UI_trap_R_RegisterShaderNoMip( ART_ARROWS );
+	UI_trap_R_RegisterShaderNoMip( ART_ARROWUP );
+	UI_trap_R_RegisterShaderNoMip( ART_ARROWDOWN );
 }
 
 
 /*
 =================
-UI_AddBotsMenu
+Q3UI_AddBotsMenu
 =================
 */
-void UI_AddBotsMenu( void ) {
-	UI_AddBotsMenu_Init();
-	UI_PushMenu( &addBotsMenuInfo.menu );
+void Q3UI_AddBotsMenu( void ) {
+	Q3UI_AddBotsMenu_Init();
+	Q3UI_PushMenu( &addBotsMenuInfo.menu );
 }

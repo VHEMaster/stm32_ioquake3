@@ -60,11 +60,11 @@
 #   define DECLSPEC
 #  endif
 # else
-#  if defined(__GNUC__) && __GNUC__ >= 4
-#   define DECLSPEC	__attribute__ ((visibility("default")))
-#  else
+//#  if defined(__GNUC__) && __GNUC__ >= 4
+//#   define DECLSPEC	__attribute__ ((visibility("default")))
+//#  else
 #   define DECLSPEC
-#  endif
+//#  endif
 # endif
 #endif
 

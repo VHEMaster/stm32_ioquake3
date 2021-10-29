@@ -60,19 +60,19 @@ void MField_Draw( mfield_t *edit, int x, int y, int style, vec4_t color ) {
 
 	// extract <drawLen> characters from the field at <prestep>
 	if ( drawLen >= MAX_STRING_CHARS ) {
-		trap_Error( "drawLen >= MAX_STRING_CHARS" );
+		UI_trap_Error( "drawLen >= MAX_STRING_CHARS" );
 	}
 	memcpy( str, edit->buffer + prestep, drawLen );
 	str[ drawLen ] = 0;
 
-	UI_DrawString( x, y, str, style, color );
+	Q3UI_DrawString( x, y, str, style, color );
 
 	// draw the cursor
 	if (!(style & UI_PULSE)) {
 		return;
 	}
 
-	if ( trap_Key_GetOverstrikeMode() ) {
+	if ( UI_trap_Key_GetOverstrikeMode() ) {
 		cursorChar = 11;
 	} else {
 		cursorChar = 10;
@@ -105,7 +105,7 @@ void MField_Draw( mfield_t *edit, int x, int y, int style, vec4_t color ) {
 		x = x - len*charw;
 	}
 	
-	UI_DrawChar( x + ( edit->cursor - prestep ) * charw, y, cursorChar, style & ~(UI_CENTER|UI_RIGHT), color );
+	Q3UI_DrawChar( x + ( edit->cursor - prestep ) * charw, y, cursorChar, style & ~(UI_CENTER|UI_RIGHT), color );
 }
 
 /*
@@ -117,7 +117,7 @@ void MField_Paste( mfield_t *edit ) {
 	char	pasteBuffer[64];
 	int		pasteLen, i;
 
-	trap_GetClipboardData( pasteBuffer, 64 );
+	UI_trap_GetClipboardData( pasteBuffer, 64 );
 
 	// send as if typed, so insert / overstrike works properly
 	pasteLen = strlen( pasteBuffer );
@@ -140,7 +140,7 @@ void MField_KeyDownEvent( mfield_t *edit, int key ) {
 	int		len;
 
 	// shift-insert is paste
-	if ( ( ( key == K_INS ) || ( key == K_KP_INS ) ) && trap_Key_IsDown( K_SHIFT ) ) {
+	if ( ( ( key == K_INS ) || ( key == K_KP_INS ) ) && UI_trap_Key_IsDown( K_SHIFT ) ) {
 		MField_Paste( edit );
 		return;
 	}
@@ -179,13 +179,13 @@ void MField_KeyDownEvent( mfield_t *edit, int key ) {
 		return;
 	}
 
-	if ( key == K_HOME || key == K_KP_HOME || ( tolower(key) == 'a' && trap_Key_IsDown( K_CTRL ) ) ) {
+	if ( key == K_HOME || key == K_KP_HOME || ( tolower(key) == 'a' && UI_trap_Key_IsDown( K_CTRL ) ) ) {
 		edit->cursor = 0;
 		edit->scroll = 0;
 		return;
 	}
 
-	if ( key == K_END || key == K_KP_END || ( tolower(key) == 'e' && trap_Key_IsDown( K_CTRL ) ) ) {
+	if ( key == K_END || key == K_KP_END || ( tolower(key) == 'e' && UI_trap_Key_IsDown( K_CTRL ) ) ) {
 		edit->cursor = len;
 		edit->scroll = len - edit->widthInChars + 1;
 		if (edit->scroll < 0)
@@ -194,7 +194,7 @@ void MField_KeyDownEvent( mfield_t *edit, int key ) {
 	}
 
 	if ( key == K_INS || key == K_KP_INS ) {
-		trap_Key_SetOverstrikeMode( !trap_Key_GetOverstrikeMode() );
+		UI_trap_Key_SetOverstrikeMode( !UI_trap_Key_GetOverstrikeMode() );
 		return;
 	}
 }
@@ -253,7 +253,7 @@ void MField_CharEvent( mfield_t *edit, int ch ) {
 		return;
 	}
 
-	if ( !trap_Key_GetOverstrikeMode() ) {	
+	if ( !UI_trap_Key_GetOverstrikeMode() ) {	
 		if ((edit->cursor == MAX_EDIT_LINE - 1) || (edit->maxchars && edit->cursor >= edit->maxchars))
 			return;
 	} else {
@@ -373,12 +373,12 @@ void MenuField_Draw( menufield_s *f )
 	if ( focus )
 	{
 		// draw cursor
-		UI_FillRect( f->generic.left, f->generic.top, f->generic.right-f->generic.left+1, f->generic.bottom-f->generic.top+1, listbar_color ); 
-		UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|style, color);
+		Q3UI_FillRect( f->generic.left, f->generic.top, f->generic.right-f->generic.left+1, f->generic.bottom-f->generic.top+1, listbar_color ); 
+		Q3UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|style, color);
 	}
 
 	if ( f->generic.name ) {
-		UI_DrawString( x - w, y, f->generic.name, style|UI_RIGHT, color );
+		Q3UI_DrawString( x - w, y, f->generic.name, style|UI_RIGHT, color );
 	}
 
 	MField_Draw( &f->field, x + w, y, style, color );

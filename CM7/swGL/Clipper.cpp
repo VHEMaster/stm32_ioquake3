@@ -1,8 +1,12 @@
-﻿#include <vector>
-#include <intrin.h>
-#include "Vertex.h"
-#include "Triangle.h"
-#include "Clipper.h"
+﻿#include "Clipper.hpp"
+#include "AllocatedVector.hpp"
+
+#include <vector>
+
+//#include <intrin.h>
+
+#include "Triangle.hpp"
+#include "Vertex.hpp"
 
 // TODO: Try to implement guard band clipping to (mostly) avoid the costly analytical clipping
 namespace SWGL {
@@ -30,7 +34,7 @@ namespace SWGL {
 
     bool Clipper::clipTriangles(TriangleList &triangles) {
 
-        std::vector<Triangle> outputList;
+        AllocatedVector<Triangle> outputList;
 
         for (auto &t : triangles) {
 
@@ -102,12 +106,12 @@ namespace SWGL {
 
     void Clipper::clipTriangle(Triangle &t, unsigned int clipcode, TriangleList &out) {
 
-        std::vector<Vertex> vInList{t.v[0], t.v[1], t.v[2]};
-        std::vector<Vertex> vOutList;
+        AllocatedVector<Vertex> vInList{t.v[0], t.v[1], t.v[2]};
+        AllocatedVector<Vertex> vOutList;
 
         unsigned long planeIdx;
-        while (_BitScanForward(&planeIdx, clipcode)) {
-
+        while ((planeIdx = __builtin_ffs(clipcode)) > 0) {
+        	planeIdx -= 1;
             clipcode ^= 1U << planeIdx;
 
             //

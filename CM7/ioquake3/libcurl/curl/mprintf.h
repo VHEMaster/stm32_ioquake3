@@ -24,16 +24,16 @@
  ***************************************************************************/
 
 #include <stdarg.h>
-#include <stdio.h> /* needed for FILE */
+#include <stdio.h> /* needed for FIL */
 
 #include "curl.h"
 
 CURL_EXTERN int curl_mprintf(const char *format, ...);
-CURL_EXTERN int curl_mfprintf(FILE *fd, const char *format, ...);
+CURL_EXTERN int curl_mfprintf(FIL *fd, const char *format, ...);
 CURL_EXTERN int curl_msprintf(char *buffer, const char *format, ...);
 CURL_EXTERN int curl_msnprintf(char *buffer, size_t maxlength, const char *format, ...);
 CURL_EXTERN int curl_mvprintf(const char *format, va_list args);
-CURL_EXTERN int curl_mvfprintf(FILE *fd, const char *format, va_list args);
+CURL_EXTERN int curl_mvfprintf(FIL *fd, const char *format, va_list args);
 CURL_EXTERN int curl_mvsprintf(char *buffer, const char *format, va_list args);
 CURL_EXTERN int curl_mvsnprintf(char *buffer, size_t maxlength, const char *format, va_list args);
 CURL_EXTERN char *curl_maprintf(const char *format, ...);
@@ -41,7 +41,7 @@ CURL_EXTERN char *curl_mvaprintf(const char *format, va_list args);
 
 #ifdef _MPRINTF_REPLACE
 # define printf curl_mprintf
-# define fprintf curl_mfprintf
+# define f_printf curl_mfprintf
 #ifdef CURLDEBUG
 /* When built with CURLDEBUG we define away the sprintf() functions since we
    don't want internal code to be using them */

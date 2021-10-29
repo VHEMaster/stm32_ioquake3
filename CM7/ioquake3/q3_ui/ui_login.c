@@ -70,22 +70,22 @@ static void Login_MenuEvent( void* ptr, int event ) {
 	switch( ((menucommon_s*)ptr)->id ) {
 	case ID_LOGIN:
 		// set name								``
-		//trap_Cvar_Set( "name", s_login.name_box.field.buffer );
+		//UI_trap_Cvar_Set( "name", s_login.name_box.field.buffer );
 		/*
-		trap_Cvar_Set( "rank_name", s_login.name_box.field.buffer );
-		trap_Cvar_Set( "rank_pwd", s_login.password_box.field.buffer );
+		UI_trap_Cvar_Set( "rank_name", s_login.name_box.field.buffer );
+		UI_trap_Cvar_Set( "rank_pwd", s_login.password_box.field.buffer );
 		*/
 
 		// login
-		trap_CL_UI_RankUserLogin(
+		UI_trap_CL_UI_RankUserLogin(
 			s_login.name_box.field.buffer, 
 			s_login.password_box.field.buffer );
 
-		UI_ForceMenuOff();
+		Q3UI_ForceMenuOff();
 		break;
 		
 	case ID_CANCEL:
-		UI_PopMenu();
+		Q3UI_PopMenu();
 		break;
 	}
 }
@@ -191,18 +191,18 @@ Login_Cache
 ===============
 */
 void Login_Cache( void ) {
-	trap_R_RegisterShaderNoMip( LOGIN_FRAME );
+	UI_trap_R_RegisterShaderNoMip( LOGIN_FRAME );
 }
 
 
 /*
 ===============
-UI_LoginMenu
+Q3UI_LoginMenu
 ===============
 */
-void UI_LoginMenu( void ) {
+void Q3UI_LoginMenu( void ) {
 	Login_MenuInit();
-	UI_PushMenu ( &s_login.menu );
+	Q3UI_PushMenu ( &s_login.menu );
 }
 
 

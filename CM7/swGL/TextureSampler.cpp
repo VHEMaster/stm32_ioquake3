@@ -1,7 +1,7 @@
 ﻿#include <cmath>
 #include <algorithm>
 #include "SIMD.h"
-#include "TextureManager.h"
+#include "TextureManager.hpp"
 
 namespace SWGL {
 
@@ -62,57 +62,57 @@ namespace SWGL {
     void sampleTexelsLinear(TextureMipMap &texMipMap, TextureParameter &texParams, TextureCoordinates &texCoords, ARGBColor &colorOut) {
 
         // Get the dimension of the texture
-        QInt width = _mm_set1_epi32(texMipMap.width);
-        QInt height = _mm_set1_epi32(texMipMap.height);
-        QInt wrapWidth = _mm_set1_epi32(texMipMap.width - 1);
-        QInt wrapHeight = _mm_set1_epi32(texMipMap.height - 1);
+        QInt width = SIMD::set1_epi32(texMipMap.width);
+        QInt height = SIMD::set1_epi32(texMipMap.height);
+        QInt wrapWidth = SIMD::set1_epi32(texMipMap.width - 1);
+        QInt wrapHeight = SIMD::set1_epi32(texMipMap.height - 1);
 
         // Scale u and v according to the textures dimensions
-        QFloat scaledU = _mm_sub_ps(_mm_mul_ps(texCoords.s, _mm_cvtepi32_ps(width)), _mm_set1_ps(0.5f));
-        QFloat scaledV = _mm_sub_ps(_mm_mul_ps(texCoords.t, _mm_cvtepi32_ps(height)), _mm_set1_ps(0.5f));
+        QFloat scaledU = SIMD::sub_ps(SIMD::mul_ps(texCoords.s, SIMD::cvtepi32_ps(width)), SIMD::set1_ps(0.5f));
+        QFloat scaledV = SIMD::sub_ps(SIMD::mul_ps(texCoords.t, SIMD::cvtepi32_ps(height)), SIMD::set1_ps(0.5f));
         QFloat flooredU = SIMD::floor(scaledU);
         QFloat flooredV = SIMD::floor(scaledV);
 
-        QInt texelX0 = _mm_cvttps_epi32(flooredU);
-        QInt texelY0 = _mm_cvttps_epi32(flooredV);
-        QInt texelX1 = _mm_add_epi32(texelX0, _mm_set1_epi32(1));
-        QInt texelY1 = _mm_add_epi32(texelY0, _mm_set1_epi32(1));
+        QInt texelX0 = SIMD::cvttps_epi32(flooredU);
+        QInt texelY0 = SIMD::cvttps_epi32(flooredV);
+        QInt texelX1 = SIMD::add_epi32(texelX0, SIMD::set1_epi32(1));
+        QInt texelY1 = SIMD::add_epi32(texelY0, SIMD::set1_epi32(1));
 
         // Get fractional part of u and v
-        QFloat fracX0 = _mm_sub_ps(scaledU, flooredU);
-        QFloat fracY0 = _mm_sub_ps(scaledV, flooredV);
-        QFloat fracX1 = _mm_sub_ps(_mm_set1_ps(1.0f), fracX0);
-        QFloat fracY1 = _mm_sub_ps(_mm_set1_ps(1.0f), fracY0);
+        QFloat fracX0 = SIMD::sub_ps(scaledU, flooredU);
+        QFloat fracY0 = SIMD::sub_ps(scaledV, flooredV);
+        QFloat fracX1 = SIMD::sub_ps(SIMD::set1_ps(1.0f), fracX0);
+        QFloat fracY1 = SIMD::sub_ps(SIMD::set1_ps(1.0f), fracY0);
 
         // Calculate the blending weights as Q1.8 fixed point values
-        const QFloat shift = _mm_set1_ps(256.0f);
-        QInt wx1y1 = _mm_cvtps_epi32(_mm_mul_ps(_mm_mul_ps(fracX0, fracY0), shift));
-        QInt wx0y1 = _mm_cvtps_epi32(_mm_mul_ps(_mm_mul_ps(fracX1, fracY0), shift));
-        QInt wx1y0 = _mm_cvtps_epi32(_mm_mul_ps(_mm_mul_ps(fracX0, fracY1), shift));
-        QInt wx0y0 = _mm_cvtps_epi32(_mm_mul_ps(_mm_mul_ps(fracX1, fracY1), shift));
+        const QFloat shift = SIMD::set1_ps(256.0f);
+        QInt wx1y1 = SIMD::cvtps_epi32(SIMD::mul_ps(SIMD::mul_ps(fracX0, fracY0), shift));
+        QInt wx0y1 = SIMD::cvtps_epi32(SIMD::mul_ps(SIMD::mul_ps(fracX1, fracY0), shift));
+        QInt wx1y0 = SIMD::cvtps_epi32(SIMD::mul_ps(SIMD::mul_ps(fracX0, fracY1), shift));
+        QInt wx0y0 = SIMD::cvtps_epi32(SIMD::mul_ps(SIMD::mul_ps(fracX1, fracY1), shift));
 
         // TODO: Implement the wrapping modes correctly!
 
         // Determine the texel x- and y-coordinates according to the selected wrapping mode
         if (texParams.wrappingModeS == GL_REPEAT) {
 
-            texelX0 = _mm_and_si128(texelX0, wrapWidth);
-            texelX1 = _mm_and_si128(texelX1, wrapWidth);
+            texelX0 = SIMD::and_si128(texelX0, wrapWidth);
+            texelX1 = SIMD::and_si128(texelX1, wrapWidth);
         }
         else {
 
-            texelX0 = SIMD::clamp(texelX0, _mm_setzero_si128(), wrapWidth);
-            texelX1 = SIMD::clamp(texelX1, _mm_setzero_si128(), wrapWidth);
+            texelX0 = SIMD::clamp(texelX0, SIMD::setzero_si128(), wrapWidth);
+            texelX1 = SIMD::clamp(texelX1, SIMD::setzero_si128(), wrapWidth);
         }
         if (texParams.wrappingModeT == GL_REPEAT) {
 
-            texelY0 = _mm_and_si128(texelY0, wrapHeight);
-            texelY1 = _mm_and_si128(texelY1, wrapHeight);
+            texelY0 = SIMD::and_si128(texelY0, wrapHeight);
+            texelY1 = SIMD::and_si128(texelY1, wrapHeight);
         }
         else {
 
-            texelY0 = SIMD::clamp(texelY0, _mm_setzero_si128(), wrapHeight);
-            texelY1 = SIMD::clamp(texelY1, _mm_setzero_si128(), wrapHeight);
+            texelY0 = SIMD::clamp(texelY0, SIMD::setzero_si128(), wrapHeight);
+            texelY1 = SIMD::clamp(texelY1, SIMD::setzero_si128(), wrapHeight);
         }
 
         // Gather texture samples
@@ -128,48 +128,48 @@ namespace SWGL {
         QInt sampleX0Y0 = SIMD::gather(data, texelOffsetX0Y0);
 
         // Extract alpha/green and red/blue channels
-        const QInt channelMask = _mm_set1_epi32(0x00ff00ff);
+        const QInt channelMask = SIMD::set1_epi32(0x00ff00ff);
 
         QInt ag[4], rb[4];
-        ag[0] = _mm_and_si128(_mm_srli_epi32(sampleX0Y0, 8), channelMask);
-        ag[1] = _mm_and_si128(_mm_srli_epi32(sampleX1Y0, 8), channelMask);
-        ag[2] = _mm_and_si128(_mm_srli_epi32(sampleX0Y1, 8), channelMask);
-        ag[3] = _mm_and_si128(_mm_srli_epi32(sampleX1Y1, 8), channelMask);
-        rb[0] = _mm_and_si128(sampleX0Y0, channelMask);
-        rb[1] = _mm_and_si128(sampleX1Y0, channelMask);
-        rb[2] = _mm_and_si128(sampleX0Y1, channelMask);
-        rb[3] = _mm_and_si128(sampleX1Y1, channelMask);
+        ag[0] = SIMD::and_si128(SIMD::srli_epi32(sampleX0Y0, 8), channelMask);
+        ag[1] = SIMD::and_si128(SIMD::srli_epi32(sampleX1Y0, 8), channelMask);
+        ag[2] = SIMD::and_si128(SIMD::srli_epi32(sampleX0Y1, 8), channelMask);
+        ag[3] = SIMD::and_si128(SIMD::srli_epi32(sampleX1Y1, 8), channelMask);
+        rb[0] = SIMD::and_si128(sampleX0Y0, channelMask);
+        rb[1] = SIMD::and_si128(sampleX1Y0, channelMask);
+        rb[2] = SIMD::and_si128(sampleX0Y1, channelMask);
+        rb[3] = SIMD::and_si128(sampleX1Y1, channelMask);
 
         // Blend samples
-        QInt blendAG = _mm_add_epi32(_mm_add_epi32(_mm_add_epi32(_mm_mullo_epi32(ag[0], wx0y0), _mm_mullo_epi32(ag[1], wx1y0)), _mm_mullo_epi32(ag[2], wx0y1)), _mm_mullo_epi32(ag[3], wx1y1));
-        QInt blendRB = _mm_add_epi32(_mm_add_epi32(_mm_add_epi32(_mm_mullo_epi32(rb[0], wx0y0), _mm_mullo_epi32(rb[1], wx1y0)), _mm_mullo_epi32(rb[2], wx0y1)), _mm_mullo_epi32(rb[3], wx1y1));
+        QInt blendAG = SIMD::add_epi32(SIMD::add_epi32(SIMD::add_epi32(SIMD::mullo_epi32(ag[0], wx0y0), SIMD::mullo_epi32(ag[1], wx1y0)), SIMD::mullo_epi32(ag[2], wx0y1)), SIMD::mullo_epi32(ag[3], wx1y1));
+        QInt blendRB = SIMD::add_epi32(SIMD::add_epi32(SIMD::add_epi32(SIMD::mullo_epi32(rb[0], wx0y0), SIMD::mullo_epi32(rb[1], wx1y0)), SIMD::mullo_epi32(rb[2], wx0y1)), SIMD::mullo_epi32(rb[3], wx1y1));
 
         // Convert the rgba-channels to their floating point representation
-        const QFloat normalize = _mm_set1_ps(1.0f / 255.0f);
-        const QInt mask = _mm_set1_epi32(0xff);
+        const QFloat normalize = SIMD::set1_ps(1.0f / 255.0f);
+        const QInt mask = SIMD::set1_epi32(0xff);
 
-        QFloat a = _mm_cvtepi32_ps(_mm_srli_epi32(blendAG, 24));
-        QFloat g = _mm_cvtepi32_ps(_mm_and_si128(_mm_srli_epi32(blendAG, 8), mask));
-        QFloat r = _mm_cvtepi32_ps(_mm_srli_epi32(blendRB, 24));
-        QFloat b = _mm_cvtepi32_ps(_mm_and_si128(_mm_srli_epi32(blendRB, 8), mask));
+        QFloat a = SIMD::cvtepi32_ps(SIMD::srli_epi32(blendAG, 24));
+        QFloat g = SIMD::cvtepi32_ps(SIMD::and_si128(SIMD::srli_epi32(blendAG, 8), mask));
+        QFloat r = SIMD::cvtepi32_ps(SIMD::srli_epi32(blendRB, 24));
+        QFloat b = SIMD::cvtepi32_ps(SIMD::and_si128(SIMD::srli_epi32(blendRB, 8), mask));
 
-        colorOut.a = _mm_mul_ps(a, normalize);
-        colorOut.r = _mm_mul_ps(r, normalize);
-        colorOut.g = _mm_mul_ps(g, normalize);
-        colorOut.b = _mm_mul_ps(b, normalize);
+        colorOut.a = SIMD::mul_ps(a, normalize);
+        colorOut.r = SIMD::mul_ps(r, normalize);
+        colorOut.g = SIMD::mul_ps(g, normalize);
+        colorOut.b = SIMD::mul_ps(b, normalize);
     }
 
     void sampleTexelsNearest(TextureMipMap &texMipMap, TextureParameter &texParams, TextureCoordinates &texCoords, ARGBColor &colorOut) {
 
         // Get the dimension of the texture
-        QInt width = _mm_set1_epi32(texMipMap.width);
-        QInt height = _mm_set1_epi32(texMipMap.height);
-        QInt wrapWidth = _mm_set1_epi32(texMipMap.width - 1);
-        QInt wrapHeight = _mm_set1_epi32(texMipMap.height - 1);
+        QInt width = SIMD::set1_epi32(texMipMap.width);
+        QInt height = SIMD::set1_epi32(texMipMap.height);
+        QInt wrapWidth = SIMD::set1_epi32(texMipMap.width - 1);
+        QInt wrapHeight = SIMD::set1_epi32(texMipMap.height - 1);
 
         // Scale u and v according to the texture dimension
-        QInt scaledU = _mm_cvttps_epi32(SIMD::floor(_mm_mul_ps(texCoords.s, _mm_cvtepi32_ps(width))));
-        QInt scaledV = _mm_cvttps_epi32(SIMD::floor(_mm_mul_ps(texCoords.t, _mm_cvtepi32_ps(height))));
+        QInt scaledU = SIMD::cvttps_epi32(SIMD::floor(SIMD::mul_ps(texCoords.s, SIMD::cvtepi32_ps(width))));
+        QInt scaledV = SIMD::cvttps_epi32(SIMD::floor(SIMD::mul_ps(texCoords.t, SIMD::cvtepi32_ps(height))));
 
         // TODO: Implement the wrapping modes correctly!
 
@@ -177,19 +177,19 @@ namespace SWGL {
         QInt texelX, texelY;
         if (texParams.wrappingModeS == GL_REPEAT) {
 
-            texelX = _mm_and_si128(scaledU, wrapWidth);
+            texelX = SIMD::and_si128(scaledU, wrapWidth);
         }
         else {
 
-            texelX = SIMD::clamp(scaledU, _mm_setzero_si128(), wrapWidth);
+            texelX = SIMD::clamp(scaledU, SIMD::setzero_si128(), wrapWidth);
         }
         if (texParams.wrappingModeT == GL_REPEAT) {
 
-            texelY = _mm_and_si128(scaledV, wrapHeight);
+            texelY = SIMD::and_si128(scaledV, wrapHeight);
         }
         else {
 
-            texelY = SIMD::clamp(scaledV, _mm_setzero_si128(), wrapHeight);
+            texelY = SIMD::clamp(scaledV, SIMD::setzero_si128(), wrapHeight);
         }
 
         // Gather texture samples
@@ -201,18 +201,18 @@ namespace SWGL {
         );
 
         // Convert the rgba-channels to their floating point representation
-        const QFloat normalize = _mm_set1_ps(1.0f / 255.0f);
-        const QInt mask = _mm_set1_epi32(0xff);
+        const QFloat normalize = SIMD::set1_ps(1.0f / 255.0f);
+        const QInt mask = SIMD::set1_epi32(0xff);
 
-        QFloat a = _mm_cvtepi32_ps(_mm_srli_epi32(samples, 24));
-        QFloat r = _mm_cvtepi32_ps(_mm_and_si128(_mm_srli_epi32(samples, 16), mask));
-        QFloat g = _mm_cvtepi32_ps(_mm_and_si128(_mm_srli_epi32(samples, 8), mask));
-        QFloat b = _mm_cvtepi32_ps(_mm_and_si128(samples, mask));
+        QFloat a = SIMD::cvtepi32_ps(SIMD::srli_epi32(samples, 24));
+        QFloat r = SIMD::cvtepi32_ps(SIMD::and_si128(SIMD::srli_epi32(samples, 16), mask));
+        QFloat g = SIMD::cvtepi32_ps(SIMD::and_si128(SIMD::srli_epi32(samples, 8), mask));
+        QFloat b = SIMD::cvtepi32_ps(SIMD::and_si128(samples, mask));
 
-        colorOut.a = _mm_mul_ps(normalize, a);
-        colorOut.r = _mm_mul_ps(normalize, r);
-        colorOut.g = _mm_mul_ps(normalize, g);
-        colorOut.b = _mm_mul_ps(normalize, b);
+        colorOut.a = SIMD::mul_ps(normalize, a);
+        colorOut.r = SIMD::mul_ps(normalize, r);
+        colorOut.g = SIMD::mul_ps(normalize, g);
+        colorOut.b = SIMD::mul_ps(normalize, b);
     }
 
 
@@ -243,7 +243,7 @@ namespace SWGL {
                     }
                     else {
 
-                        QFloat t = _mm_set1_ps(lambda - std::floor(lambda));
+                        QFloat t = SIMD::set1_ps(lambda - std::floor(lambda));
 
                         ARGBColor color1;
                         ARGBColor color2;
@@ -283,19 +283,19 @@ namespace SWGL {
     void TextureData1D::sampleTexels(TextureParameter &texParams, TextureCoordinates &texCoords, ARGBColor &colorOut) {
 
         // Unimplemented
-        colorOut.a = _mm_set1_ps(1.0f);
-        colorOut.r = _mm_set1_ps(1.0f);
-        colorOut.g = _mm_set1_ps(0.0f);
-        colorOut.b = _mm_set1_ps(1.0f);
+        colorOut.a = SIMD::set1_ps(1.0f);
+        colorOut.r = SIMD::set1_ps(1.0f);
+        colorOut.g = SIMD::set1_ps(0.0f);
+        colorOut.b = SIMD::set1_ps(1.0f);
     }
 
     void TextureData3D::sampleTexels(TextureParameter &texParams, TextureCoordinates &texCoords, ARGBColor &colorOut) {
 
         // Unimplemented
-        colorOut.a = _mm_set1_ps(1.0f);
-        colorOut.r = _mm_set1_ps(1.0f);
-        colorOut.g = _mm_set1_ps(0.0f);
-        colorOut.b = _mm_set1_ps(1.0f);
+        colorOut.a = SIMD::set1_ps(1.0f);
+        colorOut.r = SIMD::set1_ps(1.0f);
+        colorOut.g = SIMD::set1_ps(0.0f);
+        colorOut.b = SIMD::set1_ps(1.0f);
     }
 
 
@@ -307,13 +307,14 @@ namespace SWGL {
 
         // TODO: SIMDify this
         TextureMipMap *mip[4];
-        QFloat u, v;
+        QFloat u = {0,0,0,0};
+        QFloat v = {0,0,0,0};
 
         for (int i = 0; i < 4; i++) {
 
-            float rx = texCoords.s.m128_f32[i]; if (rx == 0.0f) rx = 0.00001f;
-            float ry = texCoords.t.m128_f32[i]; if (ry == 0.0f) ry = 0.00001f;
-            float rz = texCoords.r.m128_f32[i]; if (rz == 0.0f) rz = 0.00001f;
+            float rx = texCoords.s.a[i]; if (rx == 0.0f) rx = 0.00001f;
+            float ry = texCoords.t.a[i]; if (ry == 0.0f) ry = 0.00001f;
+            float rz = texCoords.r.a[i]; if (rz == 0.0f) rz = 0.00001f;
 
             float arx = std::abs(rx);
             float ary = std::abs(ry);
@@ -354,46 +355,46 @@ namespace SWGL {
                 }
             }
 
-            u.m128_f32[i] = 0.5f + (sc * ma);
-            v.m128_f32[i] = 0.5f + (tc * ma);
+            u.a[i] = 0.5f + (sc * ma);
+            v.a[i] = 0.5f + (tc * ma);
         }
 
         // TODO: The type of filter should also be selectable!!! This here is a linear filter:
 
         // Get the dimension of the texture
-        QInt dim = _mm_set_epi32(mip[3]->width, mip[2]->width, mip[1]->width, mip[0]->width);
-        QInt wrapDim = _mm_sub_epi32(dim, _mm_set1_epi32(1));
+        QInt dim = SIMD::set_epi32(mip[3]->width, mip[2]->width, mip[1]->width, mip[0]->width);
+        QInt wrapDim = SIMD::sub_epi32(dim, SIMD::set1_epi32(1));
 
         // Scale u and v according to the textures dimensions
-        QFloat scaledU = _mm_sub_ps(_mm_mul_ps(u, _mm_cvtepi32_ps(dim)), _mm_set1_ps(0.5f));
-        QFloat scaledV = _mm_sub_ps(_mm_mul_ps(v, _mm_cvtepi32_ps(dim)), _mm_set1_ps(0.5f));
+        QFloat scaledU = SIMD::sub_ps(SIMD::mul_ps(u, SIMD::cvtepi32_ps(dim)), SIMD::set1_ps(0.5f));
+        QFloat scaledV = SIMD::sub_ps(SIMD::mul_ps(v, SIMD::cvtepi32_ps(dim)), SIMD::set1_ps(0.5f));
         QFloat flooredU = SIMD::floor(scaledU);
         QFloat flooredV = SIMD::floor(scaledV);
 
-        QInt texelX0 = _mm_cvttps_epi32(flooredU);
-        QInt texelY0 = _mm_cvttps_epi32(flooredV);
-        QInt texelX1 = _mm_add_epi32(texelX0, _mm_set1_epi32(1));
-        QInt texelY1 = _mm_add_epi32(texelY0, _mm_set1_epi32(1));
+        QInt texelX0 = SIMD::cvttps_epi32(flooredU);
+        QInt texelY0 = SIMD::cvttps_epi32(flooredV);
+        QInt texelX1 = SIMD::add_epi32(texelX0, SIMD::set1_epi32(1));
+        QInt texelY1 = SIMD::add_epi32(texelY0, SIMD::set1_epi32(1));
 
         // Get fractional part of u and v
-        QFloat fracX0 = _mm_sub_ps(scaledU, flooredU);
-        QFloat fracY0 = _mm_sub_ps(scaledV, flooredV);
-        QFloat fracX1 = _mm_sub_ps(_mm_set1_ps(1.0f), fracX0);
-        QFloat fracY1 = _mm_sub_ps(_mm_set1_ps(1.0f), fracY0);
+        QFloat fracX0 = SIMD::sub_ps(scaledU, flooredU);
+        QFloat fracY0 = SIMD::sub_ps(scaledV, flooredV);
+        QFloat fracX1 = SIMD::sub_ps(SIMD::set1_ps(1.0f), fracX0);
+        QFloat fracY1 = SIMD::sub_ps(SIMD::set1_ps(1.0f), fracY0);
 
         // Calculate the blending weights as Q1.8 fixed point values
-        const QFloat shift = _mm_set1_ps(256.0f);
-        QInt wx1y1 = _mm_cvtps_epi32(_mm_mul_ps(_mm_mul_ps(fracX0, fracY0), shift));
-        QInt wx0y1 = _mm_cvtps_epi32(_mm_mul_ps(_mm_mul_ps(fracX1, fracY0), shift));
-        QInt wx1y0 = _mm_cvtps_epi32(_mm_mul_ps(_mm_mul_ps(fracX0, fracY1), shift));
-        QInt wx0y0 = _mm_cvtps_epi32(_mm_mul_ps(_mm_mul_ps(fracX1, fracY1), shift));
+        const QFloat shift = SIMD::set1_ps(256.0f);
+        QInt wx1y1 = SIMD::cvtps_epi32(SIMD::mul_ps(SIMD::mul_ps(fracX0, fracY0), shift));
+        QInt wx0y1 = SIMD::cvtps_epi32(SIMD::mul_ps(SIMD::mul_ps(fracX1, fracY0), shift));
+        QInt wx1y0 = SIMD::cvtps_epi32(SIMD::mul_ps(SIMD::mul_ps(fracX0, fracY1), shift));
+        QInt wx0y0 = SIMD::cvtps_epi32(SIMD::mul_ps(SIMD::mul_ps(fracX1, fracY1), shift));
 
         // TODO: Implement the wrapping modes correctly!!!
         // Just clamp the texel coordinates for now...
-        texelX0 = SIMD::clamp(texelX0, _mm_setzero_si128(), wrapDim);
-        texelY0 = SIMD::clamp(texelY0, _mm_setzero_si128(), wrapDim);
-        texelX1 = SIMD::clamp(texelX1, _mm_setzero_si128(), wrapDim);
-        texelY1 = SIMD::clamp(texelY1, _mm_setzero_si128(), wrapDim);
+        texelX0 = SIMD::clamp(texelX0, SIMD::setzero_si128(), wrapDim);
+        texelY0 = SIMD::clamp(texelY0, SIMD::setzero_si128(), wrapDim);
+        texelX1 = SIMD::clamp(texelX1, SIMD::setzero_si128(), wrapDim);
+        texelY1 = SIMD::clamp(texelY1, SIMD::setzero_si128(), wrapDim);
 
         // Gather texture samples
         QInt texelOffsetX1Y1 = SIMD::multiplyAdd(texelY1, dim, texelX1);
@@ -401,28 +402,28 @@ namespace SWGL {
         QInt texelOffsetX1Y0 = SIMD::multiplyAdd(texelY0, dim, texelX1);
         QInt texelOffsetX0Y0 = SIMD::multiplyAdd(texelY0, dim, texelX0);
 
-        QInt sampleX1Y1 = _mm_set_epi32(
+        QInt sampleX1Y1 = SIMD::set_epi32(
 
             mip[3]->pixel[SIMD::extract<3>(texelOffsetX1Y1)],
             mip[2]->pixel[SIMD::extract<2>(texelOffsetX1Y1)],
             mip[1]->pixel[SIMD::extract<1>(texelOffsetX1Y1)],
             mip[0]->pixel[SIMD::extract<0>(texelOffsetX1Y1)]
         );
-        QInt sampleX0Y1 = _mm_set_epi32(
+        QInt sampleX0Y1 = SIMD::set_epi32(
 
             mip[3]->pixel[SIMD::extract<3>(texelOffsetX0Y1)],
             mip[2]->pixel[SIMD::extract<2>(texelOffsetX0Y1)],
             mip[1]->pixel[SIMD::extract<1>(texelOffsetX0Y1)],
             mip[0]->pixel[SIMD::extract<0>(texelOffsetX0Y1)]
         );
-        QInt sampleX1Y0 = _mm_set_epi32(
+        QInt sampleX1Y0 = SIMD::set_epi32(
 
             mip[3]->pixel[SIMD::extract<3>(texelOffsetX1Y0)],
             mip[2]->pixel[SIMD::extract<2>(texelOffsetX1Y0)],
             mip[1]->pixel[SIMD::extract<1>(texelOffsetX1Y0)],
             mip[0]->pixel[SIMD::extract<0>(texelOffsetX1Y0)]
         );
-        QInt sampleX0Y0 = _mm_set_epi32(
+        QInt sampleX0Y0 = SIMD::set_epi32(
 
             mip[3]->pixel[SIMD::extract<3>(texelOffsetX0Y0)],
             mip[2]->pixel[SIMD::extract<2>(texelOffsetX0Y0)],
@@ -431,34 +432,34 @@ namespace SWGL {
         );
 
         // Extract alpha/green and red/blue channels
-        const QInt channelMask = _mm_set1_epi32(0x00ff00ff);
+        const QInt channelMask = SIMD::set1_epi32(0x00ff00ff);
 
         QInt ag[4], rb[4];
-        ag[0] = _mm_and_si128(_mm_srli_epi32(sampleX0Y0, 8), channelMask);
-        ag[1] = _mm_and_si128(_mm_srli_epi32(sampleX1Y0, 8), channelMask);
-        ag[2] = _mm_and_si128(_mm_srli_epi32(sampleX0Y1, 8), channelMask);
-        ag[3] = _mm_and_si128(_mm_srli_epi32(sampleX1Y1, 8), channelMask);
-        rb[0] = _mm_and_si128(sampleX0Y0, channelMask);
-        rb[1] = _mm_and_si128(sampleX1Y0, channelMask);
-        rb[2] = _mm_and_si128(sampleX0Y1, channelMask);
-        rb[3] = _mm_and_si128(sampleX1Y1, channelMask);
+        ag[0] = SIMD::and_si128(SIMD::srli_epi32(sampleX0Y0, 8), channelMask);
+        ag[1] = SIMD::and_si128(SIMD::srli_epi32(sampleX1Y0, 8), channelMask);
+        ag[2] = SIMD::and_si128(SIMD::srli_epi32(sampleX0Y1, 8), channelMask);
+        ag[3] = SIMD::and_si128(SIMD::srli_epi32(sampleX1Y1, 8), channelMask);
+        rb[0] = SIMD::and_si128(sampleX0Y0, channelMask);
+        rb[1] = SIMD::and_si128(sampleX1Y0, channelMask);
+        rb[2] = SIMD::and_si128(sampleX0Y1, channelMask);
+        rb[3] = SIMD::and_si128(sampleX1Y1, channelMask);
 
         // Blend samples
-        QInt blendAG = _mm_add_epi32(_mm_add_epi32(_mm_add_epi32(_mm_mullo_epi32(ag[0], wx0y0), _mm_mullo_epi32(ag[1], wx1y0)), _mm_mullo_epi32(ag[2], wx0y1)), _mm_mullo_epi32(ag[3], wx1y1));
-        QInt blendRB = _mm_add_epi32(_mm_add_epi32(_mm_add_epi32(_mm_mullo_epi32(rb[0], wx0y0), _mm_mullo_epi32(rb[1], wx1y0)), _mm_mullo_epi32(rb[2], wx0y1)), _mm_mullo_epi32(rb[3], wx1y1));
+        QInt blendAG = SIMD::add_epi32(SIMD::add_epi32(SIMD::add_epi32(SIMD::mullo_epi32(ag[0], wx0y0), SIMD::mullo_epi32(ag[1], wx1y0)), SIMD::mullo_epi32(ag[2], wx0y1)), SIMD::mullo_epi32(ag[3], wx1y1));
+        QInt blendRB = SIMD::add_epi32(SIMD::add_epi32(SIMD::add_epi32(SIMD::mullo_epi32(rb[0], wx0y0), SIMD::mullo_epi32(rb[1], wx1y0)), SIMD::mullo_epi32(rb[2], wx0y1)), SIMD::mullo_epi32(rb[3], wx1y1));
 
         // Convert the rgba-channels to their floating point representation
-        const QFloat normalize = _mm_set1_ps(1.0f / 255.0f);
-        const QInt mask = _mm_set1_epi32(0xff);
+        const QFloat normalize = SIMD::set1_ps(1.0f / 255.0f);
+        const QInt mask = SIMD::set1_epi32(0xff);
 
-        QFloat a = _mm_cvtepi32_ps(_mm_srli_epi32(blendAG, 24));
-        QFloat g = _mm_cvtepi32_ps(_mm_and_si128(_mm_srli_epi32(blendAG, 8), mask));
-        QFloat r = _mm_cvtepi32_ps(_mm_srli_epi32(blendRB, 24));
-        QFloat b = _mm_cvtepi32_ps(_mm_and_si128(_mm_srli_epi32(blendRB, 8), mask));
+        QFloat a = SIMD::cvtepi32_ps(SIMD::srli_epi32(blendAG, 24));
+        QFloat g = SIMD::cvtepi32_ps(SIMD::and_si128(SIMD::srli_epi32(blendAG, 8), mask));
+        QFloat r = SIMD::cvtepi32_ps(SIMD::srli_epi32(blendRB, 24));
+        QFloat b = SIMD::cvtepi32_ps(SIMD::and_si128(SIMD::srli_epi32(blendRB, 8), mask));
 
-        colorOut.a = _mm_mul_ps(a, normalize);
-        colorOut.r = _mm_mul_ps(r, normalize);
-        colorOut.g = _mm_mul_ps(g, normalize);
-        colorOut.b = _mm_mul_ps(b, normalize);
+        colorOut.a = SIMD::mul_ps(a, normalize);
+        colorOut.r = SIMD::mul_ps(r, normalize);
+        colorOut.g = SIMD::mul_ps(g, normalize);
+        colorOut.b = SIMD::mul_ps(b, normalize);
     }
 }

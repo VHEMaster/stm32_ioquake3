@@ -1,12 +1,14 @@
 ﻿#include <algorithm>
 #include "OpenGL.h"
-#include "Context.h"
-#include "Log.h"
-#include "Matrix.h"
-#include "Vector.h"
-#include "VertexPipeline.h"
-#include "MatrixStack.h"
-#include "TextureManager.h"
+#include "SIMD.h"
+
+#include "Context.hpp"
+#include "Log.hpp"
+#include "Matrix.hpp"
+#include "MatrixStack.hpp"
+#include "TextureManager.hpp"
+#include "Vector.hpp"
+#include "VertexPipeline.hpp"
 
 #define GET_CONTEXT_OR_RETURN(...)                          \
     auto &ctx = SWGL::Context::getCurrentContext();         \
@@ -46,7 +48,7 @@
 
 #define CAN_BE_CALLED_INSIDE_GL_BEGIN()
 
-#pragma region OpenGL 1.0
+//#pragma region OpenGL 1.0
 
 SWGLAPI void STDCALL glDrv_glAccum(GLenum op, GLfloat value) {
 
@@ -4512,10 +4514,10 @@ SWGLAPI void STDCALL glDrv_glTexEnvColorCommon(const SWGL::ContextPtr &ctx, floa
 
     auto &texEnv = ctx->getTextureManager().getActiveTextureEnvironment();
 
-    texEnv.colorConstA = std::clamp(a, 0.0f, 1.0f);
-    texEnv.colorConstR = std::clamp(r, 0.0f, 1.0f);
-    texEnv.colorConstG = std::clamp(g, 0.0f, 1.0f);
-    texEnv.colorConstB = std::clamp(b, 0.0f, 1.0f);
+    texEnv.colorConstA = CLAMP(a, 0.0f, 1.0f);
+    texEnv.colorConstR = CLAMP(r, 0.0f, 1.0f);
+    texEnv.colorConstG = CLAMP(g, 0.0f, 1.0f);
+    texEnv.colorConstB = CLAMP(b, 0.0f, 1.0f);
 }
 
 SWGLAPI void STDCALL glDrv_glTexEnvRGBScaleCommon(const SWGL::ContextPtr &ctx, float scaleRGB) {
@@ -6100,8 +6102,8 @@ SWGLAPI void STDCALL glDrv_glViewport(GLint x, GLint y, GLsizei width, GLsizei h
     );
 }
 
-#pragma endregion
-#pragma region Open GL 1.1
+//#pragma endregion
+//#pragma region Open GL 1.1
 
 SWGLAPI GLboolean STDCALL glDrv_glAreTexturesResident(GLsizei n, const GLuint *textures, GLboolean *residences) {
 
@@ -6645,8 +6647,8 @@ SWGLAPI void STDCALL glDrv_glVertexPointer(GLint size, GLenum type, GLsizei stri
     );
 }
 
-#pragma endregion
-#pragma region OpenGL 1.2
+//#pragma endregion
+//#pragma region OpenGL 1.2
 
 SWGLAPI void STDCALL glDrv_glDrawRangeElements(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const GLvoid *indices) {
 
@@ -6688,8 +6690,8 @@ SWGLAPI void STDCALL glDrv_glCopyTexSubImage3D(GLenum target, GLint level, GLint
     // ...
 }
 
-#pragma endregion
-#pragma region OpenGL 1.3
+//#pragma endregion
+//#pragma region OpenGL 1.3
 
 SWGLAPI void STDCALL glDrv_glActiveTexture(GLenum texture) {
 
@@ -7573,11 +7575,11 @@ SWGLAPI void STDCALL glDrv_glMultTransposeMatrixd(const GLdouble *m) {
     // ...
 }
 
-#pragma endregion
+//#pragma endregion
 
 
 
-#pragma region Extension: glLockArraysEXT
+//#pragma region Extension: glLockArraysEXT
 
 SWGLAPI void STDCALL glDrv_glLockArrays(GLint start, GLsizei count) {
 
@@ -7605,4 +7607,4 @@ SWGLAPI void STDCALL glDrv_glUnlockArrays() {
     // Just do nothing!
 }
 
-#pragma endregion
+//#pragma endregion

@@ -263,7 +263,7 @@ ArenaServers_MaxPing
 static int ArenaServers_MaxPing( void ) {
 	int		maxPing;
 
-	maxPing = (int)trap_Cvar_VariableValue( "cl_maxPing" );
+	maxPing = (int)UI_trap_Cvar_VariableValue( "cl_maxPing" );
 	if( maxPing < 100 ) {
 		maxPing = 100;
 	}
@@ -344,7 +344,7 @@ static void ArenaServers_Go( void ) {
 
 	servernode = g_arenaservers.table[g_arenaservers.list.curvalue].servernode;
 	if( servernode ) {
-		trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect %s\n", servernode->adrstr ) );
+		UI_trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect %s\n", servernode->adrstr ) );
 	}
 }
 
@@ -755,7 +755,7 @@ void ArenaServers_LoadFavorites( void )
 	// resync existing results with new or deleted cvars
 	for (i=0; i<MAX_FAVORITESERVERS; i++)
 	{
-		trap_Cvar_VariableStringBuffer( va("server%d",i+1), adrstr, MAX_ADDRESSLENGTH );
+		UI_trap_Cvar_VariableStringBuffer( va("server%d",i+1), adrstr, MAX_ADDRESSLENGTH );
 		if (!adrstr[0])
 			continue;
 
@@ -852,11 +852,11 @@ static void ArenaServers_DoRefresh( void )
 	{
 	  if (g_servertype != UIAS_FAVORITES) {
 			if (g_servertype == UIAS_LOCAL) {
-				if (!trap_LAN_GetServerCount(g_servertype)) {
+				if (!UI_trap_LAN_GetServerCount(g_servertype)) {
 					return;
 				}
 			}
-			if (trap_LAN_GetServerCount(g_servertype) < 0) {
+			if (UI_trap_LAN_GetServerCount(g_servertype) < 0) {
 			  // still waiting for response
 			  return;
 			}
@@ -876,7 +876,7 @@ static void ArenaServers_DoRefresh( void )
 	maxPing = ArenaServers_MaxPing();
 	for (i=0; i<MAX_PINGREQUESTS; i++)
 	{
-		trap_LAN_GetPing( i, adrstr, MAX_ADDRESSLENGTH, &time );
+		UI_trap_LAN_GetPing( i, adrstr, MAX_ADDRESSLENGTH, &time );
 		if (!adrstr[0])
 		{
 			// ignore empty or pending pings
@@ -909,7 +909,7 @@ static void ArenaServers_DoRefresh( void )
 			}
 			else
 			{
-				trap_LAN_GetPingInfo( i, info, MAX_INFO_STRING );
+				UI_trap_LAN_GetPingInfo( i, info, MAX_INFO_STRING );
 			}
 
 			// insert ping results
@@ -920,7 +920,7 @@ static void ArenaServers_DoRefresh( void )
    		}
 
 		// clear this query from external list
-		trap_LAN_ClearPing( i );
+		UI_trap_LAN_ClearPing( i );
 	}
 
 	// get results of servers query
@@ -928,7 +928,7 @@ static void ArenaServers_DoRefresh( void )
 	if (g_servertype == UIAS_FAVORITES) {
 	  g_arenaservers.numqueriedservers = g_arenaservers.numfavoriteaddresses;
 	} else {
-	  g_arenaservers.numqueriedservers = trap_LAN_GetServerCount(g_servertype);
+	  g_arenaservers.numqueriedservers = UI_trap_LAN_GetServerCount(g_servertype);
 	}
 
 //	if (g_arenaservers.numqueriedservers > g_arenaservers.maxservers)
@@ -938,7 +938,7 @@ static void ArenaServers_DoRefresh( void )
 	// iterate ping through all found servers
 	for (i=0; i<MAX_PINGREQUESTS && g_arenaservers.currentping < g_arenaservers.numqueriedservers; i++)
 	{
-		if (trap_LAN_GetPingQueueCount() >= MAX_PINGREQUESTS)
+		if (UI_trap_LAN_GetPingQueueCount() >= MAX_PINGREQUESTS)
 		{
 			// ping queue is full
 			break;
@@ -958,19 +958,19 @@ static void ArenaServers_DoRefresh( void )
 		if (g_servertype == UIAS_FAVORITES) {
 		  strcpy( adrstr, g_arenaservers.favoriteaddresses[g_arenaservers.currentping] ); 		
 		} else {
-		  trap_LAN_GetServerAddressString(g_servertype, g_arenaservers.currentping, adrstr, MAX_ADDRESSLENGTH );
+		  UI_trap_LAN_GetServerAddressString(g_servertype, g_arenaservers.currentping, adrstr, MAX_ADDRESSLENGTH );
 		}
 
 		strcpy( g_arenaservers.pinglist[j].adrstr, adrstr );
 		g_arenaservers.pinglist[j].start = uis.realtime;
 
-		trap_Cmd_ExecuteText( EXEC_NOW, va( "ping %s\n", adrstr )  );
+		UI_trap_Cmd_ExecuteText( EXEC_NOW, va( "ping %s\n", adrstr )  );
 		
 		// advance to next server
 		g_arenaservers.currentping++;
 	}
 
-	if (!trap_LAN_GetPingQueueCount())
+	if (!UI_trap_LAN_GetPingQueueCount())
 	{
 		// all pings completed
 		ArenaServers_StopRefresh();
@@ -997,7 +997,7 @@ static void ArenaServers_StartRefresh( void )
 	for (i=0; i<MAX_PINGREQUESTS; i++)
 	{
 		g_arenaservers.pinglist[i].adrstr[0] = '\0';
-		trap_LAN_ClearPing( i );
+		UI_trap_LAN_ClearPing( i );
 	}
 
 	g_arenaservers.refreshservers    = qtrue;
@@ -1013,7 +1013,7 @@ static void ArenaServers_StartRefresh( void )
 	ArenaServers_UpdateMenu();
 
 	if( g_servertype == UIAS_LOCAL ) {
-		trap_Cmd_ExecuteText( EXEC_APPEND, "localservers\n" );
+		UI_trap_Cmd_ExecuteText( EXEC_APPEND, "localservers\n" );
 		return;
 	}
 
@@ -1051,12 +1051,12 @@ static void ArenaServers_StartRefresh( void )
 		}
 
 		protocol[0] = '\0';
-		trap_Cvar_VariableStringBuffer( "debug_protocol", protocol, sizeof(protocol) );
+		UI_trap_Cvar_VariableStringBuffer( "debug_protocol", protocol, sizeof(protocol) );
 		if (strlen(protocol)) {
-			trap_Cmd_ExecuteText( EXEC_APPEND, va( "globalservers %d %s%s\n", g_servertype - 1, protocol, myargs ));
+			UI_trap_Cmd_ExecuteText( EXEC_APPEND, va( "globalservers %d %s%s\n", g_servertype - 1, protocol, myargs ));
 		}
 		else {
-			trap_Cmd_ExecuteText( EXEC_APPEND, va( "globalservers %d %d%s\n", g_servertype - 1, (int)trap_Cvar_VariableValue( "protocol" ), myargs ) );
+			UI_trap_Cmd_ExecuteText( EXEC_APPEND, va( "globalservers %d %d%s\n", g_servertype - 1, (int)UI_trap_Cvar_VariableValue( "protocol" ), myargs ) );
 		}
 	}
 }
@@ -1072,10 +1072,10 @@ void ArenaServers_SaveChanges( void )
 	int	i;
 
 	for (i=0; i<g_arenaservers.numfavoriteaddresses; i++)
-		trap_Cvar_Set( va("server%d",i+1), g_arenaservers.favoriteaddresses[i] );
+		UI_trap_Cvar_Set( va("server%d",i+1), g_arenaservers.favoriteaddresses[i] );
 
 	for (; i<MAX_FAVORITESERVERS; i++)
-		trap_Cvar_Set( va("server%d",i+1), "" );
+		UI_trap_Cvar_Set( va("server%d",i+1), "" );
 }
 
 
@@ -1108,7 +1108,7 @@ int ArenaServers_SetType( int type )
 		while(type <= UIAS_GLOBAL5)
 		{
 			Com_sprintf(cvarname, sizeof(cvarname), "sv_master%d", type);
-			trap_Cvar_VariableStringBuffer(cvarname, masterstr, sizeof(masterstr));
+			UI_trap_Cvar_VariableStringBuffer(cvarname, masterstr, sizeof(masterstr));
 			if(*masterstr)
 				break;
 			
@@ -1169,18 +1169,18 @@ PunkBuster_Confirm
 static void Punkbuster_ConfirmEnable( qboolean result ) {
 	if (result)
 	{		
-		trap_SetPbClStatus(1);
+		UI_trap_SetPbClStatus(1);
 	}
-	g_arenaservers.punkbuster.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "cl_punkbuster" ) );
+	g_arenaservers.punkbuster.curvalue = Com_Clamp( 0, 1, UI_trap_Cvar_VariableValue( "cl_punkbuster" ) );
 }
 
 static void Punkbuster_ConfirmDisable( qboolean result ) {
 	if (result)
 	{
-		trap_SetPbClStatus(0);
-		UI_Message( punkbuster_msg );
+		UI_trap_SetPbClStatus(0);
+		Q3UI_Message( punkbuster_msg );
 	}
-	g_arenaservers.punkbuster.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "cl_punkbuster" ) );
+	g_arenaservers.punkbuster.curvalue = Com_Clamp( 0, 1, UI_trap_Cvar_VariableValue( "cl_punkbuster" ) );
 }
 
 /*
@@ -1200,29 +1200,29 @@ static void ArenaServers_Event( void* ptr, int event ) {
 	switch( id ) {
 	case ID_MASTER:
 		g_arenaservers.master.curvalue = ArenaServers_SetType(g_arenaservers.master.curvalue);
-		trap_Cvar_SetValue( "ui_browserMaster", g_arenaservers.master.curvalue);
+		UI_trap_Cvar_SetValue( "ui_browserMaster", g_arenaservers.master.curvalue);
 		break;
 
 	case ID_GAMETYPE:
-		trap_Cvar_SetValue( "ui_browserGameType", g_arenaservers.gametype.curvalue );
+		UI_trap_Cvar_SetValue( "ui_browserGameType", g_arenaservers.gametype.curvalue );
 		g_gametype = g_arenaservers.gametype.curvalue;
 		ArenaServers_UpdateMenu();
 		break;
 
 	case ID_SORTKEY:
-		trap_Cvar_SetValue( "ui_browserSortKey", g_arenaservers.sortkey.curvalue );
+		UI_trap_Cvar_SetValue( "ui_browserSortKey", g_arenaservers.sortkey.curvalue );
 		ArenaServers_Sort( g_arenaservers.sortkey.curvalue );
 		ArenaServers_UpdateMenu();
 		break;
 
 	case ID_SHOW_FULL:
-		trap_Cvar_SetValue( "ui_browserShowFull", g_arenaservers.showfull.curvalue );
+		UI_trap_Cvar_SetValue( "ui_browserShowFull", g_arenaservers.showfull.curvalue );
 		g_fullservers = g_arenaservers.showfull.curvalue;
 		ArenaServers_UpdateMenu();
 		break;
 
 	case ID_SHOW_EMPTY:
-		trap_Cvar_SetValue( "ui_browserShowEmpty", g_arenaservers.showempty.curvalue );
+		UI_trap_Cvar_SetValue( "ui_browserShowEmpty", g_arenaservers.showempty.curvalue );
 		g_emptyservers = g_arenaservers.showempty.curvalue;
 		ArenaServers_UpdateMenu();
 		break;
@@ -1244,7 +1244,7 @@ static void ArenaServers_Event( void* ptr, int event ) {
 	case ID_BACK:
 		ArenaServers_StopRefresh();
 		ArenaServers_SaveChanges();
-		UI_PopMenu();
+		Q3UI_PopMenu();
 		break;
 
 	case ID_REFRESH:
@@ -1252,11 +1252,11 @@ static void ArenaServers_Event( void* ptr, int event ) {
 		break;
 
 	case ID_SPECIFY:
-		UI_SpecifyServerMenu();
+		Q3UI_SpecifyServerMenu();
 		break;
 
 	case ID_CREATE:
-		UI_StartServerMenu( qtrue );
+		Q3UI_StartServerMenu( qtrue );
 		break;
 
 	case ID_CONNECT:
@@ -1271,11 +1271,11 @@ static void ArenaServers_Event( void* ptr, int event ) {
 	case ID_PUNKBUSTER:
 		if (g_arenaservers.punkbuster.curvalue)			
 		{
-			UI_ConfirmMenu_Style( "Enable Punkbuster?",  UI_CENTER|UI_INVERSE|UI_SMALLFONT, 0, Punkbuster_ConfirmEnable );
+			Q3UI_ConfirmMenu_Style( "Enable Punkbuster?",  UI_CENTER|UI_INVERSE|UI_SMALLFONT, 0, Punkbuster_ConfirmEnable );
 		}
 		else
 		{
-			UI_ConfirmMenu_Style( "Disable Punkbuster?", UI_CENTER|UI_INVERSE|UI_SMALLFONT, 0, Punkbuster_ConfirmDisable );
+			Q3UI_ConfirmMenu_Style( "Disable Punkbuster?", UI_CENTER|UI_INVERSE|UI_SMALLFONT, 0, Punkbuster_ConfirmDisable );
 		}
 		break;
 	}
@@ -1599,12 +1599,12 @@ static void ArenaServers_MenuInit( void ) {
 	g_emptyservers = Com_Clamp( 0, 1, ui_browserShowEmpty.integer );
 	g_arenaservers.showempty.curvalue = g_emptyservers;
 	
-	g_arenaservers.punkbuster.curvalue = Com_Clamp( 0, 1, trap_Cvar_VariableValue( "cl_punkbuster" ) );
+	g_arenaservers.punkbuster.curvalue = Com_Clamp( 0, 1, UI_trap_Cvar_VariableValue( "cl_punkbuster" ) );
 
 	// force to initial state and refresh
 	g_arenaservers.master.curvalue = g_servertype = ArenaServers_SetType(g_servertype);
 
-	trap_Cvar_Register(NULL, "debug_protocol", "", 0 );
+	UI_trap_Cvar_Register(NULL, "debug_protocol", "", 0 );
 }
 
 
@@ -1614,30 +1614,30 @@ ArenaServers_Cache
 =================
 */
 void ArenaServers_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
-	trap_R_RegisterShaderNoMip( ART_CREATE0 );
-	trap_R_RegisterShaderNoMip( ART_CREATE1 );
-	trap_R_RegisterShaderNoMip( ART_SPECIFY0 );
-	trap_R_RegisterShaderNoMip( ART_SPECIFY1 );
-	trap_R_RegisterShaderNoMip( ART_REFRESH0 );
-	trap_R_RegisterShaderNoMip( ART_REFRESH1 );
-	trap_R_RegisterShaderNoMip( ART_CONNECT0 );
-	trap_R_RegisterShaderNoMip( ART_CONNECT1 );
-	trap_R_RegisterShaderNoMip( ART_ARROWS0  );
-	trap_R_RegisterShaderNoMip( ART_ARROWS_UP );
-	trap_R_RegisterShaderNoMip( ART_ARROWS_DOWN );
-	trap_R_RegisterShaderNoMip( ART_UNKNOWNMAP );
-	trap_R_RegisterShaderNoMip( ART_PUNKBUSTER );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK0 );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK1 );
+	UI_trap_R_RegisterShaderNoMip( ART_CREATE0 );
+	UI_trap_R_RegisterShaderNoMip( ART_CREATE1 );
+	UI_trap_R_RegisterShaderNoMip( ART_SPECIFY0 );
+	UI_trap_R_RegisterShaderNoMip( ART_SPECIFY1 );
+	UI_trap_R_RegisterShaderNoMip( ART_REFRESH0 );
+	UI_trap_R_RegisterShaderNoMip( ART_REFRESH1 );
+	UI_trap_R_RegisterShaderNoMip( ART_CONNECT0 );
+	UI_trap_R_RegisterShaderNoMip( ART_CONNECT1 );
+	UI_trap_R_RegisterShaderNoMip( ART_ARROWS0  );
+	UI_trap_R_RegisterShaderNoMip( ART_ARROWS_UP );
+	UI_trap_R_RegisterShaderNoMip( ART_ARROWS_DOWN );
+	UI_trap_R_RegisterShaderNoMip( ART_UNKNOWNMAP );
+	UI_trap_R_RegisterShaderNoMip( ART_PUNKBUSTER );
 }
 
 
 /*
 =================
-UI_ArenaServersMenu
+Q3UI_ArenaServersMenu
 =================
 */
-void UI_ArenaServersMenu( void ) {
+void Q3UI_ArenaServersMenu( void ) {
 	ArenaServers_MenuInit();
-	UI_PushMenu( &g_arenaservers.menu );
+	Q3UI_PushMenu( &g_arenaservers.menu );
 }						  

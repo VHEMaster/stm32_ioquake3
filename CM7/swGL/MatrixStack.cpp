@@ -1,5 +1,4 @@
-﻿#include "MatrixStack.h"
-
+﻿#include "MatrixStack.hpp"
 namespace SWGL {
 
     MatrixStack::MatrixStack()

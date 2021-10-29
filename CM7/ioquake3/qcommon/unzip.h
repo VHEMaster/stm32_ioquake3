@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
+#include "fatfs.h"
+
 #if defined(STRICTUNZIP) || defined(STRICTZIPUNZIP)
 /* like the STRICT of WIN32, we define a pointer that cannot be converted
     from (void*) without cast */
@@ -124,7 +126,7 @@ typedef struct
 	unsigned long crc32_wait;           /* crc32 we must obtain after decompress all */
 	unsigned long rest_read_compressed; /* number of unsigned char to be decompressed */
 	unsigned long rest_read_uncompressed;/*number of unsigned char to be obtained after decomp*/
-	FILE* file;                 /* io structore of the zipfile */
+	FIL *file;                 /* io structore of the zipfile */
 	unsigned long compression_method;   /* compression method (0==store) */
 	unsigned long byte_before_the_zipfile;/* unsigned char before the zipfile, (>0 for sfx)*/
 } file_in_zip_read_info_s;
@@ -134,7 +136,7 @@ typedef struct
 */
 typedef struct
 {
-	FILE* file;                 /* io structore of the zipfile */
+	FIL *file;                 /* io structore of the zipfile */
 	unz_global_info gi;       /* public global information */
 	unsigned long byte_before_the_zipfile;/* unsigned char before the zipfile, (>0 for sfx)*/
 	unsigned long num_file;             /* number of the current file in the zipfile*/

@@ -90,13 +90,13 @@ static void Demos_MenuEvent( void *ptr, int event ) {
 
 	switch( ((menucommon_s*)ptr)->id ) {
 	case ID_GO:
-		UI_ForceMenuOff ();
-		trap_Cmd_ExecuteText( EXEC_APPEND, va( "demo %s\n",
+		Q3UI_ForceMenuOff ();
+		UI_trap_Cmd_ExecuteText( EXEC_APPEND, va( "demo %s\n",
 								s_demos.list.itemnames[s_demos.list.curvalue]) );
 		break;
 
 	case ID_BACK:
-		UI_PopMenu();
+		Q3UI_PopMenu();
 		break;
 
 	case ID_LEFT:
@@ -112,10 +112,10 @@ static void Demos_MenuEvent( void *ptr, int event ) {
 
 /*
 =================
-UI_DemosMenu_Key
+Q3UI_DemosMenu_Key
 =================
 */
-static sfxHandle_t UI_DemosMenu_Key( int key ) {
+static sfxHandle_t Q3UI_DemosMenu_Key( int key ) {
 	menucommon_s	*item;
 
 	item = Menu_ItemAtCursor( &s_demos.menu );
@@ -135,7 +135,7 @@ static void Demos_MenuInit( void ) {
 	char	*demoname, extension[32];
 
 	memset( &s_demos, 0 ,sizeof(demos_t) );
-	s_demos.menu.key = UI_DemosMenu_Key;
+	s_demos.menu.key = Q3UI_DemosMenu_Key;
 
 	Demos_Cache();
 
@@ -223,8 +223,8 @@ static void Demos_MenuInit( void ) {
 	s_demos.list.generic.y			= 130;
 	s_demos.list.width				= 16;
 	s_demos.list.height				= 14;
-	Com_sprintf(extension, sizeof(extension), "dm_%d", (int)trap_Cvar_VariableValue( "protocol" ) );
-	s_demos.list.numitems			= trap_FS_GetFileList( "demos", extension, s_demos.names, NAMEBUFSIZE );
+	Com_sprintf(extension, sizeof(extension), "dm_%d", (int)UI_trap_Cvar_VariableValue( "protocol" ) );
+	s_demos.list.numitems			= UI_trap_FS_GetFileList( "demos", extension, s_demos.names, NAMEBUFSIZE );
 	s_demos.list.itemnames			= (const char **)s_demos.demolist;
 	s_demos.list.columns			= 3;
 
@@ -269,23 +269,23 @@ Demos_Cache
 =================
 */
 void Demos_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
-	trap_R_RegisterShaderNoMip( ART_GO0 );
-	trap_R_RegisterShaderNoMip( ART_GO1 );
-	trap_R_RegisterShaderNoMip( ART_FRAMEL );
-	trap_R_RegisterShaderNoMip( ART_FRAMER );
-	trap_R_RegisterShaderNoMip( ART_ARROWS );
-	trap_R_RegisterShaderNoMip( ART_ARROWLEFT );
-	trap_R_RegisterShaderNoMip( ART_ARROWRIGHT );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK0 );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK1 );
+	UI_trap_R_RegisterShaderNoMip( ART_GO0 );
+	UI_trap_R_RegisterShaderNoMip( ART_GO1 );
+	UI_trap_R_RegisterShaderNoMip( ART_FRAMEL );
+	UI_trap_R_RegisterShaderNoMip( ART_FRAMER );
+	UI_trap_R_RegisterShaderNoMip( ART_ARROWS );
+	UI_trap_R_RegisterShaderNoMip( ART_ARROWLEFT );
+	UI_trap_R_RegisterShaderNoMip( ART_ARROWRIGHT );
 }
 
 /*
 ===============
-UI_DemosMenu
+Q3UI_DemosMenu
 ===============
 */
-void UI_DemosMenu( void ) {
+void Q3UI_DemosMenu( void ) {
 	Demos_MenuInit();
-	UI_PushMenu( &s_demos.menu );
+	Q3UI_PushMenu( &s_demos.menu );
 }

@@ -522,18 +522,18 @@ double cos( double x ) {
 /*
 void create_acostable( void ) {
 	int i;
-	FILE *fp;
+	FIL *fp;
 	float a;
 
 	fp = fopen("c:\\acostable.txt", "w");
-	fprintf(fp, "float acostable[] = {");
+	f_printf(fp, "float acostable[] = {");
 	for (i = 0; i < 1024; i++) {
 		if (!(i & 7))
-			fprintf(fp, "\n");
+			f_printf(fp, "\n");
 		a = acos( (float) -1 + i / 512 );
-		fprintf(fp, "%1.8f,", a);
+		f_printf(fp, "%1.8f,", a);
 	}
-	fprintf(fp, "\n}\n");
+	f_printf(fp, "\n}\n");
 	fclose(fp);
 }
 */

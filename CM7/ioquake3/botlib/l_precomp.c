@@ -1,4 +1,4 @@
-/*
+ /*
 ===========================================================================
 Copyright (C) 1999-2005 Id Software, Inc.
 
@@ -31,6 +31,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *****************************************************************************/
 
 //Notes:			fix: PC_StringizeTokens
+
+//TODO: CHECK IF REALLY NEEDED??
 
 //#define SCREWUP
 //#define BOTLIB

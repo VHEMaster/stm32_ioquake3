@@ -29,7 +29,7 @@
 
 #include <stdarg.h>
 
-
+/*
 typedef signed char int8_t;
 typedef unsigned char uint8_t;
 typedef signed short int16_t;
@@ -38,9 +38,12 @@ typedef signed int int32_t;
 typedef unsigned int uint32_t;
 typedef unsigned int size_t;
 typedef unsigned int uintptr_t;
+*/
 
 /* Enable the dummy audio driver (src/audio/dummy/\*.c) */
 #define SDL_AUDIO_DRIVER_DUMMY	1
+//#define SDL_AUDIO_DISABLED 1
+
 
 /* Enable the stub cdrom driver (src/cdrom/dummy/\*.c) */
 #define SDL_CDROM_DISABLED	1
@@ -59,5 +62,16 @@ typedef unsigned int uintptr_t;
 
 /* Enable the dummy video driver (src/video/dummy/\*.c) */
 #define SDL_VIDEO_DRIVER_DUMMY	1
+
+#define HAVE_MALLOC 1
+#define HAVE_CALLOC 1
+#define HAVE_REALLOC 1
+#define HAVE_FREE 1 1
+
+
+
+#define SDL_VIDEO_OPENGL  1
+#define SDL_VIDEO_OPENGL_WGL  1
+#define SDL_VIDEO_DISABLE_SCREENSAVER 1
 
 #endif /* _SDL_config_minimal_h */

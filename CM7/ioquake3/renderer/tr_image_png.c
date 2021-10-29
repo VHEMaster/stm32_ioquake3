@@ -1914,7 +1914,7 @@ void R_LoadPNG(const char *name, byte **pic, int *width, int *height)
 	struct PNG_Chunk_IHDR *IHDR;
 	uint32_t IHDR_Width;
 	uint32_t IHDR_Height;
-	PNG_ChunkCRC *CRC;
+	PNG_ChunkCRC *PNGCRC;
 	uint8_t *InPal;
 	uint8_t *DecompressedData;
 	uint32_t DecompressedDataLength;
@@ -2037,8 +2037,8 @@ void R_LoadPNG(const char *name, byte **pic, int *width, int *height)
 	 *  Read the CRC for IHDR
 	 */
 
-	CRC = BufferedFileRead(ThePNG, PNG_ChunkCRC_Size);
-	if(!CRC)
+	PNGCRC = BufferedFileRead(ThePNG, PNG_ChunkCRC_Size);
+	if(!PNGCRC)
 	{
 		CloseBufferedFile(ThePNG);
 
@@ -2170,8 +2170,8 @@ void R_LoadPNG(const char *name, byte **pic, int *width, int *height)
 		 *  Read the CRC for the palette
 		 */
 
-		CRC = BufferedFileRead(ThePNG, PNG_ChunkCRC_Size);
-		if(!CRC)
+		PNGCRC = BufferedFileRead(ThePNG, PNG_ChunkCRC_Size);
+		if(!PNGCRC)
 		{
 			CloseBufferedFile(ThePNG);
 
@@ -2261,8 +2261,8 @@ void R_LoadPNG(const char *name, byte **pic, int *width, int *height)
 		 *  Read the CRC.
 		 */
 
-		CRC = BufferedFileRead(ThePNG, PNG_ChunkCRC_Size);
-		if(!CRC)
+		PNGCRC = BufferedFileRead(ThePNG, PNG_ChunkCRC_Size);
+		if(!PNGCRC)
 		{
 			CloseBufferedFile(ThePNG);
 

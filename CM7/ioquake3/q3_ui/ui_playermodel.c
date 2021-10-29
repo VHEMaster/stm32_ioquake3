@@ -181,8 +181,8 @@ static void PlayerModel_UpdateModel( void )
 	viewangles[ROLL]  = 0;
 	VectorClear( moveangles );
 
-	UI_PlayerInfo_SetModel( &s_playermodel.playerinfo, s_playermodel.modelskin );
-	UI_PlayerInfo_SetInfo( &s_playermodel.playerinfo, LEGS_IDLE, TORSO_STAND, viewangles, moveangles, WP_MACHINEGUN, qfalse );
+	Q3UI_PlayerInfo_SetModel( &s_playermodel.playerinfo, s_playermodel.modelskin );
+	Q3UI_PlayerInfo_SetInfo( &s_playermodel.playerinfo, LEGS_IDLE, TORSO_STAND, viewangles, moveangles, WP_MACHINEGUN, qfalse );
 }
 
 /*
@@ -192,10 +192,10 @@ PlayerModel_SaveChanges
 */
 static void PlayerModel_SaveChanges( void )
 {
-	trap_Cvar_Set( "model", s_playermodel.modelskin );
-	trap_Cvar_Set( "headmodel", s_playermodel.modelskin );
-	trap_Cvar_Set( "team_model", s_playermodel.modelskin );
-	trap_Cvar_Set( "team_headmodel", s_playermodel.modelskin );
+	UI_trap_Cvar_Set( "model", s_playermodel.modelskin );
+	UI_trap_Cvar_Set( "headmodel", s_playermodel.modelskin );
+	UI_trap_Cvar_Set( "team_model", s_playermodel.modelskin );
+	UI_trap_Cvar_Set( "team_headmodel", s_playermodel.modelskin );
 }
 
 /*
@@ -228,7 +228,7 @@ static void PlayerModel_MenuEvent( void* ptr, int event )
 
 		case ID_BACK:
 			PlayerModel_SaveChanges();
-			UI_PopMenu();
+			Q3UI_PopMenu();
 			break;
 	}
 }
@@ -355,7 +355,7 @@ static void PlayerModel_PicEvent( void* ptr, int event )
 
 		s_playermodel.selectedmodel = modelnum;
 
-		if( trap_MemoryRemaining() > LOW_MEMORY ) {
+		if( UI_trap_MemoryRemaining() > LOW_MEMORY ) {
 			PlayerModel_UpdateModel();
 		}
 	}
@@ -372,12 +372,12 @@ static void PlayerModel_DrawPlayer( void *self )
 
 	b = (menubitmap_s*) self;
 
-	if( trap_MemoryRemaining() <= LOW_MEMORY ) {
-		UI_DrawProportionalString( b->generic.x, b->generic.y + b->height / 2, "LOW MEMORY", UI_LEFT, color_red );
+	if( UI_trap_MemoryRemaining() <= LOW_MEMORY ) {
+		Q3UI_DrawProportionalString( b->generic.x, b->generic.y + b->height / 2, "LOW MEMORY", UI_LEFT, color_red );
 		return;
 	}
 
-	UI_DrawPlayer( b->generic.x, b->generic.y, b->width, b->height, &s_playermodel.playerinfo, uis.realtime/2 );
+	Q3UI_DrawPlayer( b->generic.x, b->generic.y, b->width, b->height, &s_playermodel.playerinfo, uis.realtime/2 );
 }
 
 /*
@@ -400,13 +400,13 @@ static void PlayerModel_BuildList( void )
 	int		filelen;
 	qboolean precache;
 
-	precache = trap_Cvar_VariableValue("com_buildscript");
+	precache = UI_trap_Cvar_VariableValue("com_buildscript");
 
 	s_playermodel.modelpage = 0;
 	s_playermodel.nummodels = 0;
 
 	// iterate directory of all player models
-	numdirs = trap_FS_GetFileList("models/players", "/", dirlist, 2048 );
+	numdirs = UI_trap_FS_GetFileList("models/players", "/", dirlist, 2048 );
 	dirptr  = dirlist;
 	for (i=0; i<numdirs && s_playermodel.nummodels < MAX_PLAYERMODELS; i++,dirptr+=dirlen+1)
 	{
@@ -418,7 +418,7 @@ static void PlayerModel_BuildList( void )
 			continue;
 			
 		// iterate all skin files in directory
-		numfiles = trap_FS_GetFileList( va("models/players/%s",dirptr), "tga", filelist, 2048 );
+		numfiles = UI_trap_FS_GetFileList( va("models/players/%s",dirptr), "tga", filelist, 2048 );
 		fileptr  = filelist;
 		for (j=0; j<numfiles && s_playermodel.nummodels < MAX_PLAYERMODELS;j++,fileptr+=filelen+1)
 		{
@@ -437,7 +437,7 @@ static void PlayerModel_BuildList( void )
 			}
 
 			if( precache ) {
-				trap_S_RegisterSound( va( "sound/player/announce/%s_wins.wav", skinname), qfalse );
+				UI_trap_S_RegisterSound( va( "sound/player/announce/%s_wins.wav", skinname), qfalse );
 			}
 		}
 	}	
@@ -463,11 +463,11 @@ static void PlayerModel_SetMenuItems( void )
 	char*			pdest;
 
 	// name
-	trap_Cvar_VariableStringBuffer( "name", s_playermodel.playername.string, 16 );
+	UI_trap_Cvar_VariableStringBuffer( "name", s_playermodel.playername.string, 16 );
 	Q_CleanStr( s_playermodel.playername.string );
 
 	// model
-	trap_Cvar_VariableStringBuffer( "model", s_playermodel.modelskin, 64 );
+	UI_trap_Cvar_VariableStringBuffer( "model", s_playermodel.modelskin, 64 );
 	
 	// find model in our list
 	for (i=0; i<s_playermodel.nummodels; i++)
@@ -710,20 +710,20 @@ void PlayerModel_Cache( void )
 	int	i;
 
 	for( i = 0; playermodel_artlist[i]; i++ ) {
-		trap_R_RegisterShaderNoMip( playermodel_artlist[i] );
+		UI_trap_R_RegisterShaderNoMip( playermodel_artlist[i] );
 	}
 
 	PlayerModel_BuildList();
 	for( i = 0; i < s_playermodel.nummodels; i++ ) {
-		trap_R_RegisterShaderNoMip( s_playermodel.modelnames[i] );
+		UI_trap_R_RegisterShaderNoMip( s_playermodel.modelnames[i] );
 	}
 }
 
-void UI_PlayerModelMenu(void)
+void Q3UI_PlayerModelMenu(void)
 {
 	PlayerModel_MenuInit();
 
-	UI_PushMenu( &s_playermodel.menu );
+	Q3UI_PushMenu( &s_playermodel.menu );
 
 	Menu_SetCursorToItem( &s_playermodel.menu, &s_playermodel.pics[s_playermodel.selectedmodel % MAX_MODELSPERPAGE] );
 }

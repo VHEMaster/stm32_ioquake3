@@ -1286,7 +1286,7 @@ int ScriptSkipTo(script_t *script, char *value)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int FileLength(FILE *fp)
+int FileLength(FIL *fp)
 {
 	int pos;
 	int end;
@@ -1311,7 +1311,7 @@ script_t *LoadScriptFile(const char *filename)
 	fileHandle_t fp;
 	char pathname[MAX_QPATH];
 #else
-	FILE *fp;
+	FIL *fp;
 #endif
 	int length;
 	void *buffer;

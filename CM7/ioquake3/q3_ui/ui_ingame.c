@@ -77,8 +77,8 @@ static void InGame_RestartAction( qboolean result ) {
 		return;
 	}
 
-	UI_PopMenu();
-	trap_Cmd_ExecuteText( EXEC_APPEND, "map_restart 0\n" );
+	Q3UI_PopMenu();
+	UI_trap_Cmd_ExecuteText( EXEC_APPEND, "map_restart 0\n" );
 }
 
 
@@ -91,8 +91,8 @@ static void InGame_QuitAction( qboolean result ) {
 	if( !result ) {
 		return;
 	}
-	UI_PopMenu();
-	UI_CreditMenu();
+	Q3UI_PopMenu();
+	Q3UI_CreditMenu();
 }
 
 
@@ -108,43 +108,43 @@ void InGame_Event( void *ptr, int notification ) {
 
 	switch( ((menucommon_s*)ptr)->id ) {
 	case ID_TEAM:
-		UI_TeamMainMenu();
+		Q3UI_TeamMainMenu();
 		break;
 
 	case ID_SETUP:
-		UI_SetupMenu();
+		Q3UI_SetupMenu();
 		break;
 
 	case ID_LEAVEARENA:
-		trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect\n" );
+		UI_trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect\n" );
 		break;
 
 	case ID_RESTART:
-		UI_ConfirmMenu( "RESTART ARENA?", 0, InGame_RestartAction );
+		Q3UI_ConfirmMenu( "RESTART ARENA?", 0, InGame_RestartAction );
 		break;
 
 	case ID_QUIT:
-		UI_ConfirmMenu( "EXIT GAME?",  0, InGame_QuitAction );
+		Q3UI_ConfirmMenu( "EXIT GAME?",  0, InGame_QuitAction );
 		break;
 
 	case ID_SERVERINFO:
-		UI_ServerInfoMenu();
+		Q3UI_ServerInfoMenu();
 		break;
 
 	case ID_ADDBOTS:
-		UI_AddBotsMenu();
+		Q3UI_AddBotsMenu();
 		break;
 
 	case ID_REMOVEBOTS:
-		UI_RemoveBotsMenu();
+		Q3UI_RemoveBotsMenu();
 		break;
 
 	case ID_TEAMORDERS:
-		UI_TeamOrdersMenu();
+		Q3UI_TeamOrdersMenu();
 		break;
 
 	case ID_RESUME:
-		UI_PopMenu();
+		Q3UI_PopMenu();
 		break;
 	}
 }
@@ -198,7 +198,7 @@ void InGame_MenuInit( void ) {
 	s_ingame.addbots.string				= "ADD BOTS";
 	s_ingame.addbots.color				= color_red;
 	s_ingame.addbots.style				= UI_CENTER|UI_SMALLFONT;
-	if( !trap_Cvar_VariableValue( "sv_running" ) || !trap_Cvar_VariableValue( "bot_enable" ) || (trap_Cvar_VariableValue( "g_gametype" ) == GT_SINGLE_PLAYER)) {
+	if( !UI_trap_Cvar_VariableValue( "sv_running" ) || !UI_trap_Cvar_VariableValue( "bot_enable" ) || (UI_trap_Cvar_VariableValue( "g_gametype" ) == GT_SINGLE_PLAYER)) {
 		s_ingame.addbots.generic.flags |= QMF_GRAYED;
 	}
 
@@ -212,7 +212,7 @@ void InGame_MenuInit( void ) {
 	s_ingame.removebots.string				= "REMOVE BOTS";
 	s_ingame.removebots.color				= color_red;
 	s_ingame.removebots.style				= UI_CENTER|UI_SMALLFONT;
-	if( !trap_Cvar_VariableValue( "sv_running" ) || !trap_Cvar_VariableValue( "bot_enable" ) || (trap_Cvar_VariableValue( "g_gametype" ) == GT_SINGLE_PLAYER)) {
+	if( !UI_trap_Cvar_VariableValue( "sv_running" ) || !UI_trap_Cvar_VariableValue( "bot_enable" ) || (UI_trap_Cvar_VariableValue( "g_gametype" ) == GT_SINGLE_PLAYER)) {
 		s_ingame.removebots.generic.flags |= QMF_GRAYED;
 	}
 
@@ -226,12 +226,12 @@ void InGame_MenuInit( void ) {
 	s_ingame.teamorders.string				= "TEAM ORDERS";
 	s_ingame.teamorders.color				= color_red;
 	s_ingame.teamorders.style				= UI_CENTER|UI_SMALLFONT;
-	if( !(trap_Cvar_VariableValue( "g_gametype" ) >= GT_TEAM) ) {
+	if( !(UI_trap_Cvar_VariableValue( "g_gametype" ) >= GT_TEAM) ) {
 		s_ingame.teamorders.generic.flags |= QMF_GRAYED;
 	}
 	else {
-		trap_GetClientState( &cs );
-		trap_GetConfigString( CS_PLAYERS + cs.clientNum, info, MAX_INFO_STRING );
+		UI_trap_GetClientState( &cs );
+		UI_trap_GetConfigString( CS_PLAYERS + cs.clientNum, info, MAX_INFO_STRING );
 		team = atoi( Info_ValueForKey( info, "t" ) );
 		if( team == TEAM_SPECTATOR ) {
 			s_ingame.teamorders.generic.flags |= QMF_GRAYED;
@@ -270,7 +270,7 @@ void InGame_MenuInit( void ) {
 	s_ingame.restart.string				= "RESTART ARENA";
 	s_ingame.restart.color				= color_red;
 	s_ingame.restart.style				= UI_CENTER|UI_SMALLFONT;
-	if( !trap_Cvar_VariableValue( "sv_running" ) ) {
+	if( !UI_trap_Cvar_VariableValue( "sv_running" ) ) {
 		s_ingame.restart.generic.flags |= QMF_GRAYED;
 	}
 
@@ -327,16 +327,16 @@ InGame_Cache
 =================
 */
 void InGame_Cache( void ) {
-	trap_R_RegisterShaderNoMip( INGAME_FRAME );
+	UI_trap_R_RegisterShaderNoMip( INGAME_FRAME );
 }
 
 
 /*
 =================
-UI_InGameMenu
+Q3UI_InGameMenu
 =================
 */
-void UI_InGameMenu( void ) {
+void Q3UI_InGameMenu( void ) {
 	// force as top level menu
 	uis.menusp = 0;  
 
@@ -345,5 +345,5 @@ void UI_InGameMenu( void ) {
 	uis.cursory = 80;
 
 	InGame_MenuInit();
-	UI_PushMenu( &s_ingame.menu );
+	Q3UI_PushMenu( &s_ingame.menu );
 }

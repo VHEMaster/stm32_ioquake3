@@ -99,14 +99,14 @@ static void SpecifyLeague_GetList()
 		s_specifyleague.rankname.field.buffer, 
 		sizeof(playername) );
 
-	count = trap_CL_UI_RankGetLeauges( playername );
+	count = UI_trap_CL_UI_RankGetLeauges( playername );
 
 	for(i = 0; i < count; i++)
 	{
 		char	s[MAX_LEAGUENAME];
 		const char	*var;
 		var = va( "leaguename%i", i+1 );
-		trap_Cvar_VariableStringBuffer( var, s, sizeof(s) );
+		UI_trap_Cvar_VariableStringBuffer( var, s, sizeof(s) );
 		Q_strncpyz(league_table[i].leaguename, s, sizeof(league_table[i].leaguename) );
 		Q_strncpyz(league_table[i].buff, league_table[i].leaguename, sizeof(league_table[i].buff) );
 	}
@@ -158,8 +158,8 @@ static void SpecifyLeague_Event( void* ptr, int event )
 		case ID_SPECIFYLEAGUEBACK:
 			if( event == QM_ACTIVATED )
 			{
-				trap_Cvar_Set( "sv_leagueName", league_table[s_specifyleague.list.curvalue].leaguename);
-				UI_PopMenu();
+				UI_trap_Cvar_Set( "sv_leagueName", league_table[s_specifyleague.list.curvalue].leaguename);
+				Q3UI_PopMenu();
 			}
 		break;
 	}
@@ -292,11 +292,11 @@ void SpecifyLeague_MenuInit( void )
 
 	// initialize any menu variables
 	Q_strncpyz( s_specifyleague.rankname.field.buffer, 
-		UI_Cvar_VariableString("name"), 
+		Q3UI_Cvar_VariableString("name"), 
 		sizeof(s_specifyleague.rankname.field.buffer) );
 
 	Q_strncpyz( playername,
-		UI_Cvar_VariableString("name"), 
+		Q3UI_Cvar_VariableString("name"), 
 		sizeof(playername) );
 
 	SpecifyLeague_GetList();
@@ -316,18 +316,18 @@ void SpecifyLeague_Cache( void )
 	{
 		if (!specifyleague_artlist[i])
 			break;
-		trap_R_RegisterShaderNoMip(specifyleague_artlist[i]);
+		UI_trap_R_RegisterShaderNoMip(specifyleague_artlist[i]);
 	}
 }
 
 /*
 =================
-UI_SpecifyLeagueMenu
+Q3UI_SpecifyLeagueMenu
 =================
 */
-void UI_SpecifyLeagueMenu( void )
+void Q3UI_SpecifyLeagueMenu( void )
 {
 	SpecifyLeague_MenuInit();
-	UI_PushMenu( &s_specifyleague.menu );
+	Q3UI_PushMenu( &s_specifyleague.menu );
 }
 

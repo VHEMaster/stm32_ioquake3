@@ -76,7 +76,7 @@ static void DriverInfo_Event( void* ptr, int event )
 	switch (((menucommon_s*)ptr)->id)
 	{
 		case ID_DRIVERINFOBACK:
-			UI_PopMenu();
+			Q3UI_PopMenu();
 			break;
 	}
 }
@@ -93,25 +93,25 @@ static void DriverInfo_MenuDraw( void )
 
 	Menu_Draw( &s_driverinfo.menu );
 
-	UI_DrawString( 320, 80, "VENDOR", UI_CENTER|UI_SMALLFONT, color_red );
-	UI_DrawString( 320, 152, "PIXELFORMAT", UI_CENTER|UI_SMALLFONT, color_red );
-	UI_DrawString( 320, 192, "EXTENSIONS", UI_CENTER|UI_SMALLFONT, color_red );
+	Q3UI_DrawString( 320, 80, "VENDOR", UI_CENTER|UI_SMALLFONT, color_red );
+	Q3UI_DrawString( 320, 152, "PIXELFORMAT", UI_CENTER|UI_SMALLFONT, color_red );
+	Q3UI_DrawString( 320, 192, "EXTENSIONS", UI_CENTER|UI_SMALLFONT, color_red );
 
-	UI_DrawString( 320, 80+16, uis.glconfig.vendor_string, UI_CENTER|UI_SMALLFONT, text_color_normal );
-	UI_DrawString( 320, 96+16, uis.glconfig.version_string, UI_CENTER|UI_SMALLFONT, text_color_normal );
-	UI_DrawString( 320, 112+16, uis.glconfig.renderer_string, UI_CENTER|UI_SMALLFONT, text_color_normal );
-	UI_DrawString( 320, 152+16, va ("color(%d-bits) Z(%d-bits) stencil(%d-bits)", uis.glconfig.colorBits, uis.glconfig.depthBits, uis.glconfig.stencilBits), UI_CENTER|UI_SMALLFONT, text_color_normal );
+	Q3UI_DrawString( 320, 80+16, uis.glconfig.vendor_string, UI_CENTER|UI_SMALLFONT, text_color_normal );
+	Q3UI_DrawString( 320, 96+16, uis.glconfig.version_string, UI_CENTER|UI_SMALLFONT, text_color_normal );
+	Q3UI_DrawString( 320, 112+16, uis.glconfig.renderer_string, UI_CENTER|UI_SMALLFONT, text_color_normal );
+	Q3UI_DrawString( 320, 152+16, va ("color(%d-bits) Z(%d-bits) stencil(%d-bits)", uis.glconfig.colorBits, uis.glconfig.depthBits, uis.glconfig.stencilBits), UI_CENTER|UI_SMALLFONT, text_color_normal );
 
 	// double column
 	y = 192+16;
 	for (i=0; i<s_driverinfo.numstrings/2; i++) {
-		UI_DrawString( 320-4, y, s_driverinfo.strings[i*2], UI_RIGHT|UI_SMALLFONT, text_color_normal );
-		UI_DrawString( 320+4, y, s_driverinfo.strings[i*2+1], UI_LEFT|UI_SMALLFONT, text_color_normal );
+		Q3UI_DrawString( 320-4, y, s_driverinfo.strings[i*2], UI_RIGHT|UI_SMALLFONT, text_color_normal );
+		Q3UI_DrawString( 320+4, y, s_driverinfo.strings[i*2+1], UI_LEFT|UI_SMALLFONT, text_color_normal );
 		y += SMALLCHAR_HEIGHT;
 	}
 
 	if (s_driverinfo.numstrings & 1)
-		UI_DrawString( 320, y, s_driverinfo.strings[s_driverinfo.numstrings-1], UI_CENTER|UI_SMALLFONT, text_color_normal );
+		Q3UI_DrawString( 320, y, s_driverinfo.strings[s_driverinfo.numstrings-1], UI_CENTER|UI_SMALLFONT, text_color_normal );
 }
 
 /*
@@ -128,16 +128,16 @@ void DriverInfo_Cache( void )
 	{
 		if (!driverinfo_artlist[i])
 			break;
-		trap_R_RegisterShaderNoMip(driverinfo_artlist[i]);
+		UI_trap_R_RegisterShaderNoMip(driverinfo_artlist[i]);
 	}
 }
 
 /*
 =================
-UI_DriverInfo_Menu
+Q3UI_DriverInfo_Menu
 =================
 */
-static void UI_DriverInfo_Menu( void )
+static void Q3UI_DriverInfo_Menu( void )
 {
 	char*	eptr;
 	int		i;
@@ -220,7 +220,7 @@ static void UI_DriverInfo_Menu( void )
 	Menu_AddItem( &s_driverinfo.menu, &s_driverinfo.framer );
 	Menu_AddItem( &s_driverinfo.menu, &s_driverinfo.back );
 
-	UI_PushMenu( &s_driverinfo.menu );
+	Q3UI_PushMenu( &s_driverinfo.menu );
 }
 
 /*
@@ -540,17 +540,17 @@ static void GraphicsOptions_ApplyChanges( void *unused, int notification )
 	switch ( s_graphicsoptions.texturebits.curvalue  )
 	{
 	case 0:
-		trap_Cvar_SetValue( "r_texturebits", 0 );
+		UI_trap_Cvar_SetValue( "r_texturebits", 0 );
 		break;
 	case 1:
-		trap_Cvar_SetValue( "r_texturebits", 16 );
+		UI_trap_Cvar_SetValue( "r_texturebits", 16 );
 		break;
 	case 2:
-		trap_Cvar_SetValue( "r_texturebits", 32 );
+		UI_trap_Cvar_SetValue( "r_texturebits", 32 );
 		break;
 	}
-	trap_Cvar_SetValue( "r_picmip", 3 - s_graphicsoptions.tq.curvalue );
-	trap_Cvar_SetValue( "r_allowExtensions", s_graphicsoptions.allow_extensions.curvalue );
+	UI_trap_Cvar_SetValue( "r_picmip", 3 - s_graphicsoptions.tq.curvalue );
+	UI_trap_Cvar_SetValue( "r_allowExtensions", s_graphicsoptions.allow_extensions.curvalue );
 
 	if( resolutionsDetected )
 	{
@@ -568,47 +568,47 @@ static void GraphicsOptions_ApplyChanges( void *unused, int notification )
 			*strchr( w, 'x' ) = 0;
 			Q_strncpyz( h,
 					strchr( detectedResolutions[ s_graphicsoptions.mode.curvalue ], 'x' ) + 1, sizeof( h ) );
-			trap_Cvar_Set( "r_customwidth", w );
-			trap_Cvar_Set( "r_customheight", h );
+			UI_trap_Cvar_Set( "r_customwidth", w );
+			UI_trap_Cvar_Set( "r_customheight", h );
 		}
 
-		trap_Cvar_SetValue( "r_mode", mode );
+		UI_trap_Cvar_SetValue( "r_mode", mode );
 	}
 	else
-		trap_Cvar_SetValue( "r_mode", s_graphicsoptions.mode.curvalue );
+		UI_trap_Cvar_SetValue( "r_mode", s_graphicsoptions.mode.curvalue );
 
-	trap_Cvar_SetValue( "r_fullscreen", s_graphicsoptions.fs.curvalue );
-	trap_Cvar_SetValue( "r_colorbits", 0 );
-	trap_Cvar_SetValue( "r_depthbits", 0 );
-	trap_Cvar_SetValue( "r_stencilbits", 0 );
-	trap_Cvar_SetValue( "r_vertexLight", s_graphicsoptions.lighting.curvalue );
+	UI_trap_Cvar_SetValue( "r_fullscreen", s_graphicsoptions.fs.curvalue );
+	UI_trap_Cvar_SetValue( "r_colorbits", 0 );
+	UI_trap_Cvar_SetValue( "r_depthbits", 0 );
+	UI_trap_Cvar_SetValue( "r_stencilbits", 0 );
+	UI_trap_Cvar_SetValue( "r_vertexLight", s_graphicsoptions.lighting.curvalue );
 
 	if ( s_graphicsoptions.geometry.curvalue == 2 )
 	{
-		trap_Cvar_SetValue( "r_lodBias", 0 );
-		trap_Cvar_SetValue( "r_subdivisions", 4 );
+		UI_trap_Cvar_SetValue( "r_lodBias", 0 );
+		UI_trap_Cvar_SetValue( "r_subdivisions", 4 );
 	}
 	else if ( s_graphicsoptions.geometry.curvalue == 1 )
 	{
-		trap_Cvar_SetValue( "r_lodBias", 1 );
-		trap_Cvar_SetValue( "r_subdivisions", 12 );
+		UI_trap_Cvar_SetValue( "r_lodBias", 1 );
+		UI_trap_Cvar_SetValue( "r_subdivisions", 12 );
 	}
 	else
 	{
-		trap_Cvar_SetValue( "r_lodBias", 1 );
-		trap_Cvar_SetValue( "r_subdivisions", 20 );
+		UI_trap_Cvar_SetValue( "r_lodBias", 1 );
+		UI_trap_Cvar_SetValue( "r_subdivisions", 20 );
 	}
 
 	if ( s_graphicsoptions.filter.curvalue )
 	{
-		trap_Cvar_Set( "r_textureMode", "GL_LINEAR_MIPMAP_LINEAR" );
+		UI_trap_Cvar_Set( "r_textureMode", "GL_LINEAR_MIPMAP_LINEAR" );
 	}
 	else
 	{
-		trap_Cvar_Set( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST" );
+		UI_trap_Cvar_Set( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST" );
 	}
 
-	trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart\n" );
+	UI_trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart\n" );
 }
 
 /*
@@ -649,29 +649,29 @@ static void GraphicsOptions_Event( void* ptr, int event ) {
 		break;
 
 	case ID_DRIVERINFO:
-		UI_DriverInfo_Menu();
+		Q3UI_DriverInfo_Menu();
 		break;
 
 	case ID_BACK2:
-		UI_PopMenu();
+		Q3UI_PopMenu();
 		break;
 
 	case ID_GRAPHICS:
 		break;
 
 	case ID_DISPLAY:
-		UI_PopMenu();
-		UI_DisplayOptionsMenu();
+		Q3UI_PopMenu();
+		Q3UI_DisplayOptionsMenu();
 		break;
 
 	case ID_SOUND:
-		UI_PopMenu();
-		UI_SoundOptionsMenu();
+		Q3UI_PopMenu();
+		Q3UI_SoundOptionsMenu();
 		break;
 
 	case ID_NETWORK:
-		UI_PopMenu();
-		UI_NetworkOptionsMenu();
+		Q3UI_PopMenu();
+		Q3UI_NetworkOptionsMenu();
 		break;
 	}
 }
@@ -711,7 +711,7 @@ GraphicsOptions_SetMenuItems
 static void GraphicsOptions_SetMenuItems( void )
 {
 	s_graphicsoptions.mode.curvalue =
-		GraphicsOptions_FindDetectedResolution( trap_Cvar_VariableValue( "r_mode" ) );
+		GraphicsOptions_FindDetectedResolution( UI_trap_Cvar_VariableValue( "r_mode" ) );
 
 	if ( s_graphicsoptions.mode.curvalue < 0 )
 	{
@@ -719,10 +719,10 @@ static void GraphicsOptions_SetMenuItems( void )
 		{
 			int i;
 			char buf[MAX_STRING_CHARS];
-			trap_Cvar_VariableStringBuffer("r_customwidth", buf, sizeof(buf)-2);
+			UI_trap_Cvar_VariableStringBuffer("r_customwidth", buf, sizeof(buf)-2);
 			buf[strlen(buf)+1] = 0;
 			buf[strlen(buf)] = 'x';
-			trap_Cvar_VariableStringBuffer("r_customheight", buf+strlen(buf), sizeof(buf)-strlen(buf));
+			UI_trap_Cvar_VariableStringBuffer("r_customheight", buf+strlen(buf), sizeof(buf)-strlen(buf));
 
 			for(i = 0; detectedResolutions[i]; ++i)
 			{
@@ -740,9 +740,9 @@ static void GraphicsOptions_SetMenuItems( void )
 			s_graphicsoptions.mode.curvalue = 3;
 		}
 	}
-	s_graphicsoptions.fs.curvalue = trap_Cvar_VariableValue("r_fullscreen");
-	s_graphicsoptions.allow_extensions.curvalue = trap_Cvar_VariableValue("r_allowExtensions");
-	s_graphicsoptions.tq.curvalue = 3-trap_Cvar_VariableValue( "r_picmip");
+	s_graphicsoptions.fs.curvalue = UI_trap_Cvar_VariableValue("r_fullscreen");
+	s_graphicsoptions.allow_extensions.curvalue = UI_trap_Cvar_VariableValue("r_allowExtensions");
+	s_graphicsoptions.tq.curvalue = 3-UI_trap_Cvar_VariableValue( "r_picmip");
 	if ( s_graphicsoptions.tq.curvalue < 0 )
 	{
 		s_graphicsoptions.tq.curvalue = 0;
@@ -752,8 +752,8 @@ static void GraphicsOptions_SetMenuItems( void )
 		s_graphicsoptions.tq.curvalue = 3;
 	}
 
-	s_graphicsoptions.lighting.curvalue = trap_Cvar_VariableValue( "r_vertexLight" ) != 0;
-	switch ( ( int ) trap_Cvar_VariableValue( "r_texturebits" ) )
+	s_graphicsoptions.lighting.curvalue = UI_trap_Cvar_VariableValue( "r_vertexLight" ) != 0;
+	switch ( ( int ) UI_trap_Cvar_VariableValue( "r_texturebits" ) )
 	{
 	default:
 	case 0:
@@ -767,7 +767,7 @@ static void GraphicsOptions_SetMenuItems( void )
 		break;
 	}
 
-	if ( !Q_stricmp( UI_Cvar_VariableString( "r_textureMode" ), "GL_LINEAR_MIPMAP_NEAREST" ) )
+	if ( !Q_stricmp( Q3UI_Cvar_VariableString( "r_textureMode" ), "GL_LINEAR_MIPMAP_NEAREST" ) )
 	{
 		s_graphicsoptions.filter.curvalue = 0;
 	}
@@ -776,9 +776,9 @@ static void GraphicsOptions_SetMenuItems( void )
 		s_graphicsoptions.filter.curvalue = 1;
 	}
 
-	if ( trap_Cvar_VariableValue( "r_lodBias" ) > 0 )
+	if ( UI_trap_Cvar_VariableValue( "r_lodBias" ) > 0 )
 	{
-		if ( trap_Cvar_VariableValue( "r_subdivisions" ) >= 20 )
+		if ( UI_trap_Cvar_VariableValue( "r_subdivisions" ) >= 20 )
 		{
 			s_graphicsoptions.geometry.curvalue = 0;
 		}
@@ -792,7 +792,7 @@ static void GraphicsOptions_SetMenuItems( void )
 		s_graphicsoptions.geometry.curvalue = 2;
 	}
 
-	switch ( ( int ) trap_Cvar_VariableValue( "r_colorbits" ) )
+	switch ( ( int ) UI_trap_Cvar_VariableValue( "r_colorbits" ) )
 	{
 	default:
 	case 0:
@@ -890,7 +890,7 @@ void GraphicsOptions_MenuInit( void )
 	memset( &s_graphicsoptions, 0 ,sizeof(graphicsoptions_t) );
 
 
-	Q_strncpyz(resbuf, UI_Cvar_VariableString("r_availableModes"), sizeof(resbuf));
+	Q_strncpyz(resbuf, Q3UI_Cvar_VariableString("r_availableModes"), sizeof(resbuf));
 	if(*resbuf)
 	{
 		char* s = resbuf;
@@ -1159,23 +1159,23 @@ GraphicsOptions_Cache
 =================
 */
 void GraphicsOptions_Cache( void ) {
-	trap_R_RegisterShaderNoMip( GRAPHICSOPTIONS_FRAMEL );
-	trap_R_RegisterShaderNoMip( GRAPHICSOPTIONS_FRAMER );
-	trap_R_RegisterShaderNoMip( GRAPHICSOPTIONS_BACK0 );
-	trap_R_RegisterShaderNoMip( GRAPHICSOPTIONS_BACK1 );
-	trap_R_RegisterShaderNoMip( GRAPHICSOPTIONS_ACCEPT0 );
-	trap_R_RegisterShaderNoMip( GRAPHICSOPTIONS_ACCEPT1 );
+	UI_trap_R_RegisterShaderNoMip( GRAPHICSOPTIONS_FRAMEL );
+	UI_trap_R_RegisterShaderNoMip( GRAPHICSOPTIONS_FRAMER );
+	UI_trap_R_RegisterShaderNoMip( GRAPHICSOPTIONS_BACK0 );
+	UI_trap_R_RegisterShaderNoMip( GRAPHICSOPTIONS_BACK1 );
+	UI_trap_R_RegisterShaderNoMip( GRAPHICSOPTIONS_ACCEPT0 );
+	UI_trap_R_RegisterShaderNoMip( GRAPHICSOPTIONS_ACCEPT1 );
 }
 
 
 /*
 =================
-UI_GraphicsOptionsMenu
+Q3UI_GraphicsOptionsMenu
 =================
 */
-void UI_GraphicsOptionsMenu( void ) {
+void Q3UI_GraphicsOptionsMenu( void ) {
 	GraphicsOptions_MenuInit();
-	UI_PushMenu( &s_graphicsoptions.menu );
+	Q3UI_PushMenu( &s_graphicsoptions.menu );
 	Menu_SetCursorToItem( &s_graphicsoptions.menu, &s_graphicsoptions.graphics );
 }
 

@@ -290,7 +290,7 @@ void R_LoadTGA ( const char *name, byte **pic, int *width, int *height)
   // TTimo: this is the chunk of code to ensure a behavior that meets TGA specs 
   // bit 5 set => top-down
   if (targa_header.attributes & 0x20) {
-    unsigned char *flip = (unsigned char*)malloc (columns*4);
+    unsigned char *flip = (unsigned char*)pvPortMalloc (columns*4);
     unsigned char *src, *dst;
 
     for (row = 0; row < rows/2; row++) {
@@ -301,7 +301,7 @@ void R_LoadTGA ( const char *name, byte **pic, int *width, int *height)
       memcpy (src, dst, columns*4);
       memcpy (dst, flip, columns*4);
     }
-    free (flip);
+    vPortFree (flip);
   }
 #endif
   // instead we just print a warning

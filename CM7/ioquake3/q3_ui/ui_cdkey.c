@@ -60,10 +60,10 @@ static cdkeyMenuInfo_t	cdkeyMenuInfo;
 
 /*
 ===============
-UI_CDKeyMenu_Event
+Q3UI_CDKeyMenu_Event
 ===============
 */
-static void UI_CDKeyMenu_Event( void *ptr, int event ) {
+static void Q3UI_CDKeyMenu_Event( void *ptr, int event ) {
 	if( event != QM_ACTIVATED ) {
 		return;
 	}
@@ -71,13 +71,13 @@ static void UI_CDKeyMenu_Event( void *ptr, int event ) {
 	switch( ((menucommon_s*)ptr)->id ) {
 	case ID_ACCEPT:
 		if( cdkeyMenuInfo.cdkey.field.buffer[0] ) {
-			trap_SetCDKey( cdkeyMenuInfo.cdkey.field.buffer );
+			UI_trap_SetCDKey( cdkeyMenuInfo.cdkey.field.buffer );
 		}
-		UI_PopMenu();
+		Q3UI_PopMenu();
 		break;
 
 	case ID_BACK:
-		UI_PopMenu();
+		Q3UI_PopMenu();
 		break;
 	}
 }
@@ -85,10 +85,10 @@ static void UI_CDKeyMenu_Event( void *ptr, int event ) {
 
 /*
 =================
-UI_CDKeyMenu_PreValidateKey
+Q3UI_CDKeyMenu_PreValidateKey
 =================
 */
-static int UI_CDKeyMenu_PreValidateKey( const char *key ) {
+static int Q3UI_CDKeyMenu_PreValidateKey( const char *key ) {
 	char	ch;
 
 	if( strlen( key ) != 16 ) {
@@ -125,10 +125,10 @@ static int UI_CDKeyMenu_PreValidateKey( const char *key ) {
 
 /*
 =================
-UI_CDKeyMenu_DrawKey
+Q3UI_CDKeyMenu_DrawKey
 =================
 */
-static void UI_CDKeyMenu_DrawKey( void *self ) {
+static void Q3UI_CDKeyMenu_DrawKey( void *self ) {
 	menufield_s		*f;
 	qboolean		focus;
 	int				style;
@@ -151,12 +151,12 @@ static void UI_CDKeyMenu_DrawKey( void *self ) {
 
 	x = 320 - 8 * BIGCHAR_WIDTH;
 	y = 240 - BIGCHAR_HEIGHT / 2;
-	UI_FillRect( x, y, 16 * BIGCHAR_WIDTH, BIGCHAR_HEIGHT, listbar_color );
-	UI_DrawString( x, y, f->field.buffer, style, color );
+	Q3UI_FillRect( x, y, 16 * BIGCHAR_WIDTH, BIGCHAR_HEIGHT, listbar_color );
+	Q3UI_DrawString( x, y, f->field.buffer, style, color );
 
 	// draw cursor if we have focus
 	if( focus ) {
-		if ( trap_Key_GetOverstrikeMode() ) {
+		if ( UI_trap_Key_GetOverstrikeMode() ) {
 			c = 11;
 		} else {
 			c = 10;
@@ -165,31 +165,31 @@ static void UI_CDKeyMenu_DrawKey( void *self ) {
 		style &= ~UI_PULSE;
 		style |= UI_BLINK;
 
-		UI_DrawChar( x + f->field.cursor * BIGCHAR_WIDTH, y, c, style, color_white );
+		Q3UI_DrawChar( x + f->field.cursor * BIGCHAR_WIDTH, y, c, style, color_white );
 	}
 
-	val = UI_CDKeyMenu_PreValidateKey( f->field.buffer );
+	val = Q3UI_CDKeyMenu_PreValidateKey( f->field.buffer );
 	if( val == 1 ) {
-		UI_DrawProportionalString( 320, 376, "Please enter your CD Key", UI_CENTER|UI_SMALLFONT, color_yellow );
+		Q3UI_DrawProportionalString( 320, 376, "Please enter your CD Key", UI_CENTER|UI_SMALLFONT, color_yellow );
 	}
 	else if ( val == 0 ) {
-		UI_DrawProportionalString( 320, 376, "The CD Key appears to be valid, thank you", UI_CENTER|UI_SMALLFONT, color_white );
+		Q3UI_DrawProportionalString( 320, 376, "The CD Key appears to be valid, thank you", UI_CENTER|UI_SMALLFONT, color_white );
 	}
 	else {
-		UI_DrawProportionalString( 320, 376, "The CD Key is not valid", UI_CENTER|UI_SMALLFONT, color_red );
+		Q3UI_DrawProportionalString( 320, 376, "The CD Key is not valid", UI_CENTER|UI_SMALLFONT, color_red );
 	}
 }
 
 
 /*
 ===============
-UI_CDKeyMenu_Init
+Q3UI_CDKeyMenu_Init
 ===============
 */
-static void UI_CDKeyMenu_Init( void ) {
-	trap_Cvar_Set( "ui_cdkeychecked", "1" );
+static void Q3UI_CDKeyMenu_Init( void ) {
+	UI_trap_Cvar_Set( "ui_cdkeychecked", "1" );
 
-	UI_CDKeyMenu_Cache();
+	Q3UI_CDKeyMenu_Cache();
 
 	memset( &cdkeyMenuInfo, 0, sizeof(cdkeyMenuInfo) );
 	cdkeyMenuInfo.menu.wrapAround = qtrue;
@@ -217,13 +217,13 @@ static void UI_CDKeyMenu_Init( void ) {
 	cdkeyMenuInfo.cdkey.generic.y					= 240 - BIGCHAR_HEIGHT / 2;
 	cdkeyMenuInfo.cdkey.field.widthInChars			= 16;
 	cdkeyMenuInfo.cdkey.field.maxchars				= 16;
-	cdkeyMenuInfo.cdkey.generic.ownerdraw			= UI_CDKeyMenu_DrawKey;
+	cdkeyMenuInfo.cdkey.generic.ownerdraw			= Q3UI_CDKeyMenu_DrawKey;
 
 	cdkeyMenuInfo.accept.generic.type				= MTYPE_BITMAP;
 	cdkeyMenuInfo.accept.generic.name				= ART_ACCEPT0;
 	cdkeyMenuInfo.accept.generic.flags				= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	cdkeyMenuInfo.accept.generic.id					= ID_ACCEPT;
-	cdkeyMenuInfo.accept.generic.callback			= UI_CDKeyMenu_Event;
+	cdkeyMenuInfo.accept.generic.callback			= Q3UI_CDKeyMenu_Event;
 	cdkeyMenuInfo.accept.generic.x					= 640;
 	cdkeyMenuInfo.accept.generic.y					= 480-64;
 	cdkeyMenuInfo.accept.width						= 128;
@@ -234,7 +234,7 @@ static void UI_CDKeyMenu_Init( void ) {
 	cdkeyMenuInfo.back.generic.name					= ART_BACK0;
 	cdkeyMenuInfo.back.generic.flags				= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	cdkeyMenuInfo.back.generic.id					= ID_BACK;
-	cdkeyMenuInfo.back.generic.callback				= UI_CDKeyMenu_Event;
+	cdkeyMenuInfo.back.generic.callback				= Q3UI_CDKeyMenu_Event;
 	cdkeyMenuInfo.back.generic.x					= 0;
 	cdkeyMenuInfo.back.generic.y					= 480-64;
 	cdkeyMenuInfo.back.width						= 128;
@@ -249,8 +249,8 @@ static void UI_CDKeyMenu_Init( void ) {
 		Menu_AddItem( &cdkeyMenuInfo.menu, &cdkeyMenuInfo.back );
 	}
 
-	trap_GetCDKey( cdkeyMenuInfo.cdkey.field.buffer, cdkeyMenuInfo.cdkey.field.maxchars + 1 );
-	if( trap_VerifyCDKey( cdkeyMenuInfo.cdkey.field.buffer, NULL ) == qfalse ) {
+	UI_trap_GetCDKey( cdkeyMenuInfo.cdkey.field.buffer, cdkeyMenuInfo.cdkey.field.maxchars + 1 );
+	if( UI_trap_VerifyCDKey( cdkeyMenuInfo.cdkey.field.buffer, NULL ) == qfalse ) {
 		cdkeyMenuInfo.cdkey.field.buffer[0] = 0;
 	}
 }
@@ -258,34 +258,34 @@ static void UI_CDKeyMenu_Init( void ) {
 
 /*
 =================
-UI_CDKeyMenu_Cache
+Q3UI_CDKeyMenu_Cache
 =================
 */
-void UI_CDKeyMenu_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_ACCEPT0 );
-	trap_R_RegisterShaderNoMip( ART_ACCEPT1 );
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
-	trap_R_RegisterShaderNoMip( ART_FRAME );
+void Q3UI_CDKeyMenu_Cache( void ) {
+	UI_trap_R_RegisterShaderNoMip( ART_ACCEPT0 );
+	UI_trap_R_RegisterShaderNoMip( ART_ACCEPT1 );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK0 );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK1 );
+	UI_trap_R_RegisterShaderNoMip( ART_FRAME );
 }
 
 
 /*
 ===============
-UI_CDKeyMenu
+Q3UI_CDKeyMenu
 ===============
 */
-void UI_CDKeyMenu( void ) {
-	UI_CDKeyMenu_Init();
-	UI_PushMenu( &cdkeyMenuInfo.menu );
+void Q3UI_CDKeyMenu( void ) {
+	Q3UI_CDKeyMenu_Init();
+	Q3UI_PushMenu( &cdkeyMenuInfo.menu );
 }
 
 
 /*
 ===============
-UI_CDKeyMenu_f
+Q3UI_CDKeyMenu_f
 ===============
 */
-void UI_CDKeyMenu_f( void ) {
-	UI_CDKeyMenu();
+void Q3UI_CDKeyMenu_f( void ) {
+	Q3UI_CDKeyMenu();
 }

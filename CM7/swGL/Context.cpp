@@ -1,8 +1,10 @@
-﻿#include <memory>
-#include "Defines.h"
-#include "MatrixStack.h"
-#include "VertexPipeline.h"
-#include "Context.h"
+﻿#include "Context.hpp"
+
+#include <memory>
+#include "Defines.hpp"
+
+#include "MatrixStack.hpp"
+#include "VertexPipeline.hpp"
 
 namespace SWGL {
 

@@ -98,25 +98,25 @@ char	*ui_medalSounds[] = {
 
 /*
 =================
-UI_SPPostgameMenu_AgainEvent
+Q3UI_SPPostgameMenu_AgainEvent
 =================
 */
-static void UI_SPPostgameMenu_AgainEvent( void* ptr, int event )
+static void Q3UI_SPPostgameMenu_AgainEvent( void* ptr, int event )
 {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
-	UI_PopMenu();
-	trap_Cmd_ExecuteText( EXEC_APPEND, "map_restart 0\n" );
+	Q3UI_PopMenu();
+	UI_trap_Cmd_ExecuteText( EXEC_APPEND, "map_restart 0\n" );
 }
 
 
 /*
 =================
-UI_SPPostgameMenu_NextEvent
+Q3UI_SPPostgameMenu_NextEvent
 =================
 */
-static void UI_SPPostgameMenu_NextEvent( void* ptr, int event ) {
+static void Q3UI_SPPostgameMenu_NextEvent( void* ptr, int event ) {
 	int			currentSet;
 	int			levelSet;
 	int			level;
@@ -126,7 +126,7 @@ static void UI_SPPostgameMenu_NextEvent( void* ptr, int event ) {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
-	UI_PopMenu();
+	Q3UI_PopMenu();
 
 	// handle specially if we just won the training map
 	if( postgameMenuInfo.won == 0 ) {
@@ -137,52 +137,52 @@ static void UI_SPPostgameMenu_NextEvent( void* ptr, int event ) {
 	}
 	levelSet = level / ARENAS_PER_TIER;
 
-	currentLevel = UI_GetCurrentGame();
+	currentLevel = Q3UI_GetCurrentGame();
 	if( currentLevel == -1 ) {
 		currentLevel = postgameMenuInfo.level;
 	}
 	currentSet = currentLevel / ARENAS_PER_TIER;
 
-	if( levelSet > currentSet || levelSet == UI_GetNumSPTiers() ) {
+	if( levelSet > currentSet || levelSet == Q3UI_GetNumSPTiers() ) {
 		level = currentLevel;
 	}
 
-	arenaInfo = UI_GetArenaInfoByNumber( level );
+	arenaInfo = Q3UI_GetArenaInfoByNumber( level );
 	if ( !arenaInfo ) {
 		return;
 	}
 
-	UI_SPArena_Start( arenaInfo );
+	Q3UI_SPArena_Start( arenaInfo );
 }
 
 
 /*
 =================
-UI_SPPostgameMenu_MenuEvent
+Q3UI_SPPostgameMenu_MenuEvent
 =================
 */
-static void UI_SPPostgameMenu_MenuEvent( void* ptr, int event )
+static void Q3UI_SPPostgameMenu_MenuEvent( void* ptr, int event )
 {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
-	UI_PopMenu();
-	trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect; levelselect\n" );
+	Q3UI_PopMenu();
+	UI_trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect; levelselect\n" );
 }
 
 
 /*
 =================
-UI_SPPostgameMenu_MenuKey
+Q3UI_SPPostgameMenu_MenuKey
 =================
 */
-static sfxHandle_t UI_SPPostgameMenu_MenuKey( int key ) {
+static sfxHandle_t Q3UI_SPPostgameMenu_MenuKey( int key ) {
 	if ( uis.realtime < postgameMenuInfo.ignoreKeysTime ) {
 		return 0;
 	}
 
 	if( postgameMenuInfo.phase == 1 ) {
-		trap_Cmd_ExecuteText( EXEC_APPEND, "abort_podium\n" );
+		UI_trap_Cmd_ExecuteText( EXEC_APPEND, "abort_podium\n" );
 		postgameMenuInfo.phase = 2;
 		postgameMenuInfo.starttime = uis.realtime;
 		postgameMenuInfo.ignoreKeysTime	= uis.realtime + 250;
@@ -206,7 +206,7 @@ static sfxHandle_t UI_SPPostgameMenu_MenuKey( int key ) {
 
 static int medalLocations[6] = {144, 448, 88, 504, 32, 560};
 
-static void UI_SPPostgameMenu_DrawAwardsMedals( int max ) {
+static void Q3UI_SPPostgameMenu_DrawAwardsMedals( int max ) {
 	int		n;
 	int		medal;
 	int		amount;
@@ -219,7 +219,7 @@ static void UI_SPPostgameMenu_DrawAwardsMedals( int max ) {
 		medal = postgameMenuInfo.awardsEarned[n];
 		amount = postgameMenuInfo.awardsLevels[n];
 
-		UI_DrawNamedPic( x, y, 48, 48, ui_medalPicNames[medal] );
+		Q3UI_DrawNamedPic( x, y, 48, 48, ui_medalPicNames[medal] );
 
 		if( medal == AWARD_ACCURACY ) {
 			Com_sprintf( buf, sizeof(buf), "%i%%", amount );
@@ -231,12 +231,12 @@ static void UI_SPPostgameMenu_DrawAwardsMedals( int max ) {
 			Com_sprintf( buf, sizeof(buf), "%i", amount );
 		}
 
-		UI_DrawString( x + 24, y + 52, buf, UI_CENTER, color_yellow );
+		Q3UI_DrawString( x + 24, y + 52, buf, UI_CENTER, color_yellow );
 	}
 }
 
 
-static void UI_SPPostgameMenu_DrawAwardsPresentation( int timer ) {
+static void Q3UI_SPPostgameMenu_DrawAwardsPresentation( int timer ) {
 	int		awardNum;
 	int		atimer;
 	vec4_t	color;
@@ -246,23 +246,23 @@ static void UI_SPPostgameMenu_DrawAwardsPresentation( int timer ) {
 
 	color[0] = color[1] = color[2] = 1.0f;
 	color[3] = (float)( AWARD_PRESENTATION_TIME - atimer ) / (float)AWARD_PRESENTATION_TIME;
-	UI_DrawProportionalString( 320, 64, ui_medalNames[postgameMenuInfo.awardsEarned[awardNum]], UI_CENTER, color );
+	Q3UI_DrawProportionalString( 320, 64, ui_medalNames[postgameMenuInfo.awardsEarned[awardNum]], UI_CENTER, color );
 
-	UI_SPPostgameMenu_DrawAwardsMedals( awardNum + 1 );
+	Q3UI_SPPostgameMenu_DrawAwardsMedals( awardNum + 1 );
 
 	if( !postgameMenuInfo.playedSound[awardNum] ) {
 		postgameMenuInfo.playedSound[awardNum] = qtrue;
-		trap_S_StartLocalSound( trap_S_RegisterSound( ui_medalSounds[postgameMenuInfo.awardsEarned[awardNum]], qfalse ), CHAN_ANNOUNCER );
+		UI_trap_S_StartLocalSound( UI_trap_S_RegisterSound( ui_medalSounds[postgameMenuInfo.awardsEarned[awardNum]], qfalse ), CHAN_ANNOUNCER );
 	}
 }
 
 
 /*
 =================
-UI_SPPostgameMenu_MenuDrawScoreLine
+Q3UI_SPPostgameMenu_MenuDrawScoreLine
 =================
 */
-static void UI_SPPostgameMenu_MenuDrawScoreLine( int n, int y ) {
+static void Q3UI_SPPostgameMenu_MenuDrawScoreLine( int n, int y ) {
 	int		rank;
 	char	name[64];
 	char	info[MAX_INFO_STRING];
@@ -277,47 +277,47 @@ static void UI_SPPostgameMenu_MenuDrawScoreLine( int n, int y ) {
 
 	rank = postgameMenuInfo.ranks[n];
 	if( rank & RANK_TIED_FLAG ) {
-		UI_DrawString( 640 - 31 * SMALLCHAR_WIDTH, y, "(tie)", UI_LEFT|UI_SMALLFONT, color_white );
+		Q3UI_DrawString( 640 - 31 * SMALLCHAR_WIDTH, y, "(tie)", UI_LEFT|UI_SMALLFONT, color_white );
 		rank &= ~RANK_TIED_FLAG;
 	}
-	trap_GetConfigString( CS_PLAYERS + postgameMenuInfo.clientNums[n], info, MAX_INFO_STRING );
+	UI_trap_GetConfigString( CS_PLAYERS + postgameMenuInfo.clientNums[n], info, MAX_INFO_STRING );
 	Q_strncpyz( name, Info_ValueForKey( info, "n" ), sizeof(name) );
 	Q_CleanStr( name );
 
-	UI_DrawString( 640 - 25 * SMALLCHAR_WIDTH, y, va( "#%i: %-16s %2i", rank + 1, name, postgameMenuInfo.scores[n] ), UI_LEFT|UI_SMALLFONT, color_white );
+	Q3UI_DrawString( 640 - 25 * SMALLCHAR_WIDTH, y, va( "#%i: %-16s %2i", rank + 1, name, postgameMenuInfo.scores[n] ), UI_LEFT|UI_SMALLFONT, color_white );
 }
 
 
 /*
 =================
-UI_SPPostgameMenu_MenuDraw
+Q3UI_SPPostgameMenu_MenuDraw
 =================
 */
-static void UI_SPPostgameMenu_MenuDraw( void ) {
+static void Q3UI_SPPostgameMenu_MenuDraw( void ) {
 	int		timer;
 	int		serverId;
 	int		n;
 	char	info[MAX_INFO_STRING];
 
-	trap_GetConfigString( CS_SYSTEMINFO, info, sizeof(info) );
+	UI_trap_GetConfigString( CS_SYSTEMINFO, info, sizeof(info) );
 	serverId = atoi( Info_ValueForKey( info, "sv_serverid" ) );
 	if( serverId != postgameMenuInfo.serverId ) {
-		UI_PopMenu();
+		Q3UI_PopMenu();
 		return;
 	}
 
 	// phase 1
 	if ( postgameMenuInfo.numClients > 2 ) {
-		UI_DrawProportionalString( 510, 480 - 64 - PROP_HEIGHT, postgameMenuInfo.placeNames[2], UI_CENTER, color_white );
+		Q3UI_DrawProportionalString( 510, 480 - 64 - PROP_HEIGHT, postgameMenuInfo.placeNames[2], UI_CENTER, color_white );
 	}
-	UI_DrawProportionalString( 130, 480 - 64 - PROP_HEIGHT, postgameMenuInfo.placeNames[1], UI_CENTER, color_white );
-	UI_DrawProportionalString( 320, 480 - 64 - 2 * PROP_HEIGHT, postgameMenuInfo.placeNames[0], UI_CENTER, color_white );
+	Q3UI_DrawProportionalString( 130, 480 - 64 - PROP_HEIGHT, postgameMenuInfo.placeNames[1], UI_CENTER, color_white );
+	Q3UI_DrawProportionalString( 320, 480 - 64 - 2 * PROP_HEIGHT, postgameMenuInfo.placeNames[0], UI_CENTER, color_white );
 
 	if( postgameMenuInfo.phase == 1 ) {
 		timer = uis.realtime - postgameMenuInfo.starttime;
 
 		if( timer >= 1000 && postgameMenuInfo.winnerSound ) {
-			trap_S_StartLocalSound( postgameMenuInfo.winnerSound, CHAN_ANNOUNCER );
+			UI_trap_S_StartLocalSound( postgameMenuInfo.winnerSound, CHAN_ANNOUNCER );
 			postgameMenuInfo.winnerSound = 0;
 		}
 
@@ -341,29 +341,29 @@ static void UI_SPPostgameMenu_MenuDraw( void ) {
 			postgameMenuInfo.starttime = uis.realtime;
 		}
 		else {
-			UI_SPPostgameMenu_DrawAwardsPresentation( timer );
+			Q3UI_SPPostgameMenu_DrawAwardsPresentation( timer );
 		}
 	}
 
 	// phase 3
 	if( postgameMenuInfo.phase == 3 ) {
 		if( uis.demoversion ) {
-			if( postgameMenuInfo.won == 1 && UI_ShowTierVideo( 8 )) {
-				trap_Cvar_Set( "nextmap", "" );
-				trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect; cinematic demoEnd.RoQ\n" );
+			if( postgameMenuInfo.won == 1 && Q3UI_ShowTierVideo( 8 )) {
+				UI_trap_Cvar_Set( "nextmap", "" );
+				UI_trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect; cinematic demoEnd.RoQ\n" );
 				return;
 			}
 		}
-		else if( postgameMenuInfo.won > -1 && UI_ShowTierVideo( postgameMenuInfo.won + 1 )) {
+		else if( postgameMenuInfo.won > -1 && Q3UI_ShowTierVideo( postgameMenuInfo.won + 1 )) {
 			if( postgameMenuInfo.won == postgameMenuInfo.lastTier ) {
-				trap_Cvar_Set( "nextmap", "" );
-				trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect; cinematic end.RoQ\n" );
+				UI_trap_Cvar_Set( "nextmap", "" );
+				UI_trap_Cmd_ExecuteText( EXEC_APPEND, "disconnect; cinematic end.RoQ\n" );
 				return;
 			}
 
-			trap_Cvar_SetValue( "ui_spSelection", postgameMenuInfo.won * ARENAS_PER_TIER );
-			trap_Cvar_Set( "nextmap", "levelselect" );
-			trap_Cmd_ExecuteText( EXEC_APPEND, va( "disconnect; cinematic tier%i.RoQ\n", postgameMenuInfo.won + 1 ) );
+			UI_trap_Cvar_SetValue( "ui_spSelection", postgameMenuInfo.won * ARENAS_PER_TIER );
+			UI_trap_Cvar_Set( "nextmap", "levelselect" );
+			UI_trap_Cmd_ExecuteText( EXEC_APPEND, va( "disconnect; cinematic tier%i.RoQ\n", postgameMenuInfo.won + 1 ) );
 			return;
 		}
 
@@ -371,13 +371,13 @@ static void UI_SPPostgameMenu_MenuDraw( void ) {
 		postgameMenuInfo.item_next.generic.flags &= ~QMF_INACTIVE;
 		postgameMenuInfo.item_menu.generic.flags &= ~QMF_INACTIVE;
 
-		UI_SPPostgameMenu_DrawAwardsMedals( postgameMenuInfo.numAwards );
+		Q3UI_SPPostgameMenu_DrawAwardsMedals( postgameMenuInfo.numAwards );
 
 		Menu_Draw( &postgameMenuInfo.menu );
 	}
 
 	// draw the scoreboard
-	if( !trap_Cvar_VariableValue( "ui_spScoreboard" ) ) {
+	if( !UI_trap_Cvar_VariableValue( "ui_spScoreboard" ) ) {
 		return;
 	}
 
@@ -388,61 +388,61 @@ static void UI_SPPostgameMenu_MenuDraw( void ) {
 	else {
 		n = timer / 1500 % (postgameMenuInfo.numClients + 2);
 	}
-	UI_SPPostgameMenu_MenuDrawScoreLine( n, 0 );
-	UI_SPPostgameMenu_MenuDrawScoreLine( n + 1, 0 + SMALLCHAR_HEIGHT );
-	UI_SPPostgameMenu_MenuDrawScoreLine( n + 2, 0 + 2 * SMALLCHAR_HEIGHT );
+	Q3UI_SPPostgameMenu_MenuDrawScoreLine( n, 0 );
+	Q3UI_SPPostgameMenu_MenuDrawScoreLine( n + 1, 0 + SMALLCHAR_HEIGHT );
+	Q3UI_SPPostgameMenu_MenuDrawScoreLine( n + 2, 0 + 2 * SMALLCHAR_HEIGHT );
 }
 
 
 /*
 =================
-UI_SPPostgameMenu_Cache
+Q3UI_SPPostgameMenu_Cache
 =================
 */
-void UI_SPPostgameMenu_Cache( void ) {
+void Q3UI_SPPostgameMenu_Cache( void ) {
 	int			n;
 	qboolean	buildscript;
 
-	buildscript = trap_Cvar_VariableValue("com_buildscript");
+	buildscript = UI_trap_Cvar_VariableValue("com_buildscript");
 
-	trap_R_RegisterShaderNoMip( ART_MENU0 );
-	trap_R_RegisterShaderNoMip( ART_MENU1 );
-	trap_R_RegisterShaderNoMip( ART_REPLAY0 );
-	trap_R_RegisterShaderNoMip( ART_REPLAY1 );
-	trap_R_RegisterShaderNoMip( ART_NEXT0 );
-	trap_R_RegisterShaderNoMip( ART_NEXT1 );
+	UI_trap_R_RegisterShaderNoMip( ART_MENU0 );
+	UI_trap_R_RegisterShaderNoMip( ART_MENU1 );
+	UI_trap_R_RegisterShaderNoMip( ART_REPLAY0 );
+	UI_trap_R_RegisterShaderNoMip( ART_REPLAY1 );
+	UI_trap_R_RegisterShaderNoMip( ART_NEXT0 );
+	UI_trap_R_RegisterShaderNoMip( ART_NEXT1 );
 	for( n = 0; n < 6; n++ ) {
-		trap_R_RegisterShaderNoMip( ui_medalPicNames[n] );
-		trap_S_RegisterSound( ui_medalSounds[n], qfalse );
+		UI_trap_R_RegisterShaderNoMip( ui_medalPicNames[n] );
+		UI_trap_S_RegisterSound( ui_medalSounds[n], qfalse );
 	}
 
 	if( buildscript ) {
-		trap_S_RegisterSound( "music/loss.wav", qfalse );
-		trap_S_RegisterSound( "music/win.wav", qfalse );
-		trap_S_RegisterSound( "sound/player/announce/youwin.wav", qfalse );
+		UI_trap_S_RegisterSound( "music/loss.wav", qfalse );
+		UI_trap_S_RegisterSound( "music/win.wav", qfalse );
+		UI_trap_S_RegisterSound( "sound/player/announce/youwin.wav", qfalse );
 	}
 }
 
 
 /*
 =================
-UI_SPPostgameMenu_Init
+Q3UI_SPPostgameMenu_Init
 =================
 */
-static void UI_SPPostgameMenu_Init( void ) {
+static void Q3UI_SPPostgameMenu_Init( void ) {
 	postgameMenuInfo.menu.wrapAround	= qtrue;
-	postgameMenuInfo.menu.key			= UI_SPPostgameMenu_MenuKey;
-	postgameMenuInfo.menu.draw			= UI_SPPostgameMenu_MenuDraw;
+	postgameMenuInfo.menu.key			= Q3UI_SPPostgameMenu_MenuKey;
+	postgameMenuInfo.menu.draw			= Q3UI_SPPostgameMenu_MenuDraw;
 	postgameMenuInfo.ignoreKeysTime		= uis.realtime + 1500;
 
-	UI_SPPostgameMenu_Cache();
+	Q3UI_SPPostgameMenu_Cache();
 
 	postgameMenuInfo.item_menu.generic.type			= MTYPE_BITMAP;
 	postgameMenuInfo.item_menu.generic.name			= ART_MENU0;
 	postgameMenuInfo.item_menu.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_INACTIVE;
 	postgameMenuInfo.item_menu.generic.x			= 0;
 	postgameMenuInfo.item_menu.generic.y			= 480-64;
-	postgameMenuInfo.item_menu.generic.callback		= UI_SPPostgameMenu_MenuEvent;
+	postgameMenuInfo.item_menu.generic.callback		= Q3UI_SPPostgameMenu_MenuEvent;
 	postgameMenuInfo.item_menu.generic.id			= ID_MENU;
 	postgameMenuInfo.item_menu.width				= 128;
 	postgameMenuInfo.item_menu.height				= 64;
@@ -453,7 +453,7 @@ static void UI_SPPostgameMenu_Init( void ) {
 	postgameMenuInfo.item_again.generic.flags		= QMF_CENTER_JUSTIFY|QMF_PULSEIFFOCUS|QMF_INACTIVE;
 	postgameMenuInfo.item_again.generic.x			= 320;
 	postgameMenuInfo.item_again.generic.y			= 480-64;
-	postgameMenuInfo.item_again.generic.callback	= UI_SPPostgameMenu_AgainEvent;
+	postgameMenuInfo.item_again.generic.callback	= Q3UI_SPPostgameMenu_AgainEvent;
 	postgameMenuInfo.item_again.generic.id			= ID_AGAIN;
 	postgameMenuInfo.item_again.width				= 128;
 	postgameMenuInfo.item_again.height				= 64;
@@ -464,7 +464,7 @@ static void UI_SPPostgameMenu_Init( void ) {
 	postgameMenuInfo.item_next.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS|QMF_INACTIVE;
 	postgameMenuInfo.item_next.generic.x			= 640;
 	postgameMenuInfo.item_next.generic.y			= 480-64;
-	postgameMenuInfo.item_next.generic.callback		= UI_SPPostgameMenu_NextEvent;
+	postgameMenuInfo.item_next.generic.callback		= Q3UI_SPPostgameMenu_NextEvent;
 	postgameMenuInfo.item_next.generic.id			= ID_NEXT;
 	postgameMenuInfo.item_next.width				= 128;
 	postgameMenuInfo.item_next.height				= 64;
@@ -481,12 +481,12 @@ static void Prepname( int index ) {
 	char	name[64];
 	char	info[MAX_INFO_STRING];
 
-	trap_GetConfigString( CS_PLAYERS + postgameMenuInfo.clientNums[index], info, MAX_INFO_STRING );
+	UI_trap_GetConfigString( CS_PLAYERS + postgameMenuInfo.clientNums[index], info, MAX_INFO_STRING );
 	Q_strncpyz( name, Info_ValueForKey( info, "n" ), sizeof(name) );
 	Q_CleanStr( name );
 	len = strlen( name );
 
-	while( len && UI_ProportionalStringWidth( name ) > 256 ) {
+	while( len && Q3UI_ProportionalStringWidth( name ) > 256 ) {
 		len--;
 		name[len] = 0;
 	}
@@ -497,10 +497,10 @@ static void Prepname( int index ) {
 
 /*
 =================
-UI_SPPostgameMenu_f
+Q3UI_SPPostgameMenu_f
 =================
 */
-void UI_SPPostgameMenu_f( void ) {
+void Q3UI_SPPostgameMenu_f( void ) {
 	int			playerGameRank;
 	int			playerClientNum;
 	int			n;
@@ -512,12 +512,12 @@ void UI_SPPostgameMenu_f( void ) {
 
 	memset( &postgameMenuInfo, 0, sizeof(postgameMenuInfo) );
 
-	trap_GetConfigString( CS_SYSTEMINFO, info, sizeof(info) );
+	UI_trap_GetConfigString( CS_SYSTEMINFO, info, sizeof(info) );
 	postgameMenuInfo.serverId = atoi( Info_ValueForKey( info, "sv_serverid" ) );
 
-	trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
+	UI_trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
 	Q_strncpyz( map, Info_ValueForKey( info, "mapname" ), sizeof(map) );
-	arena = UI_GetArenaInfoByMap( map );
+	arena = Q3UI_GetArenaInfoByMap( map );
 	if ( !arena ) {
 		return;
 	}
@@ -525,8 +525,8 @@ void UI_SPPostgameMenu_f( void ) {
 
 	postgameMenuInfo.level = atoi( Info_ValueForKey( arenainfo, "num" ) );
 
-	postgameMenuInfo.numClients = atoi( UI_Argv( 1 ) );
-	playerClientNum = atoi( UI_Argv( 2 ) );
+	postgameMenuInfo.numClients = atoi( Q3UI_Argv( 1 ) );
+	playerClientNum = atoi( Q3UI_Argv( 2 ) );
 	playerGameRank = 8;		// in case they ended game as a spectator
 
 	if( postgameMenuInfo.numClients > MAX_SCOREBOARD_CLIENTS ) {
@@ -534,58 +534,58 @@ void UI_SPPostgameMenu_f( void ) {
 	}
 
 	for( n = 0; n < postgameMenuInfo.numClients; n++ ) {
-		postgameMenuInfo.clientNums[n] = atoi( UI_Argv( 8 + n * 3 + 1 ) );
-		postgameMenuInfo.ranks[n] = atoi( UI_Argv( 8 + n * 3 + 2 ) );
-		postgameMenuInfo.scores[n] = atoi( UI_Argv( 8 + n * 3 + 3 ) );
+		postgameMenuInfo.clientNums[n] = atoi( Q3UI_Argv( 8 + n * 3 + 1 ) );
+		postgameMenuInfo.ranks[n] = atoi( Q3UI_Argv( 8 + n * 3 + 2 ) );
+		postgameMenuInfo.scores[n] = atoi( Q3UI_Argv( 8 + n * 3 + 3 ) );
 
 		if( postgameMenuInfo.clientNums[n] == playerClientNum ) {
 			playerGameRank = (postgameMenuInfo.ranks[n] & ~RANK_TIED_FLAG) + 1;
 		}
 	}
 
-	UI_SetBestScore( postgameMenuInfo.level, playerGameRank );
+	Q3UI_SetBestScore( postgameMenuInfo.level, playerGameRank );
 
 	// process award stats and prepare presentation data
-	awardValues[AWARD_ACCURACY] = atoi( UI_Argv( 3 ) );
-	awardValues[AWARD_IMPRESSIVE] = atoi( UI_Argv( 4 ) );
-	awardValues[AWARD_EXCELLENT] = atoi( UI_Argv( 5 ) );
-	awardValues[AWARD_GAUNTLET] = atoi( UI_Argv( 6 ) );
-	awardValues[AWARD_FRAGS] = atoi( UI_Argv( 7 ) );
-	awardValues[AWARD_PERFECT] = atoi( UI_Argv( 8 ) );
+	awardValues[AWARD_ACCURACY] = atoi( Q3UI_Argv( 3 ) );
+	awardValues[AWARD_IMPRESSIVE] = atoi( Q3UI_Argv( 4 ) );
+	awardValues[AWARD_EXCELLENT] = atoi( Q3UI_Argv( 5 ) );
+	awardValues[AWARD_GAUNTLET] = atoi( Q3UI_Argv( 6 ) );
+	awardValues[AWARD_FRAGS] = atoi( Q3UI_Argv( 7 ) );
+	awardValues[AWARD_PERFECT] = atoi( Q3UI_Argv( 8 ) );
 
 	postgameMenuInfo.numAwards = 0;
 
 	if( awardValues[AWARD_ACCURACY] >= 50 ) {
-		UI_LogAwardData( AWARD_ACCURACY, 1 );
+		Q3UI_LogAwardData( AWARD_ACCURACY, 1 );
 		postgameMenuInfo.awardsEarned[postgameMenuInfo.numAwards] = AWARD_ACCURACY;
 		postgameMenuInfo.awardsLevels[postgameMenuInfo.numAwards] = awardValues[AWARD_ACCURACY];
 		postgameMenuInfo.numAwards++;
 	}
 
 	if( awardValues[AWARD_IMPRESSIVE] ) {
-		UI_LogAwardData( AWARD_IMPRESSIVE, awardValues[AWARD_IMPRESSIVE] );
+		Q3UI_LogAwardData( AWARD_IMPRESSIVE, awardValues[AWARD_IMPRESSIVE] );
 		postgameMenuInfo.awardsEarned[postgameMenuInfo.numAwards] = AWARD_IMPRESSIVE;
 		postgameMenuInfo.awardsLevels[postgameMenuInfo.numAwards] = awardValues[AWARD_IMPRESSIVE];
 		postgameMenuInfo.numAwards++;
 	}
 
 	if( awardValues[AWARD_EXCELLENT] ) {
-		UI_LogAwardData( AWARD_EXCELLENT, awardValues[AWARD_EXCELLENT] );
+		Q3UI_LogAwardData( AWARD_EXCELLENT, awardValues[AWARD_EXCELLENT] );
 		postgameMenuInfo.awardsEarned[postgameMenuInfo.numAwards] = AWARD_EXCELLENT;
 		postgameMenuInfo.awardsLevels[postgameMenuInfo.numAwards] = awardValues[AWARD_EXCELLENT];
 		postgameMenuInfo.numAwards++;
 	}
 
 	if( awardValues[AWARD_GAUNTLET] ) {
-		UI_LogAwardData( AWARD_GAUNTLET, awardValues[AWARD_GAUNTLET] );
+		Q3UI_LogAwardData( AWARD_GAUNTLET, awardValues[AWARD_GAUNTLET] );
 		postgameMenuInfo.awardsEarned[postgameMenuInfo.numAwards] = AWARD_GAUNTLET;
 		postgameMenuInfo.awardsLevels[postgameMenuInfo.numAwards] = awardValues[AWARD_GAUNTLET];
 		postgameMenuInfo.numAwards++;
 	}
 
-	oldFrags = UI_GetAwardLevel( AWARD_FRAGS ) / 100;
-	UI_LogAwardData( AWARD_FRAGS, awardValues[AWARD_FRAGS] );
-	newFrags = UI_GetAwardLevel( AWARD_FRAGS ) / 100;
+	oldFrags = Q3UI_GetAwardLevel( AWARD_FRAGS ) / 100;
+	Q3UI_LogAwardData( AWARD_FRAGS, awardValues[AWARD_FRAGS] );
+	newFrags = Q3UI_GetAwardLevel( AWARD_FRAGS ) / 100;
 	if( newFrags > oldFrags ) {
 		postgameMenuInfo.awardsEarned[postgameMenuInfo.numAwards] = AWARD_FRAGS;
 		postgameMenuInfo.awardsLevels[postgameMenuInfo.numAwards] = newFrags * 100;
@@ -593,14 +593,14 @@ void UI_SPPostgameMenu_f( void ) {
 	}
 
 	if( awardValues[AWARD_PERFECT] ) {
-		UI_LogAwardData( AWARD_PERFECT, 1 );
+		Q3UI_LogAwardData( AWARD_PERFECT, 1 );
 		postgameMenuInfo.awardsEarned[postgameMenuInfo.numAwards] = AWARD_PERFECT;
 		postgameMenuInfo.awardsLevels[postgameMenuInfo.numAwards] = 1;
 		postgameMenuInfo.numAwards++;
 	}
 
 	if ( playerGameRank == 1 ) {
-		postgameMenuInfo.won = UI_TierCompleted( postgameMenuInfo.level );
+		postgameMenuInfo.won = Q3UI_TierCompleted( postgameMenuInfo.level );
 	}
 	else {
 		postgameMenuInfo.won = -1;
@@ -609,11 +609,11 @@ void UI_SPPostgameMenu_f( void ) {
 	postgameMenuInfo.starttime = uis.realtime;
 	postgameMenuInfo.scoreboardtime = uis.realtime;
 
-	trap_Key_SetCatcher( KEYCATCH_UI );
+	UI_trap_Key_SetCatcher( KEYCATCH_UI );
 	uis.menusp = 0;
 
-	UI_SPPostgameMenu_Init();
-	UI_PushMenu( &postgameMenuInfo.menu );
+	Q3UI_SPPostgameMenu_Init();
+	Q3UI_PushMenu( &postgameMenuInfo.menu );
 
 	if ( playerGameRank == 1 ) {
 		Menu_SetCursorToItem( &postgameMenuInfo.menu, &postgameMenuInfo.item_next );
@@ -627,18 +627,18 @@ void UI_SPPostgameMenu_f( void ) {
 	Prepname( 2 );
 
 	if ( playerGameRank != 1 ) {
-		postgameMenuInfo.winnerSound = trap_S_RegisterSound( va( "sound/player/announce/%s_wins.wav", postgameMenuInfo.placeNames[0] ), qfalse );
-		trap_Cmd_ExecuteText( EXEC_APPEND, "music music/loss\n" );
+		postgameMenuInfo.winnerSound = UI_trap_S_RegisterSound( va( "sound/player/announce/%s_wins.wav", postgameMenuInfo.placeNames[0] ), qfalse );
+		UI_trap_Cmd_ExecuteText( EXEC_APPEND, "music music/loss\n" );
 	}
 	else {
-		postgameMenuInfo.winnerSound = trap_S_RegisterSound( "sound/player/announce/youwin.wav", qfalse );
-		trap_Cmd_ExecuteText( EXEC_APPEND, "music music/win\n" );
+		postgameMenuInfo.winnerSound = UI_trap_S_RegisterSound( "sound/player/announce/youwin.wav", qfalse );
+		UI_trap_Cmd_ExecuteText( EXEC_APPEND, "music music/win\n" );
 	}
 
 	postgameMenuInfo.phase = 1;
 
-	postgameMenuInfo.lastTier = UI_GetNumSPTiers();
-	if ( UI_GetSpecialArenaInfo( "final" ) ) {
+	postgameMenuInfo.lastTier = Q3UI_GetNumSPTiers();
+	if ( Q3UI_GetSpecialArenaInfo( "final" ) ) {
 		postgameMenuInfo.lastTier++;
 	}
 }

@@ -79,8 +79,8 @@ static void MainMenu_ExitAction( qboolean result ) {
 	if( !result ) {
 		return;
 	}
-	UI_PopMenu();
-	UI_CreditMenu();
+	Q3UI_PopMenu();
+	Q3UI_CreditMenu();
 }
 
 
@@ -97,36 +97,36 @@ void Main_MenuEvent (void* ptr, int event) {
 
 	switch( ((menucommon_s*)ptr)->id ) {
 	case ID_SINGLEPLAYER:
-		UI_SPLevelMenu();
+		Q3UI_SPLevelMenu();
 		break;
 
 	case ID_MULTIPLAYER:
-		UI_ArenaServersMenu();
+		Q3UI_ArenaServersMenu();
 		break;
 
 	case ID_SETUP:
-		UI_SetupMenu();
+		Q3UI_SetupMenu();
 		break;
 
 	case ID_DEMOS:
-		UI_DemosMenu();
+		Q3UI_DemosMenu();
 		break;
 
 	case ID_CINEMATICS:
-		UI_CinematicsMenu();
+		Q3UI_CinematicsMenu();
 		break;
 
 	case ID_MODS:
-		UI_ModsMenu();
+		Q3UI_ModsMenu();
 		break;
 
 	case ID_TEAMARENA:
-		trap_Cvar_Set( "fs_game", "missionpack");
-		trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart;" );
+		UI_trap_Cvar_Set( "fs_game", "missionpack");
+		UI_trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart;" );
 		break;
 
 	case ID_EXIT:
-		UI_ConfirmMenu( "EXIT GAME?", 0, MainMenu_ExitAction );
+		Q3UI_ConfirmMenu( "EXIT GAME?", 0, MainMenu_ExitAction );
 		break;
 	}
 }
@@ -138,13 +138,13 @@ MainMenu_Cache
 ===============
 */
 void MainMenu_Cache( void ) {
-	s_main.bannerModel = trap_R_RegisterModel( MAIN_BANNER_MODEL );
+	s_main.bannerModel = UI_trap_R_RegisterModel( MAIN_BANNER_MODEL );
 }
 
 sfxHandle_t ErrorMessage_Key(int key)
 {
-	trap_Cvar_Set( "com_errorMessage", "" );
-	UI_MainMenu();
+	UI_trap_Cvar_Set( "com_errorMessage", "" );
+	Q3UI_MainMenu();
 	return (menu_null_sound);
 }
 
@@ -176,7 +176,7 @@ static void Main_MenuDraw( void ) {
 	y = 0;
 	w = 640;
 	h = 120;
-	UI_AdjustFrom640( &x, &y, &w, &h );
+	Q3UI_AdjustFrom640( &x, &y, &w, &h );
 	refdef.x = x;
 	refdef.y = y;
 	refdef.width = w;
@@ -192,7 +192,7 @@ static void Main_MenuDraw( void ) {
 	origin[1] = 0;
 	origin[2] = -32;
 
-	trap_R_ClearScene();
+	UI_trap_R_ClearScene();
 
 	// add the model
 
@@ -207,13 +207,13 @@ static void Main_MenuDraw( void ) {
 	ent.renderfx = RF_LIGHTING_ORIGIN | RF_NOSHADOW;
 	VectorCopy( ent.origin, ent.oldorigin );
 
-	trap_R_AddRefEntityToScene( &ent );
+	UI_trap_R_AddRefEntityToScene( &ent );
 
-	trap_R_RenderScene( &refdef );
+	UI_trap_R_RenderScene( &refdef );
 	
 	if (strlen(s_errorMessage.errorMessage))
 	{
-		UI_DrawProportionalString_AutoWrapped( 320, 192, 600, 20, s_errorMessage.errorMessage, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color );
+		Q3UI_DrawProportionalString_AutoWrapped( 320, 192, 600, 20, s_errorMessage.errorMessage, UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color );
 	}
 	else
 	{
@@ -222,20 +222,20 @@ static void Main_MenuDraw( void ) {
 	}
 
 	if (uis.demoversion) {
-		UI_DrawProportionalString( 320, 372, "DEMO      FOR MATURE AUDIENCES      DEMO", UI_CENTER|UI_SMALLFONT, color );
-		UI_DrawString( 320, 400, "Quake III Arena(c) 1999-2000, Id Software, Inc.  All Rights Reserved", UI_CENTER|UI_SMALLFONT, color );
+		Q3UI_DrawProportionalString( 320, 372, "DEMO      FOR MATURE AUDIENCES      DEMO", UI_CENTER|UI_SMALLFONT, color );
+		Q3UI_DrawString( 320, 400, "Quake III Arena(c) 1999-2000, Id Software, Inc.  All Rights Reserved", UI_CENTER|UI_SMALLFONT, color );
 	} else {
-		UI_DrawString( 320, 450, "Quake III Arena(c) 1999-2000, Id Software, Inc.  All Rights Reserved", UI_CENTER|UI_SMALLFONT, color );
+		Q3UI_DrawString( 320, 450, "Quake III Arena(c) 1999-2000, Id Software, Inc.  All Rights Reserved", UI_CENTER|UI_SMALLFONT, color );
 	}
 }
 
 
 /*
 ===============
-UI_TeamArenaExists
+Q3UI_TeamArenaExists
 ===============
 */
-static qboolean UI_TeamArenaExists( void ) {
+static qboolean Q3UI_TeamArenaExists( void ) {
 	int		numdirs;
 	char	dirlist[2048];
 	char	*dirptr;
@@ -243,7 +243,7 @@ static qboolean UI_TeamArenaExists( void ) {
 	int		i;
 	int		dirlen;
 
-	numdirs = trap_FS_GetFileList( "$modlist", "", dirlist, sizeof(dirlist) );
+	numdirs = UI_trap_FS_GetFileList( "$modlist", "", dirlist, sizeof(dirlist) );
 	dirptr  = dirlist;
 	for( i = 0; i < numdirs; i++ ) {
 		dirlen = strlen( dirptr ) + 1;
@@ -259,26 +259,26 @@ static qboolean UI_TeamArenaExists( void ) {
 
 /*
 ===============
-UI_MainMenu
+Q3UI_MainMenu
 
 The main menu only comes up when not in a game,
 so make sure that the attract loop server is down
 and that local cinematics are killed
 ===============
 */
-void UI_MainMenu( void ) {
+void Q3UI_MainMenu( void ) {
 	int		y;
 	qboolean teamArena = qfalse;
 	int		style = UI_CENTER | UI_DROPSHADOW;
 
-	trap_Cvar_Set( "sv_killserver", "1" );
+	UI_trap_Cvar_Set( "sv_killserver", "1" );
 
 	if( !uis.demoversion && !ui_cdkeychecked.integer ) {
 		char	key[17];
 
-		trap_GetCDKey( key, sizeof(key) );
-		if( trap_VerifyCDKey( key, NULL ) == qfalse ) {
-			UI_CDKeyMenu();
+		UI_trap_GetCDKey( key, sizeof(key) );
+		if( UI_trap_VerifyCDKey( key, NULL ) == qfalse ) {
+			Q3UI_CDKeyMenu();
 			return;
 		}
 	}
@@ -289,7 +289,7 @@ void UI_MainMenu( void ) {
 	// com_errorMessage would need that too
 	MainMenu_Cache();
 	
-	trap_Cvar_VariableStringBuffer( "com_errorMessage", s_errorMessage.errorMessage, sizeof(s_errorMessage.errorMessage) );
+	UI_trap_Cvar_VariableStringBuffer( "com_errorMessage", s_errorMessage.errorMessage, sizeof(s_errorMessage.errorMessage) );
 	if (strlen(s_errorMessage.errorMessage))
 	{	
 		s_errorMessage.menu.draw = Main_MenuDraw;
@@ -298,9 +298,9 @@ void UI_MainMenu( void ) {
 		s_errorMessage.menu.wrapAround = qtrue;
 		s_errorMessage.menu.showlogo = qtrue;		
 
-		trap_Key_SetCatcher( KEYCATCH_UI );
+		UI_trap_Key_SetCatcher( KEYCATCH_UI );
 		uis.menusp = 0;
-		UI_PushMenu ( &s_errorMessage.menu );
+		Q3UI_PushMenu ( &s_errorMessage.menu );
 		
 		return;
 	}
@@ -365,7 +365,7 @@ void UI_MainMenu( void ) {
 	s_main.cinematics.color					= color_red;
 	s_main.cinematics.style					= style;
 
-	if (UI_TeamArenaExists()) {
+	if (Q3UI_TeamArenaExists()) {
 		teamArena = qtrue;
 		y += MAIN_MENU_VERTICAL_SPACING;
 		s_main.teamArena.generic.type			= MTYPE_PTEXT;
@@ -412,8 +412,8 @@ void UI_MainMenu( void ) {
 	Menu_AddItem( &s_main.menu,	&s_main.mods );
 	Menu_AddItem( &s_main.menu,	&s_main.exit );             
 
-	trap_Key_SetCatcher( KEYCATCH_UI );
+	UI_trap_Key_SetCatcher( KEYCATCH_UI );
 	uis.menusp = 0;
-	UI_PushMenu ( &s_main.menu );
+	Q3UI_PushMenu ( &s_main.menu );
 		
 }

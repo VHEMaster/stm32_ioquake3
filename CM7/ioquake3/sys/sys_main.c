@@ -31,6 +31,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <ctype.h>
 #include <errno.h>
 
+//TODO WHOLE FIL
+
 #ifndef VCMODS_NOSDL
 #ifndef DEDICATED
 #ifdef USE_LOCAL_HEADERS
@@ -49,8 +51,22 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 
+#include "ui_public.h"
+#include "g_public.h"
+#include "cg_public.h"
+
 static char binaryPath[ MAX_OSPATH ] = { 0 };
 static char installPath[ MAX_OSPATH ] = { 0 };
+static int mymain( int argc, char **argv );
+
+typedef enum
+{
+  MOD_INVALID = 0,
+  MOD_UI,
+  MOD_QAGAME,
+  MOD_CGAME
+
+} eModuleHandle;
 
 /*
 =================
@@ -84,19 +100,6 @@ void Sys_SetDefaultInstallPath(const char *path)
 
 /*
 =================
-Sys_DefaultInstallPath
-=================
-*/
-char *Sys_DefaultInstallPath(void)
-{
-	if (*installPath)
-		return installPath;
-	else
-		return Sys_Cwd();
-}
-
-/*
-=================
 Sys_DefaultAppPath
 =================
 */
@@ -105,6 +108,18 @@ char *Sys_DefaultAppPath(void)
 	return Sys_BinaryPath();
 }
 
+/*
+=================
+Sys_DefaultInstallPath
+=================
+*/
+char *Sys_DefaultInstallPath(void)
+{
+  if (*installPath)
+    return installPath;
+  else
+    return "";
+}
 /*
 =================
 Sys_In_Restart_f
@@ -126,7 +141,9 @@ Handle new console input
 */
 char *Sys_ConsoleInput(void)
 {
-	return CON_Input( );
+  //TODO console input
+	//return CON_Input( );
+  return 0;
 }
 
 /*
@@ -138,7 +155,7 @@ Single exit point (regular exit or in case of error)
 */
 void Sys_Exit( int ex )
 {
-	CON_Shutdown( );
+	//CON_Shutdown( );
 
 #ifndef DEDICATED
 #ifndef VCMODS_NOSDL
@@ -179,9 +196,7 @@ cpuFeatures_t Sys_GetProcessorFeatures( void )
 #ifndef VCMODS_NOSDL
    if( SDL_HasRDTSC( ) )    features |= CF_RDTSC;
 	if( SDL_HasMMX( ) )      features |= CF_MMX;
-	if( SDL_HasMMXExt( ) )   features |= CF_MMX_EXT;
 	if( SDL_Has3DNow( ) )    features |= CF_3DNOW;
-	if( SDL_Has3DNowExt( ) ) features |= CF_3DNOW_EXT;
 	if( SDL_HasSSE( ) )      features |= CF_SSE;
 	if( SDL_HasSSE2( ) )     features |= CF_SSE2;
 	if( SDL_HasAltiVec( ) )  features |= CF_ALTIVEC;
@@ -284,7 +299,7 @@ void Sys_Print( const char *msg )
 #endif
 
 	CON_LogWrite( msg );
-	CON_Print( msg );
+	//CON_Print( msg );
 }
 
 /*
@@ -354,36 +369,6 @@ void Sys_UnloadDll( void *dllHandle )
 		Com_Printf("Sys_UnloadDll(NULL)\n");
 		return;
 	}
-
-	Sys_UnloadLibrary(dllHandle);
-}
-
-/*
-=================
-Sys_TryLibraryLoad
-=================
-*/
-static void* Sys_TryLibraryLoad(const char* base, const char* gamedir, const char* fname, char* fqpath )
-{
-	void* libHandle;
-	char* fn;
-
-	*fqpath = 0;
-
-	fn = FS_BuildOSPath( base, gamedir, fname );
-	Com_Printf( "Sys_LoadDll(%s)... \n", fn );
-
-	libHandle = Sys_LoadLibrary(fn);
-
-	if(!libHandle) {
-		Com_Printf( "Sys_LoadDll(%s) failed:\n\"%s\"\n", fn, Sys_LibraryError() );
-		return NULL;
-	}
-
-	Com_Printf ( "Sys_LoadDll(%s): succeeded ...\n", fn );
-	Q_strncpyz ( fqpath , fn , MAX_QPATH ) ;
-
-	return libHandle;
 }
 
 /*
@@ -396,16 +381,16 @@ Used to load a development dll instead of a virtual machine
 #3 look in fs_basepath
 =================
 */
+
 void *Sys_LoadDll( const char *name, char *fqpath ,
 	intptr_t (**entryPoint)(int, ...),
 	intptr_t (*systemcalls)(intptr_t, ...) )
 {
-	void  *libHandle;
+	void  *libHandle = NULL;
 	void  (*dllEntry)( intptr_t (*syscallptr)(intptr_t, ...) );
 	char  fname[MAX_OSPATH];
 	char  *basepath;
 	char  *homepath;
-	char  *pwdpath;
 	char  *gamedir;
 
 	assert( name );
@@ -413,32 +398,33 @@ void *Sys_LoadDll( const char *name, char *fqpath ,
 	Q_snprintf (fname, sizeof(fname), "%s" ARCH_STRING DLL_EXT, name);
 
 	// TODO: use fs_searchpaths from files.c
-	pwdpath = Sys_Cwd();
 	basepath = Cvar_VariableString( "fs_basepath" );
 	homepath = Cvar_VariableString( "fs_homepath" );
 	gamedir = Cvar_VariableString( "fs_game" );
 
-	libHandle = Sys_TryLibraryLoad(pwdpath, gamedir, fname, fqpath);
 
-	if(!libHandle && homepath)
-		libHandle = Sys_TryLibraryLoad(homepath, gamedir, fname, fqpath);
+  if(strcmp(name, "cgame") == 0)
+  {
+    libHandle = (void*)MOD_CGAME;
+    dllEntry = CG_dllEntry;
+    *entryPoint = (intptr_t (*)(int, ...))CG_vmMain;
+  }
+  else if(strcmp(name, "qagame") == 0)
+  {
+    libHandle = (void*)MOD_QAGAME;
+    dllEntry = G_dllEntry;
+    *entryPoint = (intptr_t (*)(int, ...))G_vmMain;
+  }
+  else if(strcmp(name, "ui") == 0)
+  {
+    libHandle = (void*)MOD_UI;
+    dllEntry = UI_dllEntry;
+    //*entryPoint = (intptr_t (*)(int, ...))UI_vmMain;
+    *entryPoint = (intptr_t (*)(int, ...))Q3UI_vmMain;
+  }
 
-	if(!libHandle && basepath)
-		libHandle = Sys_TryLibraryLoad(basepath, gamedir, fname, fqpath);
-
-	if(!libHandle) {
+	if(libHandle == NULL) {
 		Com_Printf ( "Sys_LoadDll(%s) failed to load library\n", name );
-		return NULL;
-	}
-
-	dllEntry = Sys_LoadFunction( libHandle, "dllEntry" );
-	*entryPoint = Sys_LoadFunction( libHandle, "vmMain" );
-
-	if ( !*entryPoint || !dllEntry )
-	{
-		Com_Printf ( "Sys_LoadDll(%s) failed to find vmMain function:\n\"%s\" !\n", name, Sys_LibraryError( ) );
-		Sys_UnloadLibrary(libHandle);
-
 		return NULL;
 	}
 
@@ -462,9 +448,9 @@ void Sys_ParseArgs( int argc, char **argv )
 		{
 			const char* date = __DATE__;
 #ifdef DEDICATED
-			fprintf( stdout, Q3_VERSION " dedicated server (%s)\n", date );
+			printf( Q3_VERSION " dedicated server (%s)\n", date );
 #else
-			fprintf( stdout, Q3_VERSION " client (%s)\n", date );
+			printf( Q3_VERSION " client (%s)\n", date );
 #endif
 			Sys_Exit(0);
 		}
@@ -490,13 +476,13 @@ void Sys_SigHandler( int signal )
 
 	if( signalcaught )
 	{
-		fprintf( stderr, "DOUBLE SIGNAL FAULT: Received signal %d, exiting...\n",
+		printf( "DOUBLE SIGNAL FAULT: Received signal %d, exiting...\n",
 			signal );
 	}
 	else
 	{
 		signalcaught = qtrue;
-		fprintf( stderr, "Received signal %d, exiting...\n", signal );
+		printf("Received signal %d, exiting...\n", signal );
 #ifndef DEDICATED
 		CL_Shutdown();
 #endif
@@ -511,8 +497,8 @@ void Sys_SigAction(int sig, siginfo_t *info, void *v)
 {
 	ucontext_t *uc = (ucontext_t *)v;
 
-	fprintf(stderr, "arm_pc = 0x%08x\n", uc->uc_mcontext.arm_pc);
-	fprintf(stderr, "arm_lr = 0x%08x\n", uc->uc_mcontext.arm_lr);
+	f_printf(stderr, "arm_pc = 0x%08x\n", uc->uc_mcontext.arm_pc);
+	f_printf(stderr, "arm_lr = 0x%08x\n", uc->uc_mcontext.arm_lr);
 
 	Sys_SigHandler(sig);
 }
@@ -524,9 +510,10 @@ main
 =================
 */
 
-int main( int argc, char **argv )
+int Q3_main( int argc, char **argv )
 {
-   bcm_host_init();
+   //Used on RPI???
+   //bcm_host_init();
    return mymain(argc, argv);
 }
 
@@ -570,7 +557,7 @@ int mymain( int argc, char **argv )
 	Sys_Milliseconds( );
 
 	Sys_ParseArgs( argc, argv );
-	Sys_SetBinaryPath( Sys_Dirname( argv[ 0 ] ) );
+  Sys_SetBinaryPath(argv[0]);
 	Sys_SetDefaultInstallPath( DEFAULT_BASEDIR );
 
 	// Concatenate the command line for passing to Com_Init
@@ -583,7 +570,7 @@ int mymain( int argc, char **argv )
 	Com_Init( commandLine );
 	NET_Init( );
 
-	CON_Init( );
+	//CON_Init( );
 
 	signal( SIGILL, Sys_SigHandler );
 	signal( SIGFPE, Sys_SigHandler );

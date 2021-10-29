@@ -82,7 +82,7 @@ static void SpecifyServer_Event( void* ptr, int event )
 				if (s_specifyserver.port.field.buffer[0])
 					Com_sprintf( buff+strlen(buff), 128, ":%s", s_specifyserver.port.field.buffer );
 
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect %s\n", buff ) );
+				UI_trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect %s\n", buff ) );
 			}
 			break;
 
@@ -90,7 +90,7 @@ static void SpecifyServer_Event( void* ptr, int event )
 			if (event != QM_ACTIVATED)
 				break;
 
-			UI_PopMenu();
+			Q3UI_PopMenu();
 			break;
 	}
 }
@@ -196,18 +196,18 @@ void SpecifyServer_Cache( void )
 	{
 		if (!specifyserver_artlist[i])
 			break;
-		trap_R_RegisterShaderNoMip(specifyserver_artlist[i]);
+		UI_trap_R_RegisterShaderNoMip(specifyserver_artlist[i]);
 	}
 }
 
 /*
 =================
-UI_SpecifyServerMenu
+Q3UI_SpecifyServerMenu
 =================
 */
-void UI_SpecifyServerMenu( void )
+void Q3UI_SpecifyServerMenu( void )
 {
 	SpecifyServer_MenuInit();
-	UI_PushMenu( &s_specifyserver.menu );
+	Q3UI_PushMenu( &s_specifyserver.menu );
 }
 

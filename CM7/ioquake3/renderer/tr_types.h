@@ -138,7 +138,8 @@ typedef struct {
 typedef enum {
 	STEREO_CENTER,
 	STEREO_LEFT,
-	STEREO_RIGHT
+	STEREO_RIGHT,
+  STEREO_32bit = INT_MAX
 } stereoFrame_t;
 
 
@@ -152,7 +153,8 @@ typedef enum {
 typedef enum {
 	TC_NONE,
 	TC_S3TC,  // this is for the GL_S3_s3tc extension.
-	TC_S3TC_ARB  // this is for the GL_EXT_texture_compression_s3tc extension.
+	TC_S3TC_ARB,  // this is for the GL_EXT_texture_compression_s3tc extension.
+  TC_32bit = INT_MAX
 } textureCompression_t;
 
 typedef enum {
@@ -162,7 +164,8 @@ typedef enum {
 								// should always be the lowest value in this
 								// enum set
 	GLDRV_STANDALONE,			// driver is a non-3Dfx standalone driver
-	GLDRV_VOODOO				// driver is a 3Dfx standalone driver
+	GLDRV_VOODOO,				// driver is a 3Dfx standalone driver
+	GLDRV32bit = INT_MAX
 } glDriverType_t;
 
 typedef enum {
@@ -172,7 +175,8 @@ typedef enum {
 							// display adapter
 	GLHW_RIVA128,			// where you can't interpolate alpha
 	GLHW_RAGEPRO,			// where you can't modulate alpha on alpha textures
-	GLHW_PERMEDIA2			// where you don't have src*dst
+	GLHW_PERMEDIA2,			// where you don't have src*dst
+  GLHW32bit = INT_MAX
 } glHardwareType_t;
 
 typedef struct {

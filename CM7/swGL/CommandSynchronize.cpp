@@ -1,7 +1,7 @@
-﻿#include "DrawThread.h"
-#include "CountDownLatch.h"
-#include "CommandSynchronize.h"
+﻿#include "CommandSynchronize.hpp"
 
+#include "CountDownLatch.hpp"
+#include "DrawThread.hpp"
 namespace SWGL {
 
     //

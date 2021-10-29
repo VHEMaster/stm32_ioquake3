@@ -83,9 +83,9 @@ void SND_setup(void) {
 
 	scs = (cv->integer*1536);
 
-	buffer = malloc(scs*sizeof(sndBuffer) );
+	buffer = pvPortMalloc(scs*sizeof(sndBuffer) );
 	// allocate the stack based hunk allocator
-	sfxScratchBuffer = malloc(SND_CHUNK_SIZE * sizeof(short) * 4);	//Hunk_Alloc(SND_CHUNK_SIZE * sizeof(short) * 4);
+	sfxScratchBuffer = pvPortMalloc(SND_CHUNK_SIZE * sizeof(short) * 4);	//Hunk_Alloc(SND_CHUNK_SIZE * sizeof(short) * 4);
 	sfxScratchPointer = NULL;
 
 	inUse = scs*sizeof(sndBuffer);

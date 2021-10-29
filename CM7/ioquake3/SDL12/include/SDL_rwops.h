@@ -71,7 +71,7 @@ typedef struct SDL_RWops {
 #ifdef HAVE_STDIO_H 
 	    struct {
 		int autoclose;
-	 	FILE *fp;
+	 	FIL *fp;
 	    } stdio;
 #endif
 	    struct {
@@ -92,7 +92,7 @@ typedef struct SDL_RWops {
 extern DECLSPEC SDL_RWops * SDLCALL SDL_RWFromFile(const char *file, const char *mode);
 
 #ifdef HAVE_STDIO_H
-extern DECLSPEC SDL_RWops * SDLCALL SDL_RWFromFP(FILE *fp, int autoclose);
+extern DECLSPEC SDL_RWops * SDLCALL SDL_RWFromFP(FIL *fp, int autoclose);
 #endif
 
 extern DECLSPEC SDL_RWops * SDLCALL SDL_RWFromMem(void *mem, int size);

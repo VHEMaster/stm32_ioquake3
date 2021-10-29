@@ -1,9 +1,10 @@
-﻿#include <cmath>
+﻿#include "Matrix.hpp"
+
+#include <cmath>
 #include <memory>
 #include <algorithm>
-#include "Vector.h"
-#include "Matrix.h"
 
+#include "Vector.hpp"
 namespace SWGL {
 
     Matrix::Matrix(float m00, float m01, float m02, float m03,

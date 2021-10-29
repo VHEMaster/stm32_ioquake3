@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define _QCOMMON_H_
 
 #include "../qcommon/cm_public.h"
+#include "../qcommon/q_shared.h"
+#include "cmsis_os.h"
 
 //Ignore __attribute__ on non-gcc platforms
 #ifndef __GNUC__
@@ -33,6 +35,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 
 //#define	PRE_RELEASE_DEMO
+
 
 //============================================================================
 
@@ -174,8 +177,6 @@ const char	*NET_AdrToString (netadr_t a);
 const char      *NET_AdrToStringwPort (netadr_t a);
 int		NET_StringToAdr ( const char *s, netadr_t *a, netadrtype_t family);
 qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, msg_t *net_message);
-void		NET_JoinMulticast6(void);
-void		NET_LeaveMulticast6(void);
 void		NET_Sleep(int msec);
 
 
@@ -608,9 +609,9 @@ fileHandle_t FS_SV_FOpenFileWrite( const char *filename );
 int		FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp );
 void	FS_SV_Rename( const char *from, const char *to );
 int		FS_FOpenFileRead( const char *qpath, fileHandle_t *file, qboolean uniqueFILE );
-// if uniqueFILE is true, then a new FILE will be fopened even if the file
+// if uniqueFILE is true, then a new FIL will be fopened even if the file
 // is found in an already open pak file.  If uniqueFILE is false, you must call
-// FS_FCloseFile instead of fclose, otherwise the pak FILE would be improperly closed
+// FS_FCloseFile instead of fclose, otherwise the pak FIL would be improperly closed
 // It is generally safe to always set uniqueFILE to true, because the majority of
 // file IO goes through FS_ReadFile, which Does The Right Thing already.
 
@@ -652,7 +653,7 @@ int		FS_FTell( fileHandle_t f );
 void	FS_Flush( fileHandle_t f );
 
 void 	QDECL FS_Printf( fileHandle_t f, const char *fmt, ... ) __attribute__ ((format (printf, 2, 3)));
-// like fprintf
+// like f_printf
 
 int		FS_FOpenFileByMode( const char *qpath, fileHandle_t *f, fsMode_t mode );
 // opens a file for reading, writing, or appending depending on the value of mode

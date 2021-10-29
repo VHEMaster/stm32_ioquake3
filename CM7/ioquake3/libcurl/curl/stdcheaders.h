@@ -24,9 +24,10 @@
  ***************************************************************************/
 
 #include <sys/types.h>
+#include "fatfs.h"
 
-size_t fread (void *, size_t, size_t, FILE *);
-size_t fwrite (const void *, size_t, size_t, FILE *);
+//size_t fread (void *, size_t, size_t, FIL *);
+//size_t fwrite (const void *, size_t, size_t, FIL *);
 
 int strcasecmp(const char *, const char *);
 int strncasecmp(const char *, const char *, size_t);

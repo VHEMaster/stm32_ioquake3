@@ -1,6 +1,6 @@
-﻿#include "DrawThread.h"
-#include "CommandClearDepth.h"
+﻿#include "CommandClearDepth.hpp"
 
+#include "DrawThread.hpp"
 namespace SWGL {
 
     bool CommandClearDepth::execute(DrawThread *thread) {

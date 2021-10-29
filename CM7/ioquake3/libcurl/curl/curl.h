@@ -462,8 +462,8 @@ typedef enum {
  */
 
 typedef enum {
-  /* This is the FILE * or void * the regular output should be written to. */
-  CINIT(FILE, OBJECTPOINT, 1),
+  /* This is the FIL * or void * the regular output should be written to. */
+  CINIT(FIL, OBJECTPOINT, 1),
 
   /* The full URL to get/put */
   CINIT(URL,  OBJECTPOINT, 2),
@@ -570,7 +570,7 @@ typedef enum {
   /* send linked-list of QUOTE commands */
   CINIT(QUOTE, OBJECTPOINT, 28),
 
-  /* send FILE * or void * to store headers to, if you use a callback it
+  /* send FIL * or void * to store headers to, if you use a callback it
      is simply passed to the callback unmodified */
   CINIT(WRITEHEADER, OBJECTPOINT, 29),
 
@@ -1096,7 +1096,7 @@ typedef enum {
   CFINIT(FILECONTENT),
   CFINIT(ARRAY),
   CFINIT(OBSOLETE),
-  CFINIT(FILE),
+  CFINIT(FIL),
 
   CFINIT(BUFFER),
   CFINIT(BUFFERPTR),

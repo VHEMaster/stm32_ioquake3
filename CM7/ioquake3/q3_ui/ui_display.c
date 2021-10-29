@@ -68,43 +68,43 @@ static displayOptionsInfo_t	displayOptionsInfo;
 
 /*
 =================
-UI_DisplayOptionsMenu_Event
+Q3UI_DisplayOptionsMenu_Event
 =================
 */
-static void UI_DisplayOptionsMenu_Event( void* ptr, int event ) {
+static void Q3UI_DisplayOptionsMenu_Event( void* ptr, int event ) {
 	if( event != QM_ACTIVATED ) {
 		return;
 	}
 
 	switch( ((menucommon_s*)ptr)->id ) {
 	case ID_GRAPHICS:
-		UI_PopMenu();
-		UI_GraphicsOptionsMenu();
+		Q3UI_PopMenu();
+		Q3UI_GraphicsOptionsMenu();
 		break;
 
 	case ID_DISPLAY:
 		break;
 
 	case ID_SOUND:
-		UI_PopMenu();
-		UI_SoundOptionsMenu();
+		Q3UI_PopMenu();
+		Q3UI_SoundOptionsMenu();
 		break;
 
 	case ID_NETWORK:
-		UI_PopMenu();
-		UI_NetworkOptionsMenu();
+		Q3UI_PopMenu();
+		Q3UI_NetworkOptionsMenu();
 		break;
 
 	case ID_BRIGHTNESS:
-		trap_Cvar_SetValue( "r_gamma", displayOptionsInfo.brightness.curvalue / 10.0f );
+		UI_trap_Cvar_SetValue( "r_gamma", displayOptionsInfo.brightness.curvalue / 10.0f );
 		break;
 	
 	case ID_SCREENSIZE:
-		trap_Cvar_SetValue( "cg_viewsize", displayOptionsInfo.screensize.curvalue * 10 );
+		UI_trap_Cvar_SetValue( "cg_viewsize", displayOptionsInfo.screensize.curvalue * 10 );
 		break;
 
 	case ID_BACK:
-		UI_PopMenu();
+		Q3UI_PopMenu();
 		break;
 	}
 }
@@ -112,15 +112,15 @@ static void UI_DisplayOptionsMenu_Event( void* ptr, int event ) {
 
 /*
 ===============
-UI_DisplayOptionsMenu_Init
+Q3UI_DisplayOptionsMenu_Init
 ===============
 */
-static void UI_DisplayOptionsMenu_Init( void ) {
+static void Q3UI_DisplayOptionsMenu_Init( void ) {
 	int		y;
 
 	memset( &displayOptionsInfo, 0, sizeof(displayOptionsInfo) );
 
-	UI_DisplayOptionsMenu_Cache();
+	Q3UI_DisplayOptionsMenu_Cache();
 	displayOptionsInfo.menu.wrapAround = qtrue;
 	displayOptionsInfo.menu.fullscreen = qtrue;
 
@@ -151,7 +151,7 @@ static void UI_DisplayOptionsMenu_Init( void ) {
 	displayOptionsInfo.graphics.generic.type		= MTYPE_PTEXT;
 	displayOptionsInfo.graphics.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	displayOptionsInfo.graphics.generic.id			= ID_GRAPHICS;
-	displayOptionsInfo.graphics.generic.callback	= UI_DisplayOptionsMenu_Event;
+	displayOptionsInfo.graphics.generic.callback	= Q3UI_DisplayOptionsMenu_Event;
 	displayOptionsInfo.graphics.generic.x			= 216;
 	displayOptionsInfo.graphics.generic.y			= 240 - 2 * PROP_HEIGHT;
 	displayOptionsInfo.graphics.string				= "GRAPHICS";
@@ -161,7 +161,7 @@ static void UI_DisplayOptionsMenu_Init( void ) {
 	displayOptionsInfo.display.generic.type			= MTYPE_PTEXT;
 	displayOptionsInfo.display.generic.flags		= QMF_RIGHT_JUSTIFY;
 	displayOptionsInfo.display.generic.id			= ID_DISPLAY;
-	displayOptionsInfo.display.generic.callback		= UI_DisplayOptionsMenu_Event;
+	displayOptionsInfo.display.generic.callback		= Q3UI_DisplayOptionsMenu_Event;
 	displayOptionsInfo.display.generic.x			= 216;
 	displayOptionsInfo.display.generic.y			= 240 - PROP_HEIGHT;
 	displayOptionsInfo.display.string				= "DISPLAY";
@@ -171,7 +171,7 @@ static void UI_DisplayOptionsMenu_Init( void ) {
 	displayOptionsInfo.sound.generic.type			= MTYPE_PTEXT;
 	displayOptionsInfo.sound.generic.flags			= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	displayOptionsInfo.sound.generic.id				= ID_SOUND;
-	displayOptionsInfo.sound.generic.callback		= UI_DisplayOptionsMenu_Event;
+	displayOptionsInfo.sound.generic.callback		= Q3UI_DisplayOptionsMenu_Event;
 	displayOptionsInfo.sound.generic.x				= 216;
 	displayOptionsInfo.sound.generic.y				= 240;
 	displayOptionsInfo.sound.string					= "SOUND";
@@ -181,7 +181,7 @@ static void UI_DisplayOptionsMenu_Init( void ) {
 	displayOptionsInfo.network.generic.type			= MTYPE_PTEXT;
 	displayOptionsInfo.network.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	displayOptionsInfo.network.generic.id			= ID_NETWORK;
-	displayOptionsInfo.network.generic.callback		= UI_DisplayOptionsMenu_Event;
+	displayOptionsInfo.network.generic.callback		= Q3UI_DisplayOptionsMenu_Event;
 	displayOptionsInfo.network.generic.x			= 216;
 	displayOptionsInfo.network.generic.y			= 240 + PROP_HEIGHT;
 	displayOptionsInfo.network.string				= "NETWORK";
@@ -192,7 +192,7 @@ static void UI_DisplayOptionsMenu_Init( void ) {
 	displayOptionsInfo.brightness.generic.type		= MTYPE_SLIDER;
 	displayOptionsInfo.brightness.generic.name		= "Brightness:";
 	displayOptionsInfo.brightness.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	displayOptionsInfo.brightness.generic.callback	= UI_DisplayOptionsMenu_Event;
+	displayOptionsInfo.brightness.generic.callback	= Q3UI_DisplayOptionsMenu_Event;
 	displayOptionsInfo.brightness.generic.id		= ID_BRIGHTNESS;
 	displayOptionsInfo.brightness.generic.x			= 400;
 	displayOptionsInfo.brightness.generic.y			= y;
@@ -206,7 +206,7 @@ static void UI_DisplayOptionsMenu_Init( void ) {
 	displayOptionsInfo.screensize.generic.type		= MTYPE_SLIDER;
 	displayOptionsInfo.screensize.generic.name		= "Screen Size:";
 	displayOptionsInfo.screensize.generic.flags		= QMF_PULSEIFFOCUS|QMF_SMALLFONT;
-	displayOptionsInfo.screensize.generic.callback	= UI_DisplayOptionsMenu_Event;
+	displayOptionsInfo.screensize.generic.callback	= Q3UI_DisplayOptionsMenu_Event;
 	displayOptionsInfo.screensize.generic.id		= ID_SCREENSIZE;
 	displayOptionsInfo.screensize.generic.x			= 400;
 	displayOptionsInfo.screensize.generic.y			= y;
@@ -216,7 +216,7 @@ static void UI_DisplayOptionsMenu_Init( void ) {
 	displayOptionsInfo.back.generic.type		= MTYPE_BITMAP;
 	displayOptionsInfo.back.generic.name		= ART_BACK0;
 	displayOptionsInfo.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
-	displayOptionsInfo.back.generic.callback	= UI_DisplayOptionsMenu_Event;
+	displayOptionsInfo.back.generic.callback	= Q3UI_DisplayOptionsMenu_Event;
 	displayOptionsInfo.back.generic.id			= ID_BACK;
 	displayOptionsInfo.back.generic.x			= 0;
 	displayOptionsInfo.back.generic.y			= 480-64;
@@ -235,31 +235,31 @@ static void UI_DisplayOptionsMenu_Init( void ) {
 	Menu_AddItem( &displayOptionsInfo.menu, ( void * ) &displayOptionsInfo.screensize );
 	Menu_AddItem( &displayOptionsInfo.menu, ( void * ) &displayOptionsInfo.back );
 
-	displayOptionsInfo.brightness.curvalue  = trap_Cvar_VariableValue("r_gamma") * 10;
-	displayOptionsInfo.screensize.curvalue  = trap_Cvar_VariableValue( "cg_viewsize")/10;
+	displayOptionsInfo.brightness.curvalue  = UI_trap_Cvar_VariableValue("r_gamma") * 10;
+	displayOptionsInfo.screensize.curvalue  = UI_trap_Cvar_VariableValue( "cg_viewsize")/10;
 }
 
 
 /*
 ===============
-UI_DisplayOptionsMenu_Cache
+Q3UI_DisplayOptionsMenu_Cache
 ===============
 */
-void UI_DisplayOptionsMenu_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_FRAMEL );
-	trap_R_RegisterShaderNoMip( ART_FRAMER );
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
+void Q3UI_DisplayOptionsMenu_Cache( void ) {
+	UI_trap_R_RegisterShaderNoMip( ART_FRAMEL );
+	UI_trap_R_RegisterShaderNoMip( ART_FRAMER );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK0 );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK1 );
 }
 
 
 /*
 ===============
-UI_DisplayOptionsMenu
+Q3UI_DisplayOptionsMenu
 ===============
 */
-void UI_DisplayOptionsMenu( void ) {
-	UI_DisplayOptionsMenu_Init();
-	UI_PushMenu( &displayOptionsInfo.menu );
+void Q3UI_DisplayOptionsMenu( void ) {
+	Q3UI_DisplayOptionsMenu_Init();
+	Q3UI_PushMenu( &displayOptionsInfo.menu );
 	Menu_SetCursorToItem( &displayOptionsInfo.menu, &displayOptionsInfo.display );
 }

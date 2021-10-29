@@ -169,7 +169,7 @@ void CL_UpdateMumble(void)
 	up[2] = tmp;
 
 	if(cl_useMumble->integer > 1) {
-		fprintf(stderr, "%f %f %f, %f %f %f, %f %f %f\n",
+		f_printf(stderr, "%f %f %f, %f %f %f, %f %f %f\n",
 			pos[0], pos[1], pos[2],
 			forward[0], forward[1], forward[2],
 			up[0], up[1], up[2]);
@@ -404,10 +404,10 @@ void CL_CaptureVoip(void)
 				            speexFrames, wpos, clc.voipPower);
 
 				#if 0
-				static FILE *encio = NULL;
+				static FIL *encio = NULL;
 				if (encio == NULL) encio = fopen("voip-outgoing-encoded.bin", "wb");
 				if (encio != NULL) { fwrite(clc.voipOutgoingData, wpos, 1, encio); fflush(encio); }
-				static FILE *decio = NULL;
+				static FIL *decio = NULL;
 				if (decio == NULL) decio = fopen("voip-outgoing-decoded.bin", "wb");
 				if (decio != NULL) { fwrite(sampbuffer, speexFrames * clc.speexFrameSize * 2, 1, decio); fflush(decio); }
 				#endif

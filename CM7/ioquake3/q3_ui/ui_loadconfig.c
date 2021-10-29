@@ -88,12 +88,12 @@ static void LoadConfig_MenuEvent( void *ptr, int event ) {
 
 	switch ( ((menucommon_s*)ptr)->id ) {
 	case ID_GO:
-		trap_Cmd_ExecuteText( EXEC_APPEND, va( "exec %s\n", s_configs.list.itemnames[s_configs.list.curvalue] ) );
-		UI_PopMenu();
+		UI_trap_Cmd_ExecuteText( EXEC_APPEND, va( "exec %s\n", s_configs.list.itemnames[s_configs.list.curvalue] ) );
+		Q3UI_PopMenu();
 		break;
 
 	case ID_BACK:
-		UI_PopMenu();
+		Q3UI_PopMenu();
 		break;
 
 	case ID_LEFT:
@@ -117,7 +117,7 @@ static void LoadConfig_MenuInit( void ) {
 	int		len;
 	char	*configname;
 
-	UI_LoadConfig_Cache();
+	Q3UI_LoadConfig_Cache();
 
 	memset( &s_configs, 0 ,sizeof(configs_t) );
 	s_configs.menu.wrapAround = qtrue;
@@ -205,7 +205,7 @@ static void LoadConfig_MenuInit( void ) {
 	s_configs.list.generic.y		= 130;
 	s_configs.list.width			= 16;
 	s_configs.list.height			= 14;
-	s_configs.list.numitems			= trap_FS_GetFileList( "", "cfg", s_configs.names, NAMEBUFSIZE );
+	s_configs.list.numitems			= UI_trap_FS_GetFileList( "", "cfg", s_configs.names, NAMEBUFSIZE );
 	s_configs.list.itemnames		= (const char **)s_configs.configlist;
 	s_configs.list.columns			= 3;
 
@@ -246,29 +246,29 @@ static void LoadConfig_MenuInit( void ) {
 
 /*
 =================
-UI_LoadConfig_Cache
+Q3UI_LoadConfig_Cache
 =================
 */
-void UI_LoadConfig_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
-	trap_R_RegisterShaderNoMip( ART_FIGHT0 );
-	trap_R_RegisterShaderNoMip( ART_FIGHT1 );
-	trap_R_RegisterShaderNoMip( ART_FRAMEL );
-	trap_R_RegisterShaderNoMip( ART_FRAMER );
-	trap_R_RegisterShaderNoMip( ART_ARROWS );
-	trap_R_RegisterShaderNoMip( ART_ARROWLEFT );
-	trap_R_RegisterShaderNoMip( ART_ARROWRIGHT );
+void Q3UI_LoadConfig_Cache( void ) {
+	UI_trap_R_RegisterShaderNoMip( ART_BACK0 );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK1 );
+	UI_trap_R_RegisterShaderNoMip( ART_FIGHT0 );
+	UI_trap_R_RegisterShaderNoMip( ART_FIGHT1 );
+	UI_trap_R_RegisterShaderNoMip( ART_FRAMEL );
+	UI_trap_R_RegisterShaderNoMip( ART_FRAMER );
+	UI_trap_R_RegisterShaderNoMip( ART_ARROWS );
+	UI_trap_R_RegisterShaderNoMip( ART_ARROWLEFT );
+	UI_trap_R_RegisterShaderNoMip( ART_ARROWRIGHT );
 }
 
 
 /*
 ===============
-UI_LoadConfigMenu
+Q3UI_LoadConfigMenu
 ===============
 */
-void UI_LoadConfigMenu( void ) {
+void Q3UI_LoadConfigMenu( void ) {
 	LoadConfig_MenuInit();
-	UI_PushMenu( &s_configs.menu );
+	Q3UI_PushMenu( &s_configs.menu );
 }
 

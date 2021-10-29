@@ -288,7 +288,8 @@ void SV_Startup( void ) {
 	Cvar_Set( "sv_running", "1" );
 	
 	// Join the ipv6 multicast group now that a map is running so clients can scan for us on the local network.
-	NET_JoinMulticast6();
+	//TODO!! Check for scan with IPv4
+	//NET_JoinMulticast6();
 }
 
 
@@ -744,7 +745,7 @@ void SV_Shutdown( char *finalmsg ) {
 
 	Com_Printf( "----- Server Shutdown (%s) -----\n", finalmsg );
 
-	NET_LeaveMulticast6();
+	//NET_LeaveMulticast6();
 
 	if ( svs.clients && !com_errorEntered ) {
 		SV_FinalMessage( finalmsg );

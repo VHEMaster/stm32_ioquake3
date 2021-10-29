@@ -238,7 +238,7 @@ qboolean SNDDMA_Init(void)
 	dma.submission_chunk = 1;
 	dma.speed = obtained.freq;
 	dmasize = (dma.samples * (dma.samplebits/8));
-	dma.buffer = calloc(1, dmasize);
+	dma.buffer = pvPortMalloc(dmasize);
 
 	Com_Printf("Starting SDL audio callback...\n");
 	SDL_PauseAudio(0);  // start callback.
@@ -269,7 +269,7 @@ void SNDDMA_Shutdown(void)
 	SDL_PauseAudio(1);
 	SDL_CloseAudio();
 	SDL_QuitSubSystem(SDL_INIT_AUDIO);
-	free(dma.buffer);
+	vPortFree(dma.buffer);
 	dma.buffer = NULL;
 	dmapos = dmasize = 0;
 	snd_inited = qfalse;

@@ -79,9 +79,9 @@ static void Setup_ResetDefaults_Action( qboolean result ) {
 	if( !result ) {
 		return;
 	}
-	trap_Cmd_ExecuteText( EXEC_APPEND, "exec default.cfg\n");
-	trap_Cmd_ExecuteText( EXEC_APPEND, "cvar_restart\n");
-	trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart\n" );
+	UI_trap_Cmd_ExecuteText( EXEC_APPEND, "exec default.cfg\n");
+	UI_trap_Cmd_ExecuteText( EXEC_APPEND, "cvar_restart\n");
+	UI_trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart\n" );
 }
 
 
@@ -91,56 +91,56 @@ Setup_ResetDefaults_Draw
 =================
 */
 static void Setup_ResetDefaults_Draw( void ) {
-	UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 0, "WARNING: This will reset *ALL*", UI_CENTER|UI_SMALLFONT, color_yellow );
-	UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 1, "options to their default values.", UI_CENTER|UI_SMALLFONT, color_yellow );
+	Q3UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 0, "WARNING: This will reset *ALL*", UI_CENTER|UI_SMALLFONT, color_yellow );
+	Q3UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 1, "options to their default values.", UI_CENTER|UI_SMALLFONT, color_yellow );
 }
 
 
 /*
 ===============
-UI_SetupMenu_Event
+Q3UI_SetupMenu_Event
 ===============
 */
-static void UI_SetupMenu_Event( void *ptr, int event ) {
+static void Q3UI_SetupMenu_Event( void *ptr, int event ) {
 	if( event != QM_ACTIVATED ) {
 		return;
 	}
 
 	switch( ((menucommon_s*)ptr)->id ) {
 	case ID_CUSTOMIZEPLAYER:
-		UI_PlayerSettingsMenu();
+		Q3UI_PlayerSettingsMenu();
 		break;
 
 	case ID_CUSTOMIZECONTROLS:
-		UI_ControlsMenu();
+		Q3UI_ControlsMenu();
 		break;
 
 	case ID_SYSTEMCONFIG:
-		UI_GraphicsOptionsMenu();
+		Q3UI_GraphicsOptionsMenu();
 		break;
 
 	case ID_GAME:
-		UI_PreferencesMenu();
+		Q3UI_PreferencesMenu();
 		break;
 
 	case ID_CDKEY:
-		UI_CDKeyMenu();
+		Q3UI_CDKeyMenu();
 		break;
 
 //	case ID_LOAD:
-//		UI_LoadConfigMenu();
+//		Q3UI_LoadConfigMenu();
 //		break;
 
 //	case ID_SAVE:
-//		UI_SaveConfigMenu();
+//		Q3UI_SaveConfigMenu();
 //		break;
 
 	case ID_DEFAULTS:
-		UI_ConfirmMenu( "SET TO DEFAULTS?", Setup_ResetDefaults_Draw, Setup_ResetDefaults_Action );
+		Q3UI_ConfirmMenu( "SET TO DEFAULTS?", Setup_ResetDefaults_Draw, Setup_ResetDefaults_Action );
 		break;
 
 	case ID_BACK:
-		UI_PopMenu();
+		Q3UI_PopMenu();
 		break;
 	}
 }
@@ -148,13 +148,13 @@ static void UI_SetupMenu_Event( void *ptr, int event ) {
 
 /*
 ===============
-UI_SetupMenu_Init
+Q3UI_SetupMenu_Init
 ===============
 */
-static void UI_SetupMenu_Init( void ) {
+static void Q3UI_SetupMenu_Init( void ) {
 	int				y;
 
-	UI_SetupMenu_Cache();
+	Q3UI_SetupMenu_Cache();
 
 	memset( &setupMenuInfo, 0, sizeof(setupMenuInfo) );
 	setupMenuInfo.menu.wrapAround = qtrue;
@@ -189,7 +189,7 @@ static void UI_SetupMenu_Init( void ) {
 	setupMenuInfo.setupplayer.generic.x				= 320;
 	setupMenuInfo.setupplayer.generic.y				= y;
 	setupMenuInfo.setupplayer.generic.id			= ID_CUSTOMIZEPLAYER;
-	setupMenuInfo.setupplayer.generic.callback		= UI_SetupMenu_Event; 
+	setupMenuInfo.setupplayer.generic.callback		= Q3UI_SetupMenu_Event; 
 	setupMenuInfo.setupplayer.string				= "PLAYER";
 	setupMenuInfo.setupplayer.color					= color_red;
 	setupMenuInfo.setupplayer.style					= UI_CENTER;
@@ -200,7 +200,7 @@ static void UI_SetupMenu_Init( void ) {
 	setupMenuInfo.setupcontrols.generic.x			= 320;
 	setupMenuInfo.setupcontrols.generic.y			= y;
 	setupMenuInfo.setupcontrols.generic.id			= ID_CUSTOMIZECONTROLS;
-	setupMenuInfo.setupcontrols.generic.callback	= UI_SetupMenu_Event; 
+	setupMenuInfo.setupcontrols.generic.callback	= Q3UI_SetupMenu_Event; 
 	setupMenuInfo.setupcontrols.string				= "CONTROLS";
 	setupMenuInfo.setupcontrols.color				= color_red;
 	setupMenuInfo.setupcontrols.style				= UI_CENTER;
@@ -211,7 +211,7 @@ static void UI_SetupMenu_Init( void ) {
 	setupMenuInfo.setupsystem.generic.x				= 320;
 	setupMenuInfo.setupsystem.generic.y				= y;
 	setupMenuInfo.setupsystem.generic.id			= ID_SYSTEMCONFIG;
-	setupMenuInfo.setupsystem.generic.callback		= UI_SetupMenu_Event; 
+	setupMenuInfo.setupsystem.generic.callback		= Q3UI_SetupMenu_Event; 
 	setupMenuInfo.setupsystem.string				= "SYSTEM";
 	setupMenuInfo.setupsystem.color					= color_red;
 	setupMenuInfo.setupsystem.style					= UI_CENTER;
@@ -222,7 +222,7 @@ static void UI_SetupMenu_Init( void ) {
 	setupMenuInfo.game.generic.x					= 320;
 	setupMenuInfo.game.generic.y					= y;
 	setupMenuInfo.game.generic.id					= ID_GAME;
-	setupMenuInfo.game.generic.callback				= UI_SetupMenu_Event; 
+	setupMenuInfo.game.generic.callback				= Q3UI_SetupMenu_Event; 
 	setupMenuInfo.game.string						= "GAME OPTIONS";
 	setupMenuInfo.game.color						= color_red;
 	setupMenuInfo.game.style						= UI_CENTER;
@@ -233,12 +233,12 @@ static void UI_SetupMenu_Init( void ) {
 	setupMenuInfo.cdkey.generic.x					= 320;
 	setupMenuInfo.cdkey.generic.y					= y;
 	setupMenuInfo.cdkey.generic.id					= ID_CDKEY;
-	setupMenuInfo.cdkey.generic.callback			= UI_SetupMenu_Event; 
+	setupMenuInfo.cdkey.generic.callback			= Q3UI_SetupMenu_Event; 
 	setupMenuInfo.cdkey.string						= "CD Key";
 	setupMenuInfo.cdkey.color						= color_red;
 	setupMenuInfo.cdkey.style						= UI_CENTER;
 
-	if( !trap_Cvar_VariableValue( "cl_paused" ) ) {
+	if( !UI_trap_Cvar_VariableValue( "cl_paused" ) ) {
 #if 0
 		y += SETUP_MENU_VERTICAL_SPACING;
 		setupMenuInfo.load.generic.type					= MTYPE_PTEXT;
@@ -246,7 +246,7 @@ static void UI_SetupMenu_Init( void ) {
 		setupMenuInfo.load.generic.x					= 320;
 		setupMenuInfo.load.generic.y					= y;
 		setupMenuInfo.load.generic.id					= ID_LOAD;
-		setupMenuInfo.load.generic.callback				= UI_SetupMenu_Event; 
+		setupMenuInfo.load.generic.callback				= Q3UI_SetupMenu_Event; 
 		setupMenuInfo.load.string						= "LOAD";
 		setupMenuInfo.load.color						= color_red;
 		setupMenuInfo.load.style						= UI_CENTER;
@@ -257,7 +257,7 @@ static void UI_SetupMenu_Init( void ) {
 		setupMenuInfo.save.generic.x					= 320;
 		setupMenuInfo.save.generic.y					= y;
 		setupMenuInfo.save.generic.id					= ID_SAVE;
-		setupMenuInfo.save.generic.callback				= UI_SetupMenu_Event; 
+		setupMenuInfo.save.generic.callback				= Q3UI_SetupMenu_Event; 
 		setupMenuInfo.save.string						= "SAVE";
 		setupMenuInfo.save.color						= color_red;
 		setupMenuInfo.save.style						= UI_CENTER;
@@ -269,7 +269,7 @@ static void UI_SetupMenu_Init( void ) {
 		setupMenuInfo.defaults.generic.x				= 320;
 		setupMenuInfo.defaults.generic.y				= y;
 		setupMenuInfo.defaults.generic.id				= ID_DEFAULTS;
-		setupMenuInfo.defaults.generic.callback			= UI_SetupMenu_Event; 
+		setupMenuInfo.defaults.generic.callback			= Q3UI_SetupMenu_Event; 
 		setupMenuInfo.defaults.string					= "DEFAULTS";
 		setupMenuInfo.defaults.color					= color_red;
 		setupMenuInfo.defaults.style					= UI_CENTER;
@@ -279,7 +279,7 @@ static void UI_SetupMenu_Init( void ) {
 	setupMenuInfo.back.generic.name					= ART_BACK0;
 	setupMenuInfo.back.generic.flags				= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	setupMenuInfo.back.generic.id					= ID_BACK;
-	setupMenuInfo.back.generic.callback				= UI_SetupMenu_Event;
+	setupMenuInfo.back.generic.callback				= Q3UI_SetupMenu_Event;
 	setupMenuInfo.back.generic.x					= 0;
 	setupMenuInfo.back.generic.y					= 480-64;
 	setupMenuInfo.back.width						= 128;
@@ -296,7 +296,7 @@ static void UI_SetupMenu_Init( void ) {
 	Menu_AddItem( &setupMenuInfo.menu, &setupMenuInfo.cdkey );
 //	Menu_AddItem( &setupMenuInfo.menu, &setupMenuInfo.load );
 //	Menu_AddItem( &setupMenuInfo.menu, &setupMenuInfo.save );
-	if( !trap_Cvar_VariableValue( "cl_paused" ) ) {
+	if( !UI_trap_Cvar_VariableValue( "cl_paused" ) ) {
 		Menu_AddItem( &setupMenuInfo.menu, &setupMenuInfo.defaults );
 	}
 	Menu_AddItem( &setupMenuInfo.menu, &setupMenuInfo.back );
@@ -305,23 +305,23 @@ static void UI_SetupMenu_Init( void ) {
 
 /*
 =================
-UI_SetupMenu_Cache
+Q3UI_SetupMenu_Cache
 =================
 */
-void UI_SetupMenu_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
-	trap_R_RegisterShaderNoMip( ART_FRAMEL );
-	trap_R_RegisterShaderNoMip( ART_FRAMER );
+void Q3UI_SetupMenu_Cache( void ) {
+	UI_trap_R_RegisterShaderNoMip( ART_BACK0 );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK1 );
+	UI_trap_R_RegisterShaderNoMip( ART_FRAMEL );
+	UI_trap_R_RegisterShaderNoMip( ART_FRAMER );
 }
 
 
 /*
 ===============
-UI_SetupMenu
+Q3UI_SetupMenu
 ===============
 */
-void UI_SetupMenu( void ) {
-	UI_SetupMenu_Init();
-	UI_PushMenu( &setupMenuInfo.menu );
+void Q3UI_SetupMenu( void ) {
+	Q3UI_SetupMenu_Init();
+	Q3UI_PushMenu( &setupMenuInfo.menu );
 }

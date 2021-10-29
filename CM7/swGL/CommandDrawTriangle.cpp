@@ -1,12 +1,14 @@
-﻿#include <algorithm>
+﻿#include "CommandDrawTriangle.hpp"
+
+#include <algorithm>
 #include <cmath>
-#include "DrawThread.h"
-#include "ContextTypes.h"
+
+#include "ContextTypes.hpp"
+#include "DrawThread.hpp"
 #include "SIMD.h"
 #include "OpenGL.h"
-#include "Triangle.h"
-#include "TextureManager.h"
-#include "CommandDrawTriangle.h"
+#include "Triangle.hpp"
+#include "TextureManager.hpp"
 
 #define GRADIENT_VALUE(NAME) \
     qV ## NAME
@@ -24,10 +26,10 @@
     setupGradientEquation(GRADIENT_VALUE(NAME), GRADIENT_DX(NAME), GRADIENT_DY(NAME), Q1, Q2, Q3, v1.posObj.x(), v1.posObj.y(), fdx21, fdy21, fdx31, fdy31, rcpArea)
 
 #define GET_GRADIENT_VALUE_AFFINE(NAME) \
-    _mm_add_ps(qV ## NAME, _mm_add_ps(_mm_mul_ps(xxxx, GRADIENT_DX(NAME)), _mm_mul_ps(yyyy, GRADIENT_DY(NAME))))
+    SIMD::add_ps(qV ## NAME, SIMD::add_ps(SIMD::mul_ps(xxxx, GRADIENT_DX(NAME)), SIMD::mul_ps(yyyy, GRADIENT_DY(NAME))))
 
 #define GET_GRADIENT_VALUE_PERSP(NAME) \
-    _mm_mul_ps(w, GET_GRADIENT_VALUE_AFFINE(NAME))
+    SIMD::mul_ps(w, GET_GRADIENT_VALUE_AFFINE(NAME))
 
 
 
@@ -39,14 +41,14 @@ namespace SWGL {
 
     static INLINED QInt getIntegerRGBA(ARGBColor &color) {
 
-        const QFloat cMin = _mm_setzero_ps();
-        const QFloat cMax = _mm_set1_ps(255.0f);
+        const QFloat cMin = SIMD::setzero_ps();
+        const QFloat cMax = SIMD::set1_ps(255.0f);
 
         // Scale floating point color values
-        QFloat a = _mm_mul_ps(color.a, cMax);
-        QFloat r = _mm_mul_ps(color.r, cMax);
-        QFloat g = _mm_mul_ps(color.g, cMax);
-        QFloat b = _mm_mul_ps(color.b, cMax);
+        QFloat a = SIMD::mul_ps(color.a, cMax);
+        QFloat r = SIMD::mul_ps(color.r, cMax);
+        QFloat g = SIMD::mul_ps(color.g, cMax);
+        QFloat b = SIMD::mul_ps(color.b, cMax);
 
         // Clamp the values between [0,255]
         a = SIMD::clamp(a, cMin, cMax);
@@ -55,19 +57,19 @@ namespace SWGL {
         b = SIMD::clamp(b, cMin, cMax);
 
         // Build result
-        QInt resA = _mm_slli_epi32(_mm_cvtps_epi32(a), 24);
-        QInt resR = _mm_slli_epi32(_mm_cvtps_epi32(r), 16);
-        QInt resG = _mm_slli_epi32(_mm_cvtps_epi32(g), 8);
-        QInt resB = _mm_cvtps_epi32(b);
+        QInt resA = SIMD::slli_epi32(SIMD::cvtps_epi32(a), 24);
+        QInt resR = SIMD::slli_epi32(SIMD::cvtps_epi32(r), 16);
+        QInt resG = SIMD::slli_epi32(SIMD::cvtps_epi32(g), 8);
+        QInt resB = SIMD::cvtps_epi32(b);
 
-        return _mm_or_si128(
+        return SIMD::or_si128(
 
-            _mm_or_si128(resA, resR),
-            _mm_or_si128(resG, resB)
+            SIMD::or_si128(resA, resR),
+            SIMD::or_si128(resG, resB)
         );
     }
 
-    static void setupGradientEquation(QFloat &qVAL, QFloat &qDQDX, QFloat &qDQDY, float q1, float q2, float q3, float x1, float y1, float dx21, float dy21, float dx31, float dy31, float rcpArea) {
+    static INLINED void setupGradientEquation(QFloat &qVAL, QFloat &qDQDX, QFloat &qDQDY, float q1, float q2, float q3, float x1, float y1, float dx21, float dy21, float dx31, float dy31, float rcpArea) {
 
         float dq21 = q2 - q1;
         float dq31 = q3 - q1;
@@ -77,9 +79,9 @@ namespace SWGL {
         // Calculate the interpolant value at the origin point
         float value = q1 - (x1 * dqdx) - (y1 * dqdy);
 
-        qDQDX = _mm_set1_ps(dqdx);
-        qDQDY = _mm_set1_ps(dqdy);
-        qVAL = _mm_set_ps(
+        qDQDX = SIMD::set1_ps(dqdx);
+        qDQDY = SIMD::set1_ps(dqdy);
+        qVAL = SIMD::set_ps(
 
             value + dqdy + dqdx,
             value + dqdy,
@@ -88,7 +90,7 @@ namespace SWGL {
         );
     }
 
-    static void setupEdgeEquation(QInt &eVAL, QInt &eDEDX, QInt &eDEDY, int x, int y, int dx, int dy, int minX, int minY, int width) {
+    static INLINED void setupEdgeEquation(QInt &eVAL, QInt &eDEDX, QInt &eDEDY, int x, int y, int dx, int dy, int minX, int minY, int width) {
 
         int dedx = -dy << 4;
         int dedy = dx << 4;
@@ -99,9 +101,9 @@ namespace SWGL {
             value++;
         }
 
-        eDEDX = _mm_set1_epi32(dedx << 1);
-        eDEDY = _mm_set1_epi32((dedy << 1) - (dedx * width));
-        eVAL = _mm_set_epi32(
+        eDEDX = SIMD::set1_epi32(dedx << 1);
+        eDEDY = SIMD::set1_epi32((dedy << 1) - (dedx * width));
+        eVAL = SIMD::set_epi32(
 
             value + dedy + dedx,
             value + dedy,
@@ -167,6 +169,11 @@ namespace SWGL {
             //
             // Determine triangle bounding box with respect to our rendertarget
             //
+            //int minY = MAX((MIN(y1, MIN(y2, y3)) + 0x0f) >> 4, drawBuffer.getMinY());
+            //int maxY = MIN((MAX(y1, MIN(y2, y3)) + 0x0f) >> 4, drawBuffer.getMaxY());
+            //int minX = MAX((MIN(x1, MIN(x2, x3)) + 0x0f) >> 4, drawBuffer.getMinX());
+            //int maxX = MIN((MAX(x1, MIN(x2, x3)) + 0x0f) >> 4, drawBuffer.getMaxX());
+
             int minY = std::max((std::min({ y1, y2, y3 }) + 0x0f) >> 4, drawBuffer.getMinY());
             int maxY = std::min((std::max({ y1, y2, y3 }) + 0x0f) >> 4, drawBuffer.getMaxY());
             int minX = std::max((std::min({ x1, x2, x3 }) + 0x0f) >> 4, drawBuffer.getMinX());
@@ -247,7 +254,7 @@ namespace SWGL {
             //
             if (polygonOffset.isFillEnabled()) {
 
-                QFloat m = _mm_max_ps(
+                QFloat m = SIMD::max_ps(
 
                     SIMD::absolute(GRADIENT_DX(z)),
                     SIMD::absolute(GRADIENT_DY(z))
@@ -256,11 +263,11 @@ namespace SWGL {
                 QFloat zOffset = SIMD::multiplyAdd(
 
                     m,
-                    _mm_set1_ps(polygonOffset.getFactor()),
-                    _mm_set1_ps(polygonOffset.getRTimesUnits())
+                    SIMD::set1_ps(polygonOffset.getFactor()),
+                    SIMD::set1_ps(polygonOffset.getRTimesUnits())
                 );
 
-                GRADIENT_VALUE(z) = _mm_add_ps(GRADIENT_VALUE(z), zOffset);
+                GRADIENT_VALUE(z) = SIMD::add_ps(GRADIENT_VALUE(z), zOffset);
             }
 
 
@@ -274,21 +281,21 @@ namespace SWGL {
 
             for (int y = minY; y < maxY; y += 2) {
 
-                QFloat yyyy = _mm_set1_ps(static_cast<float>(y));
+                QFloat yyyy = SIMD::set1_ps(static_cast<float>(y));
 
                 for (int x = minX; x < maxX; x += 2) {
 
                     //
                     // Coverage test for a 2x2 pixel quad
                     //
-                    QInt e0 = _mm_cmpgt_epi32(edgeValue[0], _mm_setzero_si128());
-                    QInt e1 = _mm_cmpgt_epi32(edgeValue[1], _mm_setzero_si128());
-                    QInt e2 = _mm_cmpgt_epi32(edgeValue[2], _mm_setzero_si128());
-                    QInt fragmentMask = _mm_and_si128(_mm_and_si128(e0, e1), e2);
+                    QInt e0 = SIMD::cmpgt_epi32(edgeValue[0], SIMD::setzero_si128());
+                    QInt e1 = SIMD::cmpgt_epi32(edgeValue[1], SIMD::setzero_si128());
+                    QInt e2 = SIMD::cmpgt_epi32(edgeValue[2], SIMD::setzero_si128());
+                    QInt fragmentMask = SIMD::and_si128(SIMD::and_si128(e0, e1), e2);
 
-                    if (_mm_testz_si128(fragmentMask, fragmentMask) == 0) {
+                    if (SIMD::testz_si128(fragmentMask, fragmentMask) == 0) {
 
-                        QFloat xxxx = _mm_set1_ps(static_cast<float>(x));
+                        QFloat xxxx = SIMD::set1_ps(static_cast<float>(x));
 
 
                         //
@@ -298,10 +305,10 @@ namespace SWGL {
 
                         if (depthTesting.isTestEnabled()) {
 
-                            depthBufferZ = _mm_load_si128(reinterpret_cast<QInt *>(depthBuffer));
-                            currentZ = _mm_cvtps_epi32(
-                                _mm_mul_ps(
-                                    _mm_set1_ps(16777215.0f),
+                            depthBufferZ = SIMD::load_si128(reinterpret_cast<QInt *>(depthBuffer));
+                            currentZ = SIMD::cvtps_epi32(
+                                SIMD::mul_ps(
+                                    SIMD::set1_ps(16777215.0f),
                                     SIMD::clamp01(GET_GRADIENT_VALUE_AFFINE(z))
                                 )
                             );
@@ -309,16 +316,16 @@ namespace SWGL {
                             switch (depthTesting.getTestFunction()) {
 
                             case GL_NEVER: goto nextQuad;
-                            case GL_LESS: fragmentMask = _mm_and_si128(_mm_cmplt_epi32(currentZ, depthBufferZ), fragmentMask); break;
-                            case GL_EQUAL: fragmentMask = _mm_and_si128(_mm_cmpeq_epi32(currentZ, depthBufferZ), fragmentMask); break;
-                            case GL_LEQUAL: fragmentMask = _mm_andnot_si128(_mm_cmpgt_epi32(currentZ, depthBufferZ), fragmentMask); break;
-                            case GL_GREATER: fragmentMask = _mm_and_si128(_mm_cmpgt_epi32(currentZ, depthBufferZ), fragmentMask); break;
-                            case GL_NOTEQUAL: fragmentMask = _mm_andnot_si128(_mm_cmpeq_epi32(currentZ, depthBufferZ), fragmentMask); break;
-                            case GL_GEQUAL: fragmentMask = _mm_andnot_si128(_mm_cmplt_epi32(currentZ, depthBufferZ), fragmentMask); break;
+                            case GL_LESS: fragmentMask = SIMD::and_si128(SIMD::cmplt_epi32(currentZ, depthBufferZ), fragmentMask); break;
+                            case GL_EQUAL: fragmentMask = SIMD::and_si128(SIMD::cmpeq_epi32(currentZ, depthBufferZ), fragmentMask); break;
+                            case GL_LEQUAL: fragmentMask = SIMD::andnot_si128(SIMD::cmpgt_epi32(currentZ, depthBufferZ), fragmentMask); break;
+                            case GL_GREATER: fragmentMask = SIMD::and_si128(SIMD::cmpgt_epi32(currentZ, depthBufferZ), fragmentMask); break;
+                            case GL_NOTEQUAL: fragmentMask = SIMD::andnot_si128(SIMD::cmpeq_epi32(currentZ, depthBufferZ), fragmentMask); break;
+                            case GL_GEQUAL: fragmentMask = SIMD::andnot_si128(SIMD::cmplt_epi32(currentZ, depthBufferZ), fragmentMask); break;
                             }
 
                             // Check if any fragment survived the depth test
-                            if (_mm_testz_si128(fragmentMask, fragmentMask) != 0) {
+                            if (SIMD::testz_si128(fragmentMask, fragmentMask) != 0) {
 
                                 goto nextQuad;
                             }
@@ -326,7 +333,7 @@ namespace SWGL {
                             // Write the new depth values to the depth buffer
                             if (writeDepthAfterDepthTest) {
 
-                                _mm_store_si128(
+                                SIMD::store_si128(
 
                                     reinterpret_cast<QInt *>(depthBuffer),
                                     SIMD::blend(depthBufferZ, currentZ, fragmentMask)
@@ -338,7 +345,7 @@ namespace SWGL {
                         //
                         // Calculate perspective w
                         //
-                        QFloat w = _mm_div_ps(_mm_set1_ps(1.0f), GET_GRADIENT_VALUE_AFFINE(rcpW));
+                        QFloat w = SIMD::div_ps(SIMD::set1_ps(1.0f), GET_GRADIENT_VALUE_AFFINE(rcpW));
 
 
                         //
@@ -364,10 +371,10 @@ namespace SWGL {
                             }
 
                             // Get texture sample
-                            QFloat rcpQ = _mm_div_ps(_mm_set1_ps(1.0f), GET_GRADIENT_VALUE_AFFINE(texQ[texUnit]));
-                            texCoords.s = _mm_mul_ps(rcpQ, GET_GRADIENT_VALUE_AFFINE(texS[texUnit]));
-                            texCoords.t = _mm_mul_ps(rcpQ, GET_GRADIENT_VALUE_AFFINE(texT[texUnit]));
-                            texCoords.r = _mm_mul_ps(rcpQ, GET_GRADIENT_VALUE_AFFINE(texR[texUnit]));
+                            QFloat rcpQ = SIMD::div_ps(SIMD::set1_ps(1.0f), GET_GRADIENT_VALUE_AFFINE(texQ[texUnit]));
+                            texCoords.s = SIMD::mul_ps(rcpQ, GET_GRADIENT_VALUE_AFFINE(texS[texUnit]));
+                            texCoords.t = SIMD::mul_ps(rcpQ, GET_GRADIENT_VALUE_AFFINE(texT[texUnit]));
+                            texCoords.r = SIMD::mul_ps(rcpQ, GET_GRADIENT_VALUE_AFFINE(texR[texUnit]));
                             texState.texData->sampleTexels(texState.texParams, texCoords, texColor);
 
                             // Execute the texturing function
@@ -404,18 +411,18 @@ namespace SWGL {
                                     switch (texState.texData->format) {
 
                                     case TextureBaseFormat::Alpha:
-                                        srcColor.a = _mm_mul_ps(srcColor.a, texColor.a);
+                                        srcColor.a = SIMD::mul_ps(srcColor.a, texColor.a);
                                         break;
 
                                     case TextureBaseFormat::LuminanceAlpha:
                                     case TextureBaseFormat::Intensity:
                                     case TextureBaseFormat::RGBA:
-                                        srcColor.a = _mm_mul_ps(srcColor.a, texColor.a);
+                                        srcColor.a = SIMD::mul_ps(srcColor.a, texColor.a);
                                     case TextureBaseFormat::Luminance:
                                     case TextureBaseFormat::RGB:
-                                        srcColor.r = _mm_mul_ps(srcColor.r, texColor.r);
-                                        srcColor.g = _mm_mul_ps(srcColor.g, texColor.g);
-                                        srcColor.b = _mm_mul_ps(srcColor.b, texColor.b);
+                                        srcColor.r = SIMD::mul_ps(srcColor.r, texColor.r);
+                                        srcColor.g = SIMD::mul_ps(srcColor.g, texColor.g);
+                                        srcColor.b = SIMD::mul_ps(srcColor.b, texColor.b);
                                         break;
                                     }
                                     break;
@@ -448,24 +455,24 @@ namespace SWGL {
                                     switch (texState.texData->format) {
 
                                     case TextureBaseFormat::Alpha:
-                                        srcColor.a = _mm_mul_ps(srcColor.a, texColor.a);
+                                        srcColor.a = SIMD::mul_ps(srcColor.a, texColor.a);
                                         break;
 
                                     case TextureBaseFormat::LuminanceAlpha:
                                     case TextureBaseFormat::RGBA:
-                                        srcColor.a = _mm_mul_ps(srcColor.a, texColor.a);
+                                        srcColor.a = SIMD::mul_ps(srcColor.a, texColor.a);
                                     case TextureBaseFormat::Luminance:
                                     case TextureBaseFormat::RGB:
-                                        srcColor.r = _mm_min_ps(_mm_set1_ps(1.0f), _mm_add_ps(srcColor.r, texColor.r));
-                                        srcColor.g = _mm_min_ps(_mm_set1_ps(1.0f), _mm_add_ps(srcColor.g, texColor.g));
-                                        srcColor.b = _mm_min_ps(_mm_set1_ps(1.0f), _mm_add_ps(srcColor.b, texColor.b));
+                                        srcColor.r = SIMD::min_ps(SIMD::set1_ps(1.0f), SIMD::add_ps(srcColor.r, texColor.r));
+                                        srcColor.g = SIMD::min_ps(SIMD::set1_ps(1.0f), SIMD::add_ps(srcColor.g, texColor.g));
+                                        srcColor.b = SIMD::min_ps(SIMD::set1_ps(1.0f), SIMD::add_ps(srcColor.b, texColor.b));
                                         break;
 
                                     case TextureBaseFormat::Intensity:
-                                        srcColor.a = _mm_min_ps(_mm_set1_ps(1.0f), _mm_add_ps(srcColor.a, texColor.a));
-                                        srcColor.r = _mm_min_ps(_mm_set1_ps(1.0f), _mm_add_ps(srcColor.r, texColor.r));
-                                        srcColor.g = _mm_min_ps(_mm_set1_ps(1.0f), _mm_add_ps(srcColor.g, texColor.g));
-                                        srcColor.b = _mm_min_ps(_mm_set1_ps(1.0f), _mm_add_ps(srcColor.b, texColor.b));
+                                        srcColor.a = SIMD::min_ps(SIMD::set1_ps(1.0f), SIMD::add_ps(srcColor.a, texColor.a));
+                                        srcColor.r = SIMD::min_ps(SIMD::set1_ps(1.0f), SIMD::add_ps(srcColor.r, texColor.r));
+                                        srcColor.g = SIMD::min_ps(SIMD::set1_ps(1.0f), SIMD::add_ps(srcColor.g, texColor.g));
+                                        srcColor.b = SIMD::min_ps(SIMD::set1_ps(1.0f), SIMD::add_ps(srcColor.b, texColor.b));
                                         break;
                                     }
                                     break;
@@ -474,24 +481,24 @@ namespace SWGL {
                                     switch (texState.texData->format) {
 
                                     case TextureBaseFormat::Alpha:
-                                        srcColor.a = _mm_mul_ps(srcColor.a, texColor.a);
+                                        srcColor.a = SIMD::mul_ps(srcColor.a, texColor.a);
                                         break;
 
                                     case TextureBaseFormat::LuminanceAlpha:
                                     case TextureBaseFormat::RGBA:
-                                        srcColor.a = _mm_mul_ps(srcColor.a, texColor.a);
+                                        srcColor.a = SIMD::mul_ps(srcColor.a, texColor.a);
                                     case TextureBaseFormat::Luminance:
                                     case TextureBaseFormat::RGB:
-                                        srcColor.r = SIMD::lerp(texColor.r, srcColor.r, _mm_set1_ps(texState.texEnv.colorConstR));
-                                        srcColor.g = SIMD::lerp(texColor.g, srcColor.g, _mm_set1_ps(texState.texEnv.colorConstG));
-                                        srcColor.b = SIMD::lerp(texColor.b, srcColor.b, _mm_set1_ps(texState.texEnv.colorConstB));
+                                        srcColor.r = SIMD::lerp(texColor.r, srcColor.r, SIMD::set1_ps(texState.texEnv.colorConstR));
+                                        srcColor.g = SIMD::lerp(texColor.g, srcColor.g, SIMD::set1_ps(texState.texEnv.colorConstG));
+                                        srcColor.b = SIMD::lerp(texColor.b, srcColor.b, SIMD::set1_ps(texState.texEnv.colorConstB));
                                         break;
 
                                     case TextureBaseFormat::Intensity:
-                                        srcColor.a = SIMD::lerp(texColor.a, srcColor.a, _mm_set1_ps(texState.texEnv.colorConstA));
-                                        srcColor.r = SIMD::lerp(texColor.r, srcColor.r, _mm_set1_ps(texState.texEnv.colorConstR));
-                                        srcColor.g = SIMD::lerp(texColor.g, srcColor.g, _mm_set1_ps(texState.texEnv.colorConstG));
-                                        srcColor.b = SIMD::lerp(texColor.b, srcColor.b, _mm_set1_ps(texState.texEnv.colorConstB));
+                                        srcColor.a = SIMD::lerp(texColor.a, srcColor.a, SIMD::set1_ps(texState.texEnv.colorConstA));
+                                        srcColor.r = SIMD::lerp(texColor.r, srcColor.r, SIMD::set1_ps(texState.texEnv.colorConstR));
+                                        srcColor.g = SIMD::lerp(texColor.g, srcColor.g, SIMD::set1_ps(texState.texEnv.colorConstG));
+                                        srcColor.b = SIMD::lerp(texColor.b, srcColor.b, SIMD::set1_ps(texState.texEnv.colorConstB));
                                         break;
                                     }
                                     break;
@@ -523,7 +530,7 @@ namespace SWGL {
                                             break;
 
                                         case GL_CONSTANT:
-                                            arg.a = _mm_set1_ps(texState.texEnv.colorConstA);
+                                            arg.a = SIMD::set1_ps(texState.texEnv.colorConstA);
                                             break;
 
                                         case GL_PRIMARY_COLOR:
@@ -537,7 +544,7 @@ namespace SWGL {
 
                                         if (mod == GL_ONE_MINUS_SRC_ALPHA) {
 
-                                            arg.a = _mm_sub_ps(_mm_set1_ps(1.0f), arg.a);
+                                            arg.a = SIMD::sub_ps(SIMD::set1_ps(1.0f), arg.a);
                                         }
                                     }
 
@@ -549,19 +556,19 @@ namespace SWGL {
                                         break;
 
                                     case GL_MODULATE:
-                                        result.a = _mm_mul_ps(args[0].a, args[1].a);
+                                        result.a = SIMD::mul_ps(args[0].a, args[1].a);
                                         break;
 
                                     case GL_ADD:
-                                        result.a = _mm_add_ps(args[0].a, args[1].a);
+                                        result.a = SIMD::add_ps(args[0].a, args[1].a);
                                         break;
 
                                     case GL_ADD_SIGNED:
-                                        result.a = _mm_sub_ps(_mm_add_ps(args[0].a, args[1].a), _mm_set1_ps(0.5f));
+                                        result.a = SIMD::sub_ps(SIMD::add_ps(args[0].a, args[1].a), SIMD::set1_ps(0.5f));
                                         break;
 
                                     case GL_SUBTRACT:
-                                        result.a = _mm_sub_ps(args[0].a, args[1].a);
+                                        result.a = SIMD::sub_ps(args[0].a, args[1].a);
                                         break;
 
                                     case GL_INTERPOLATE:
@@ -587,10 +594,10 @@ namespace SWGL {
                                         break;
 
                                     case GL_CONSTANT:
-                                        arg.a = _mm_set1_ps(texState.texEnv.colorConstA);
-                                        arg.r = _mm_set1_ps(texState.texEnv.colorConstR);
-                                        arg.g = _mm_set1_ps(texState.texEnv.colorConstG);
-                                        arg.b = _mm_set1_ps(texState.texEnv.colorConstB);
+                                        arg.a = SIMD::set1_ps(texState.texEnv.colorConstA);
+                                        arg.r = SIMD::set1_ps(texState.texEnv.colorConstR);
+                                        arg.g = SIMD::set1_ps(texState.texEnv.colorConstG);
+                                        arg.b = SIMD::set1_ps(texState.texEnv.colorConstB);
                                         break;
 
                                     case GL_PRIMARY_COLOR:
@@ -608,9 +615,9 @@ namespace SWGL {
                                         break;
 
                                     case GL_ONE_MINUS_SRC_COLOR:
-                                        arg.r = _mm_sub_ps(_mm_set1_ps(1.0f), arg.r);
-                                        arg.g = _mm_sub_ps(_mm_set1_ps(1.0f), arg.g);
-                                        arg.b = _mm_sub_ps(_mm_set1_ps(1.0f), arg.b);
+                                        arg.r = SIMD::sub_ps(SIMD::set1_ps(1.0f), arg.r);
+                                        arg.g = SIMD::sub_ps(SIMD::set1_ps(1.0f), arg.g);
+                                        arg.b = SIMD::sub_ps(SIMD::set1_ps(1.0f), arg.b);
                                         break;
 
                                     case GL_SRC_ALPHA:
@@ -620,9 +627,9 @@ namespace SWGL {
                                         break;
 
                                     case GL_ONE_MINUS_SRC_ALPHA:
-                                        arg.r = _mm_sub_ps(_mm_set1_ps(1.0f), arg.a);
-                                        arg.g = _mm_sub_ps(_mm_set1_ps(1.0f), arg.a);
-                                        arg.b = _mm_sub_ps(_mm_set1_ps(1.0f), arg.a);
+                                        arg.r = SIMD::sub_ps(SIMD::set1_ps(1.0f), arg.a);
+                                        arg.g = SIMD::sub_ps(SIMD::set1_ps(1.0f), arg.a);
+                                        arg.b = SIMD::sub_ps(SIMD::set1_ps(1.0f), arg.a);
                                         break;
                                     }
                                 }
@@ -637,27 +644,27 @@ namespace SWGL {
                                     break;
 
                                 case GL_MODULATE:
-                                    result.r = _mm_mul_ps(args[0].r, args[1].r);
-                                    result.g = _mm_mul_ps(args[0].g, args[1].g);
-                                    result.b = _mm_mul_ps(args[0].b, args[1].b);
+                                    result.r = SIMD::mul_ps(args[0].r, args[1].r);
+                                    result.g = SIMD::mul_ps(args[0].g, args[1].g);
+                                    result.b = SIMD::mul_ps(args[0].b, args[1].b);
                                     break;
 
                                 case GL_ADD:
-                                    result.r = _mm_add_ps(args[0].r, args[1].r);
-                                    result.g = _mm_add_ps(args[0].g, args[1].g);
-                                    result.b = _mm_add_ps(args[0].b, args[1].b);
+                                    result.r = SIMD::add_ps(args[0].r, args[1].r);
+                                    result.g = SIMD::add_ps(args[0].g, args[1].g);
+                                    result.b = SIMD::add_ps(args[0].b, args[1].b);
                                     break;
 
                                 case GL_ADD_SIGNED:
-                                    result.r = _mm_sub_ps(_mm_add_ps(args[0].r, args[1].r), _mm_set1_ps(0.5f));
-                                    result.g = _mm_sub_ps(_mm_add_ps(args[0].g, args[1].g), _mm_set1_ps(0.5f));
-                                    result.b = _mm_sub_ps(_mm_add_ps(args[0].b, args[1].b), _mm_set1_ps(0.5f));
+                                    result.r = SIMD::sub_ps(SIMD::add_ps(args[0].r, args[1].r), SIMD::set1_ps(0.5f));
+                                    result.g = SIMD::sub_ps(SIMD::add_ps(args[0].g, args[1].g), SIMD::set1_ps(0.5f));
+                                    result.b = SIMD::sub_ps(SIMD::add_ps(args[0].b, args[1].b), SIMD::set1_ps(0.5f));
                                     break;
 
                                 case GL_SUBTRACT:
-                                    result.r = _mm_sub_ps(args[0].r, args[1].r);
-                                    result.g = _mm_sub_ps(args[0].g, args[1].g);
-                                    result.b = _mm_sub_ps(args[0].b, args[1].b);
+                                    result.r = SIMD::sub_ps(args[0].r, args[1].r);
+                                    result.g = SIMD::sub_ps(args[0].g, args[1].g);
+                                    result.b = SIMD::sub_ps(args[0].b, args[1].b);
                                     break;
 
                                 case GL_DOT3_RGB:
@@ -680,10 +687,10 @@ namespace SWGL {
                                     break;
                                 }
 
-                                srcColor.a = _mm_mul_ps(result.a, _mm_set1_ps(texState.texEnv.colorScaleA));
-                                srcColor.r = _mm_mul_ps(result.r, _mm_set1_ps(texState.texEnv.colorScaleRGB));
-                                srcColor.g = _mm_mul_ps(result.g, _mm_set1_ps(texState.texEnv.colorScaleRGB));
-                                srcColor.b = _mm_mul_ps(result.b, _mm_set1_ps(texState.texEnv.colorScaleRGB));
+                                srcColor.a = SIMD::mul_ps(result.a, SIMD::set1_ps(texState.texEnv.colorScaleA));
+                                srcColor.r = SIMD::mul_ps(result.r, SIMD::set1_ps(texState.texEnv.colorScaleRGB));
+                                srcColor.g = SIMD::mul_ps(result.g, SIMD::set1_ps(texState.texEnv.colorScaleRGB));
+                                srcColor.b = SIMD::mul_ps(result.b, SIMD::set1_ps(texState.texEnv.colorScaleRGB));
                             }
 
                             // Not quite sure about that
@@ -699,22 +706,22 @@ namespace SWGL {
                         //
                         if (alphaTesting.isEnabled()) {
 
-                            QFloat refVal = _mm_set1_ps(alphaTesting.getReferenceValue());
+                            QFloat refVal = SIMD::set1_ps(alphaTesting.getReferenceValue());
 
                             switch (alphaTesting.getTestFunction()) {
 
-                            case GL_NEVER: fragmentMask = _mm_setzero_si128(); break;
-                            case GL_LESS: fragmentMask = _mm_and_si128(fragmentMask, _mm_castps_si128(_mm_cmplt_ps(srcColor.a, refVal))); break;
-                            case GL_EQUAL: fragmentMask = _mm_and_si128(fragmentMask, _mm_castps_si128(_mm_cmpeq_ps(srcColor.a, refVal))); break;
-                            case GL_LEQUAL: fragmentMask = _mm_and_si128(fragmentMask, _mm_castps_si128(_mm_cmple_ps(srcColor.a, refVal))); break;
-                            case GL_GREATER: fragmentMask = _mm_and_si128(fragmentMask, _mm_castps_si128(_mm_cmpgt_ps(srcColor.a, refVal))); break;
-                            case GL_NOTEQUAL: fragmentMask = _mm_and_si128(fragmentMask, _mm_castps_si128(_mm_cmpneq_ps(srcColor.a, refVal))); break;
-                            case GL_GEQUAL: fragmentMask = _mm_and_si128(fragmentMask, _mm_castps_si128(_mm_cmpge_ps(srcColor.a, refVal))); break;
+                            case GL_NEVER: fragmentMask = SIMD::setzero_si128(); break;
+                            case GL_LESS: fragmentMask = SIMD::and_si128(fragmentMask, SIMD::castps_si128(SIMD::cmplt_ps(srcColor.a, refVal))); break;
+                            case GL_EQUAL: fragmentMask = SIMD::and_si128(fragmentMask, SIMD::castps_si128(SIMD::cmpeq_ps(srcColor.a, refVal))); break;
+                            case GL_LEQUAL: fragmentMask = SIMD::and_si128(fragmentMask, SIMD::castps_si128(SIMD::cmple_ps(srcColor.a, refVal))); break;
+                            case GL_GREATER: fragmentMask = SIMD::and_si128(fragmentMask, SIMD::castps_si128(SIMD::cmpgt_ps(srcColor.a, refVal))); break;
+                            case GL_NOTEQUAL: fragmentMask = SIMD::and_si128(fragmentMask, SIMD::castps_si128(SIMD::cmpneq_ps(srcColor.a, refVal))); break;
+                            case GL_GEQUAL: fragmentMask = SIMD::and_si128(fragmentMask, SIMD::castps_si128(SIMD::cmpge_ps(srcColor.a, refVal))); break;
                             case GL_ALWAYS: break;
                             }
 
                             // Check if any fragment survived the alpha test
-                            if (_mm_testz_si128(fragmentMask, fragmentMask) != 0) {
+                            if (SIMD::testz_si128(fragmentMask, fragmentMask) != 0) {
 
                                 goto nextQuad;
                             }
@@ -724,7 +731,7 @@ namespace SWGL {
                             // data as OpenGL specifies it.
                             if (writeDepthAfterAlphaTest) {
 
-                                _mm_store_si128(
+                                SIMD::store_si128(
 
                                     reinterpret_cast<QInt *>(depthBuffer),
                                     SIMD::blend(depthBufferZ, currentZ, fragmentMask)
@@ -736,20 +743,20 @@ namespace SWGL {
                         //
                         // Blending with the color buffer
                         //
-                        QInt quadBackbuffer = _mm_load_si128(reinterpret_cast<QInt *>(colorBuffer));
+                        QInt quadBackbuffer = SIMD::load_si128(reinterpret_cast<QInt *>(colorBuffer));
                         QInt quadBlendingResult;
 
                         if (blending.isEnabled()) {
 
                             // Convert the backbuffer colors back to floats
-                            const QFloat normalize = _mm_set1_ps(1.0f / 255.0f);
-                            const QInt mask = _mm_set1_epi32(0xff);
+                            const QFloat normalize = SIMD::set1_ps(1.0f / 255.0f);
+                            const QInt mask = SIMD::set1_epi32(0xff);
 
                             ARGBColor dstColor;
-                            dstColor.a = _mm_mul_ps(normalize, _mm_cvtepi32_ps(_mm_srli_epi32(quadBackbuffer, 24)));
-                            dstColor.r = _mm_mul_ps(normalize, _mm_cvtepi32_ps(_mm_and_si128(_mm_srli_epi32(quadBackbuffer, 16), mask)));
-                            dstColor.g = _mm_mul_ps(normalize, _mm_cvtepi32_ps(_mm_and_si128(_mm_srli_epi32(quadBackbuffer, 8), mask)));
-                            dstColor.b = _mm_mul_ps(normalize, _mm_cvtepi32_ps(_mm_and_si128(quadBackbuffer, mask)));
+                            dstColor.a = SIMD::mul_ps(normalize, SIMD::cvtepi32_ps(SIMD::srli_epi32(quadBackbuffer, 24)));
+                            dstColor.r = SIMD::mul_ps(normalize, SIMD::cvtepi32_ps(SIMD::and_si128(SIMD::srli_epi32(quadBackbuffer, 16), mask)));
+                            dstColor.g = SIMD::mul_ps(normalize, SIMD::cvtepi32_ps(SIMD::and_si128(SIMD::srli_epi32(quadBackbuffer, 8), mask)));
+                            dstColor.b = SIMD::mul_ps(normalize, SIMD::cvtepi32_ps(SIMD::and_si128(quadBackbuffer, mask)));
 
                             // Determine the source and destination blending factors
                             ARGBColor srcFactor, dstFactor;
@@ -757,17 +764,17 @@ namespace SWGL {
                             switch (blending.getSourceFactor()) {
 
                             case GL_ZERO:
-                                srcFactor.a = _mm_setzero_ps();
-                                srcFactor.r = _mm_setzero_ps();
-                                srcFactor.g = _mm_setzero_ps();
-                                srcFactor.b = _mm_setzero_ps();
+                                srcFactor.a = SIMD::setzero_ps();
+                                srcFactor.r = SIMD::setzero_ps();
+                                srcFactor.g = SIMD::setzero_ps();
+                                srcFactor.b = SIMD::setzero_ps();
                                 break;
 
                             case GL_ONE:
-                                srcFactor.a = _mm_set1_ps(1.0f);
-                                srcFactor.r = _mm_set1_ps(1.0f);
-                                srcFactor.g = _mm_set1_ps(1.0f);
-                                srcFactor.b = _mm_set1_ps(1.0f);
+                                srcFactor.a = SIMD::set1_ps(1.0f);
+                                srcFactor.r = SIMD::set1_ps(1.0f);
+                                srcFactor.g = SIMD::set1_ps(1.0f);
+                                srcFactor.b = SIMD::set1_ps(1.0f);
                                 break;
 
                             case GL_DST_COLOR:
@@ -775,10 +782,10 @@ namespace SWGL {
                                 break;
 
                             case GL_ONE_MINUS_DST_COLOR:
-                                srcFactor.a = _mm_sub_ps(_mm_set1_ps(1.0f), dstColor.a);
-                                srcFactor.r = _mm_sub_ps(_mm_set1_ps(1.0f), dstColor.r);
-                                srcFactor.g = _mm_sub_ps(_mm_set1_ps(1.0f), dstColor.g);
-                                srcFactor.b = _mm_sub_ps(_mm_set1_ps(1.0f), dstColor.b);
+                                srcFactor.a = SIMD::sub_ps(SIMD::set1_ps(1.0f), dstColor.a);
+                                srcFactor.r = SIMD::sub_ps(SIMD::set1_ps(1.0f), dstColor.r);
+                                srcFactor.g = SIMD::sub_ps(SIMD::set1_ps(1.0f), dstColor.g);
+                                srcFactor.b = SIMD::sub_ps(SIMD::set1_ps(1.0f), dstColor.b);
                                 break;
 
                             case GL_SRC_ALPHA:
@@ -789,10 +796,10 @@ namespace SWGL {
                                 break;
 
                             case GL_ONE_MINUS_SRC_ALPHA:
-                                srcFactor.a = _mm_sub_ps(_mm_set1_ps(1.0f), srcColor.a);
-                                srcFactor.r = _mm_sub_ps(_mm_set1_ps(1.0f), srcColor.a);
-                                srcFactor.g = _mm_sub_ps(_mm_set1_ps(1.0f), srcColor.a);
-                                srcFactor.b = _mm_sub_ps(_mm_set1_ps(1.0f), srcColor.a);
+                                srcFactor.a = SIMD::sub_ps(SIMD::set1_ps(1.0f), srcColor.a);
+                                srcFactor.r = SIMD::sub_ps(SIMD::set1_ps(1.0f), srcColor.a);
+                                srcFactor.g = SIMD::sub_ps(SIMD::set1_ps(1.0f), srcColor.a);
+                                srcFactor.b = SIMD::sub_ps(SIMD::set1_ps(1.0f), srcColor.a);
                                 break;
 
                             case GL_DST_ALPHA:
@@ -803,34 +810,34 @@ namespace SWGL {
                                 break;
 
                             case GL_ONE_MINUS_DST_ALPHA:
-                                srcFactor.a = _mm_sub_ps(_mm_set1_ps(1.0f), dstColor.a);
-                                srcFactor.r = _mm_sub_ps(_mm_set1_ps(1.0f), dstColor.a);
-                                srcFactor.g = _mm_sub_ps(_mm_set1_ps(1.0f), dstColor.a);
-                                srcFactor.b = _mm_sub_ps(_mm_set1_ps(1.0f), dstColor.a);
+                                srcFactor.a = SIMD::sub_ps(SIMD::set1_ps(1.0f), dstColor.a);
+                                srcFactor.r = SIMD::sub_ps(SIMD::set1_ps(1.0f), dstColor.a);
+                                srcFactor.g = SIMD::sub_ps(SIMD::set1_ps(1.0f), dstColor.a);
+                                srcFactor.b = SIMD::sub_ps(SIMD::set1_ps(1.0f), dstColor.a);
                                 break;
 
                             case GL_SRC_ALPHA_SATURATE:
-                                srcFactor.a = _mm_set1_ps(1.0f);
-                                srcFactor.r = _mm_min_ps(srcColor.a, _mm_sub_ps(_mm_set1_ps(1.0f), dstColor.a));
-                                srcFactor.g = _mm_min_ps(srcColor.a, _mm_sub_ps(_mm_set1_ps(1.0f), dstColor.a));
-                                srcFactor.b = _mm_min_ps(srcColor.a, _mm_sub_ps(_mm_set1_ps(1.0f), dstColor.a));
+                                srcFactor.a = SIMD::set1_ps(1.0f);
+                                srcFactor.r = SIMD::min_ps(srcColor.a, SIMD::sub_ps(SIMD::set1_ps(1.0f), dstColor.a));
+                                srcFactor.g = SIMD::min_ps(srcColor.a, SIMD::sub_ps(SIMD::set1_ps(1.0f), dstColor.a));
+                                srcFactor.b = SIMD::min_ps(srcColor.a, SIMD::sub_ps(SIMD::set1_ps(1.0f), dstColor.a));
                                 break;
                             }
 
                             switch (blending.getDestinationFactor()) {
 
                             case GL_ZERO:
-                                dstFactor.a = _mm_setzero_ps();
-                                dstFactor.r = _mm_setzero_ps();
-                                dstFactor.g = _mm_setzero_ps();
-                                dstFactor.b = _mm_setzero_ps();
+                                dstFactor.a = SIMD::setzero_ps();
+                                dstFactor.r = SIMD::setzero_ps();
+                                dstFactor.g = SIMD::setzero_ps();
+                                dstFactor.b = SIMD::setzero_ps();
                                 break;
 
                             case GL_ONE:
-                                dstFactor.a = _mm_set1_ps(1.0f);
-                                dstFactor.r = _mm_set1_ps(1.0f);
-                                dstFactor.g = _mm_set1_ps(1.0f);
-                                dstFactor.b = _mm_set1_ps(1.0f);
+                                dstFactor.a = SIMD::set1_ps(1.0f);
+                                dstFactor.r = SIMD::set1_ps(1.0f);
+                                dstFactor.g = SIMD::set1_ps(1.0f);
+                                dstFactor.b = SIMD::set1_ps(1.0f);
                                 break;
 
                             case GL_SRC_COLOR:
@@ -838,10 +845,10 @@ namespace SWGL {
                                 break;
 
                             case GL_ONE_MINUS_SRC_COLOR:
-                                dstFactor.a = _mm_sub_ps(_mm_set1_ps(1.0f), srcColor.a);
-                                dstFactor.r = _mm_sub_ps(_mm_set1_ps(1.0f), srcColor.r);
-                                dstFactor.g = _mm_sub_ps(_mm_set1_ps(1.0f), srcColor.g);
-                                dstFactor.b = _mm_sub_ps(_mm_set1_ps(1.0f), srcColor.b);
+                                dstFactor.a = SIMD::sub_ps(SIMD::set1_ps(1.0f), srcColor.a);
+                                dstFactor.r = SIMD::sub_ps(SIMD::set1_ps(1.0f), srcColor.r);
+                                dstFactor.g = SIMD::sub_ps(SIMD::set1_ps(1.0f), srcColor.g);
+                                dstFactor.b = SIMD::sub_ps(SIMD::set1_ps(1.0f), srcColor.b);
                                 break;
 
                             case GL_SRC_ALPHA:
@@ -852,10 +859,10 @@ namespace SWGL {
                                 break;
 
                             case GL_ONE_MINUS_SRC_ALPHA:
-                                dstFactor.a = _mm_sub_ps(_mm_set1_ps(1.0f), srcColor.a);
-                                dstFactor.r = _mm_sub_ps(_mm_set1_ps(1.0f), srcColor.a);
-                                dstFactor.g = _mm_sub_ps(_mm_set1_ps(1.0f), srcColor.a);
-                                dstFactor.b = _mm_sub_ps(_mm_set1_ps(1.0f), srcColor.a);
+                                dstFactor.a = SIMD::sub_ps(SIMD::set1_ps(1.0f), srcColor.a);
+                                dstFactor.r = SIMD::sub_ps(SIMD::set1_ps(1.0f), srcColor.a);
+                                dstFactor.g = SIMD::sub_ps(SIMD::set1_ps(1.0f), srcColor.a);
+                                dstFactor.b = SIMD::sub_ps(SIMD::set1_ps(1.0f), srcColor.a);
                                 break;
 
                             case GL_DST_ALPHA:
@@ -866,18 +873,18 @@ namespace SWGL {
                                 break;
 
                             case GL_ONE_MINUS_DST_ALPHA:
-                                dstFactor.a = _mm_sub_ps(_mm_set1_ps(1.0f), dstColor.a);
-                                dstFactor.r = _mm_sub_ps(_mm_set1_ps(1.0f), dstColor.a);
-                                dstFactor.g = _mm_sub_ps(_mm_set1_ps(1.0f), dstColor.a);
-                                dstFactor.b = _mm_sub_ps(_mm_set1_ps(1.0f), dstColor.a);
+                                dstFactor.a = SIMD::sub_ps(SIMD::set1_ps(1.0f), dstColor.a);
+                                dstFactor.r = SIMD::sub_ps(SIMD::set1_ps(1.0f), dstColor.a);
+                                dstFactor.g = SIMD::sub_ps(SIMD::set1_ps(1.0f), dstColor.a);
+                                dstFactor.b = SIMD::sub_ps(SIMD::set1_ps(1.0f), dstColor.a);
                                 break;
                             }
 
                             // Perform the blending
-                            srcColor.a = _mm_add_ps(_mm_mul_ps(srcColor.a, srcFactor.a), _mm_mul_ps(dstColor.a, dstFactor.a));
-                            srcColor.r = _mm_add_ps(_mm_mul_ps(srcColor.r, srcFactor.r), _mm_mul_ps(dstColor.r, dstFactor.r));
-                            srcColor.g = _mm_add_ps(_mm_mul_ps(srcColor.g, srcFactor.g), _mm_mul_ps(dstColor.g, dstFactor.g));
-                            srcColor.b = _mm_add_ps(_mm_mul_ps(srcColor.b, srcFactor.b), _mm_mul_ps(dstColor.b, dstFactor.b));
+                            srcColor.a = SIMD::add_ps(SIMD::mul_ps(srcColor.a, srcFactor.a), SIMD::mul_ps(dstColor.a, dstFactor.a));
+                            srcColor.r = SIMD::add_ps(SIMD::mul_ps(srcColor.r, srcFactor.r), SIMD::mul_ps(dstColor.r, dstFactor.r));
+                            srcColor.g = SIMD::add_ps(SIMD::mul_ps(srcColor.g, srcFactor.g), SIMD::mul_ps(dstColor.g, dstFactor.g));
+                            srcColor.b = SIMD::add_ps(SIMD::mul_ps(srcColor.b, srcFactor.b), SIMD::mul_ps(dstColor.b, dstFactor.b));
                         }
 
                         quadBlendingResult = getIntegerRGBA(srcColor);
@@ -890,14 +897,14 @@ namespace SWGL {
 
                             quadBlendingResult,
                             quadBackbuffer,
-                            _mm_set1_epi32(colorMask.getMask())
+                            SIMD::set1_epi32(colorMask.getMask())
                         );
 
 
                         //
                         // Store final color in the color buffer
                         //
-                        _mm_store_si128(
+                        SIMD::store_si128(
 
                             reinterpret_cast<QInt *>(colorBuffer),
                             SIMD::blend(quadBackbuffer, quadBlendingResult, fragmentMask)
@@ -907,9 +914,9 @@ namespace SWGL {
                 nextQuad:
 
                     // Update edge equation values with respect to the change in x
-                    edgeValue[0] = _mm_add_epi32(edgeValue[0], edgeDX[0]);
-                    edgeValue[1] = _mm_add_epi32(edgeValue[1], edgeDX[1]);
-                    edgeValue[2] = _mm_add_epi32(edgeValue[2], edgeDX[2]);
+                    edgeValue[0] = SIMD::add_epi32(edgeValue[0], edgeDX[0]);
+                    edgeValue[1] = SIMD::add_epi32(edgeValue[1], edgeDX[1]);
+                    edgeValue[2] = SIMD::add_epi32(edgeValue[2], edgeDX[2]);
 
                     // Update buffer address
                     colorBuffer += 4;
@@ -917,9 +924,9 @@ namespace SWGL {
                 }
 
                 // Update edge equation values with respect to the change in y
-                edgeValue[0] = _mm_add_epi32(edgeValue[0], edgeDY[0]);
-                edgeValue[1] = _mm_add_epi32(edgeValue[1], edgeDY[1]);
-                edgeValue[2] = _mm_add_epi32(edgeValue[2], edgeDY[2]);
+                edgeValue[0] = SIMD::add_epi32(edgeValue[0], edgeDY[0]);
+                edgeValue[1] = SIMD::add_epi32(edgeValue[1], edgeDY[1]);
+                edgeValue[2] = SIMD::add_epi32(edgeValue[2], edgeDY[2]);
 
                 // Update buffer address
                 colorBuffer += bufferStride;

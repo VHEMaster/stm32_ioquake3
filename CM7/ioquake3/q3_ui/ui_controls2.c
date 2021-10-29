@@ -360,14 +360,14 @@ static void Controls_InitCvars( void )
 			break;
 
 		// get current value
-		cvarptr->value = trap_Cvar_VariableValue( cvarptr->name );
+		cvarptr->value = UI_trap_Cvar_VariableValue( cvarptr->name );
 
 		// get default value
-		trap_Cvar_Reset( cvarptr->name );
-		cvarptr->defaultvalue = trap_Cvar_VariableValue( cvarptr->name );
+		UI_trap_Cvar_Reset( cvarptr->name );
+		cvarptr->defaultvalue = UI_trap_Cvar_VariableValue( cvarptr->name );
 
 		// restore current value
-		trap_Cvar_SetValue( cvarptr->name, cvarptr->value );
+		UI_trap_Cvar_SetValue( cvarptr->name, cvarptr->value );
 	}
 }
 
@@ -542,7 +542,7 @@ static void Controls_UpdateModel( int anim ) {
 		break;
 	}
 
-	UI_PlayerInfo_SetInfo( &s_controls.playerinfo, s_controls.playerLegs, s_controls.playerTorso, s_controls.playerViewangles, s_controls.playerMoveangles, s_controls.playerWeapon, s_controls.playerChat );
+	Q3UI_PlayerInfo_SetInfo( &s_controls.playerinfo, s_controls.playerLegs, s_controls.playerTorso, s_controls.playerViewangles, s_controls.playerMoveangles, s_controls.playerWeapon, s_controls.playerChat );
 }
 
 
@@ -668,13 +668,13 @@ static void Controls_DrawKeyBinding( void *self )
 		strcpy(name,"???");
 	else
 	{
-		trap_Key_KeynumToStringBuf( b1, name, 32 );
+		UI_trap_Key_KeynumToStringBuf( b1, name, 32 );
 		Q_strupr(name);
 
 		b2 = g_bindings[a->generic.id].bind2;
 		if (b2 != -1)
 		{
-			trap_Key_KeynumToStringBuf( b2, name2, 32 );
+			UI_trap_Key_KeynumToStringBuf( b2, name2, 32 );
 			Q_strupr(name2);
 
 			strcat( name, " or " );
@@ -684,34 +684,34 @@ static void Controls_DrawKeyBinding( void *self )
 
 	if (c)
 	{
-		UI_FillRect( a->generic.left, a->generic.top, a->generic.right-a->generic.left+1, a->generic.bottom-a->generic.top+1, listbar_color ); 
+		Q3UI_FillRect( a->generic.left, a->generic.top, a->generic.right-a->generic.left+1, a->generic.bottom-a->generic.top+1, listbar_color ); 
 
-		UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, text_color_highlight );
-		UI_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT|UI_PULSE, text_color_highlight );
+		Q3UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, text_color_highlight );
+		Q3UI_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT|UI_PULSE, text_color_highlight );
 
 		if (s_controls.waitingforkey)
 		{
-			UI_DrawChar( x, y, '=', UI_CENTER|UI_BLINK|UI_SMALLFONT, text_color_highlight);
-			UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.80, "Waiting for new key ... ESCAPE to cancel", UI_SMALLFONT|UI_CENTER|UI_PULSE, colorWhite );
+			Q3UI_DrawChar( x, y, '=', UI_CENTER|UI_BLINK|UI_SMALLFONT, text_color_highlight);
+			Q3UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.80, "Waiting for new key ... ESCAPE to cancel", UI_SMALLFONT|UI_CENTER|UI_PULSE, colorWhite );
 		}
 		else
 		{
-			UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, text_color_highlight);
-			UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.78, "Press ENTER or CLICK to change", UI_SMALLFONT|UI_CENTER, colorWhite );
-			UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.82, "Press BACKSPACE to clear", UI_SMALLFONT|UI_CENTER, colorWhite );
+			Q3UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, text_color_highlight);
+			Q3UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.78, "Press ENTER or CLICK to change", UI_SMALLFONT|UI_CENTER, colorWhite );
+			Q3UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.82, "Press BACKSPACE to clear", UI_SMALLFONT|UI_CENTER, colorWhite );
 		}
 	}
 	else
 	{
 		if (a->generic.flags & QMF_GRAYED)
 		{
-			UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, text_color_disabled );
-			UI_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT, text_color_disabled );
+			Q3UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, text_color_disabled );
+			Q3UI_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT, text_color_disabled );
 		}
 		else
 		{
-			UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, controls_binding_color );
-			UI_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT, controls_binding_color );
+			Q3UI_DrawString( x - SMALLCHAR_WIDTH, y, g_bindings[a->generic.id].label, UI_RIGHT|UI_SMALLFONT, controls_binding_color );
+			Q3UI_DrawString( x + SMALLCHAR_WIDTH, y, name, UI_LEFT|UI_SMALLFONT, controls_binding_color );
 		}
 	}
 }
@@ -723,7 +723,7 @@ Controls_StatusBar
 */
 static void Controls_StatusBar( void *self )
 {
-	UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.80, "Use Arrow Keys or CLICK to change", UI_SMALLFONT|UI_CENTER, colorWhite );
+	Q3UI_DrawString(SCREEN_WIDTH * 0.50, SCREEN_HEIGHT * 0.80, "Use Arrow Keys or CLICK to change", UI_SMALLFONT|UI_CENTER, colorWhite );
 }
 
 
@@ -736,15 +736,15 @@ static void Controls_DrawPlayer( void *self ) {
 	menubitmap_s	*b;
 	char			buf[MAX_QPATH];
 
-	trap_Cvar_VariableStringBuffer( "model", buf, sizeof( buf ) );
+	UI_trap_Cvar_VariableStringBuffer( "model", buf, sizeof( buf ) );
 	if ( strcmp( buf, s_controls.playerModel ) != 0 ) {
-		UI_PlayerInfo_SetModel( &s_controls.playerinfo, buf );
+		Q3UI_PlayerInfo_SetModel( &s_controls.playerinfo, buf );
 		strcpy( s_controls.playerModel, buf );
 		Controls_UpdateModel( ANIM_IDLE );
 	}
 
 	b = (menubitmap_s*) self;
-	UI_DrawPlayer( b->generic.x, b->generic.y, b->width, b->height, &s_controls.playerinfo, uis.realtime/2 );
+	Q3UI_DrawPlayer( b->generic.x, b->generic.y, b->width, b->height, &s_controls.playerinfo, uis.realtime/2 );
 }
 
 
@@ -764,7 +764,7 @@ static void Controls_GetKeyAssignment (char *command, int *twokeys)
 
 	for ( j = 0; j < 256; j++ )
 	{
-		trap_Key_GetBindingBuf( j, b, 256 );
+		UI_trap_Key_GetBindingBuf( j, b, 256 );
 		if ( *b == 0 ) {
 			continue;
 		}
@@ -804,13 +804,13 @@ static void Controls_GetConfig( void )
 	}
 
 	s_controls.invertmouse.curvalue  = Controls_GetCvarValue( "m_pitch" ) < 0;
-	s_controls.smoothmouse.curvalue  = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "m_filter" ) );
-	s_controls.alwaysrun.curvalue    = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cl_run" ) );
-	s_controls.autoswitch.curvalue   = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_autoswitch" ) );
-	s_controls.sensitivity.curvalue  = UI_ClampCvar( 2, 30, Controls_GetCvarValue( "sensitivity" ) );
-	s_controls.joyenable.curvalue    = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "in_joystick" ) );
-	s_controls.joythreshold.curvalue = UI_ClampCvar( 0.05f, 0.75f, Controls_GetCvarValue( "joy_threshold" ) );
-	s_controls.freelook.curvalue     = UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cl_freelook" ) );
+	s_controls.smoothmouse.curvalue  = Q3UI_ClampCvar( 0, 1, Controls_GetCvarValue( "m_filter" ) );
+	s_controls.alwaysrun.curvalue    = Q3UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cl_run" ) );
+	s_controls.autoswitch.curvalue   = Q3UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cg_autoswitch" ) );
+	s_controls.sensitivity.curvalue  = Q3UI_ClampCvar( 2, 30, Controls_GetCvarValue( "sensitivity" ) );
+	s_controls.joyenable.curvalue    = Q3UI_ClampCvar( 0, 1, Controls_GetCvarValue( "in_joystick" ) );
+	s_controls.joythreshold.curvalue = Q3UI_ClampCvar( 0.05f, 0.75f, Controls_GetCvarValue( "joy_threshold" ) );
+	s_controls.freelook.curvalue     = Q3UI_ClampCvar( 0, 1, Controls_GetCvarValue( "cl_freelook" ) );
 }
 
 /*
@@ -834,26 +834,26 @@ static void Controls_SetConfig( void )
 
 		if (bindptr->bind1 != -1)
 		{	
-			trap_Key_SetBinding( bindptr->bind1, bindptr->command );
+			UI_trap_Key_SetBinding( bindptr->bind1, bindptr->command );
 
 			if (bindptr->bind2 != -1)
-				trap_Key_SetBinding( bindptr->bind2, bindptr->command );
+				UI_trap_Key_SetBinding( bindptr->bind2, bindptr->command );
 		}
 	}
 
 	if ( s_controls.invertmouse.curvalue )
-		trap_Cvar_SetValue( "m_pitch", -fabs( trap_Cvar_VariableValue( "m_pitch" ) ) );
+		UI_trap_Cvar_SetValue( "m_pitch", -fabs( UI_trap_Cvar_VariableValue( "m_pitch" ) ) );
 	else
-		trap_Cvar_SetValue( "m_pitch", fabs( trap_Cvar_VariableValue( "m_pitch" ) ) );
+		UI_trap_Cvar_SetValue( "m_pitch", fabs( UI_trap_Cvar_VariableValue( "m_pitch" ) ) );
 
-	trap_Cvar_SetValue( "m_filter", s_controls.smoothmouse.curvalue );
-	trap_Cvar_SetValue( "cl_run", s_controls.alwaysrun.curvalue );
-	trap_Cvar_SetValue( "cg_autoswitch", s_controls.autoswitch.curvalue );
-	trap_Cvar_SetValue( "sensitivity", s_controls.sensitivity.curvalue );
-	trap_Cvar_SetValue( "in_joystick", s_controls.joyenable.curvalue );
-	trap_Cvar_SetValue( "joy_threshold", s_controls.joythreshold.curvalue );
-	trap_Cvar_SetValue( "cl_freelook", s_controls.freelook.curvalue );
-	trap_Cmd_ExecuteText( EXEC_APPEND, "in_restart\n" );
+	UI_trap_Cvar_SetValue( "m_filter", s_controls.smoothmouse.curvalue );
+	UI_trap_Cvar_SetValue( "cl_run", s_controls.alwaysrun.curvalue );
+	UI_trap_Cvar_SetValue( "cg_autoswitch", s_controls.autoswitch.curvalue );
+	UI_trap_Cvar_SetValue( "sensitivity", s_controls.sensitivity.curvalue );
+	UI_trap_Cvar_SetValue( "in_joystick", s_controls.joyenable.curvalue );
+	UI_trap_Cvar_SetValue( "joy_threshold", s_controls.joythreshold.curvalue );
+	UI_trap_Cvar_SetValue( "cl_freelook", s_controls.freelook.curvalue );
+	UI_trap_Cmd_ExecuteText( EXEC_APPEND, "in_restart\n" );
 }
 
 /*
@@ -975,11 +975,11 @@ static sfxHandle_t Controls_MenuKey( int key )
 			if (key == -1)
 			{
 				if( bindptr->bind1 != -1 ) {
-					trap_Key_SetBinding( bindptr->bind1, "" );
+					UI_trap_Key_SetBinding( bindptr->bind1, "" );
 					bindptr->bind1 = -1;
 				}
 				if( bindptr->bind2 != -1 ) {
-					trap_Key_SetBinding( bindptr->bind2, "" );
+					UI_trap_Key_SetBinding( bindptr->bind2, "" );
 					bindptr->bind2 = -1;
 				}
 			}
@@ -991,8 +991,8 @@ static sfxHandle_t Controls_MenuKey( int key )
 			}
 			else
 			{
-				trap_Key_SetBinding( bindptr->bind1, "" );
-				trap_Key_SetBinding( bindptr->bind2, "" );
+				UI_trap_Key_SetBinding( bindptr->bind1, "" );
+				UI_trap_Key_SetBinding( bindptr->bind2, "" );
 				bindptr->bind1 = key;
 				bindptr->bind2 = -1;
 			}						
@@ -1033,8 +1033,8 @@ Controls_ResetDefaults_Draw
 =================
 */
 static void Controls_ResetDefaults_Draw( void ) {
-	UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 0, "WARNING: This will reset all", UI_CENTER|UI_SMALLFONT, color_yellow );
-	UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 1, "controls to their default values.", UI_CENTER|UI_SMALLFONT, color_yellow );
+	Q3UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 0, "WARNING: This will reset all", UI_CENTER|UI_SMALLFONT, color_yellow );
+	Q3UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 1, "controls to their default values.", UI_CENTER|UI_SMALLFONT, color_yellow );
 }
 
 /*
@@ -1081,7 +1081,7 @@ static void Controls_MenuEvent( void* ptr, int event )
 		case ID_DEFAULTS:
 			if (event == QM_ACTIVATED)
 			{
-				UI_ConfirmMenu( "SET TO DEFAULTS?", Controls_ResetDefaults_Draw, Controls_ResetDefaults_Action );
+				Q3UI_ConfirmMenu( "SET TO DEFAULTS?", Controls_ResetDefaults_Draw, Controls_ResetDefaults_Action );
 			}
 			break;
 
@@ -1090,7 +1090,7 @@ static void Controls_MenuEvent( void* ptr, int event )
 			{
 				if (s_controls.changesmade)
 					Controls_SetConfig();
-				UI_PopMenu();
+				Q3UI_PopMenu();
 			}
 			break;
 
@@ -1098,14 +1098,14 @@ static void Controls_MenuEvent( void* ptr, int event )
 			if (event == QM_ACTIVATED)
 			{
 				Controls_SetConfig();
-				UI_PopMenu();
+				Q3UI_PopMenu();
 			}
 			break;
 
 		case ID_EXIT:
 			if (event == QM_ACTIVATED)
 			{
-				UI_PopMenu();
+				Q3UI_PopMenu();
 			}
 			break;
 
@@ -1156,7 +1156,7 @@ static void Controls_InitModel( void )
 {
 	memset( &s_controls.playerinfo, 0, sizeof(playerInfo_t) );
 
-	UI_PlayerInfo_SetModel( &s_controls.playerinfo, UI_Cvar_VariableString( "model" ) );
+	Q3UI_PlayerInfo_SetModel( &s_controls.playerinfo, Q3UI_Cvar_VariableString( "model" ) );
 
 	Controls_UpdateModel( ANIM_IDLE );
 }
@@ -1173,7 +1173,7 @@ static void Controls_InitWeapons( void ) {
 		if ( item->giType != IT_WEAPON ) {
 			continue;
 		}
-		trap_R_RegisterModel( item->world_model[0] );
+		UI_trap_R_RegisterModel( item->world_model[0] );
 	}
 }
 
@@ -1617,7 +1617,7 @@ static void Controls_MenuInit( void )
 
 	Menu_AddItem( &s_controls.menu, &s_controls.back );
 
-	trap_Cvar_VariableStringBuffer( "name", s_controls.name.string, 16 );
+	UI_trap_Cvar_VariableStringBuffer( "name", s_controls.name.string, 16 );
 	Q_CleanStr( s_controls.name.string );
 
 	// initialize the configurable cvars
@@ -1646,19 +1646,19 @@ Controls_Cache
 =================
 */
 void Controls_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
-	trap_R_RegisterShaderNoMip( ART_FRAMEL );
-	trap_R_RegisterShaderNoMip( ART_FRAMER );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK0 );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK1 );
+	UI_trap_R_RegisterShaderNoMip( ART_FRAMEL );
+	UI_trap_R_RegisterShaderNoMip( ART_FRAMER );
 }
 
 
 /*
 =================
-UI_ControlsMenu
+Q3UI_ControlsMenu
 =================
 */
-void UI_ControlsMenu( void ) {
+void Q3UI_ControlsMenu( void ) {
 	Controls_MenuInit();
-	UI_PushMenu( &s_controls.menu );
+	Q3UI_PushMenu( &s_controls.menu );
 }

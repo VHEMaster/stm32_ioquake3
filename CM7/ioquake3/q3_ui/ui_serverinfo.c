@@ -68,14 +68,14 @@ void Favorites_Add( void )
 	int		i;
 	int		best;
 
-	trap_Cvar_VariableStringBuffer( "cl_currentServerAddress", serverbuff, sizeof(serverbuff) );
+	UI_trap_Cvar_VariableStringBuffer( "cl_currentServerAddress", serverbuff, sizeof(serverbuff) );
 	if (!serverbuff[0])
 		return;
 
 	best = 0;
 	for (i=0; i<MAX_FAVORITESERVERS; i++)
 	{
-		trap_Cvar_VariableStringBuffer( va("server%d",i+1), adrstr, sizeof(adrstr) );
+		UI_trap_Cvar_VariableStringBuffer( va("server%d",i+1), adrstr, sizeof(adrstr) );
 		if (!Q_stricmp(serverbuff,adrstr))
 		{
 			// already in list
@@ -88,7 +88,7 @@ void Favorites_Add( void )
 	}
 
 	if (best)
-		trap_Cvar_Set( va("server%d",best), serverbuff);
+		UI_trap_Cvar_Set( va("server%d",best), serverbuff);
 }
 
 
@@ -106,14 +106,14 @@ static void ServerInfo_Event( void* ptr, int event )
 				break;
 		
 			Favorites_Add();
-			UI_PopMenu();
+			Q3UI_PopMenu();
 			break;
 
 		case ID_BACK:
 			if (event != QM_ACTIVATED)
 				break;
 
-			UI_PopMenu();
+			Q3UI_PopMenu();
 			break;
 	}
 }
@@ -140,8 +140,8 @@ static void ServerInfo_MenuDraw( void )
 
 		Q_strcat( key, MAX_INFO_KEY, ":" ); 
 
-		UI_DrawString(SCREEN_WIDTH*0.50 - 8,y,key,UI_RIGHT|UI_SMALLFONT,color_red);
-		UI_DrawString(SCREEN_WIDTH*0.50 + 8,y,value,UI_LEFT|UI_SMALLFONT,text_color_normal);
+		Q3UI_DrawString(SCREEN_WIDTH*0.50 - 8,y,key,UI_RIGHT|UI_SMALLFONT,color_red);
+		Q3UI_DrawString(SCREEN_WIDTH*0.50 + 8,y,value,UI_LEFT|UI_SMALLFONT,text_color_normal);
 
 		y += SMALLCHAR_HEIGHT;
 		i++;
@@ -174,16 +174,16 @@ void ServerInfo_Cache( void )
 	{
 		if (!serverinfo_artlist[i])
 			break;
-		trap_R_RegisterShaderNoMip(serverinfo_artlist[i]);
+		UI_trap_R_RegisterShaderNoMip(serverinfo_artlist[i]);
 	}
 }
 
 /*
 =================
-UI_ServerInfoMenu
+Q3UI_ServerInfoMenu
 =================
 */
-void UI_ServerInfoMenu( void )
+void Q3UI_ServerInfoMenu( void )
 {
 	const char		*s;
 	char			key[MAX_INFO_KEY];
@@ -231,7 +231,7 @@ void UI_ServerInfoMenu( void )
 	s_serverinfo.add.string  		  = "ADD TO FAVORITES";
 	s_serverinfo.add.style  		  = UI_CENTER|UI_SMALLFONT;
 	s_serverinfo.add.color			  =	color_red;
-	if( trap_Cvar_VariableValue( "sv_running" ) ) {
+	if( UI_trap_Cvar_VariableValue( "sv_running" ) ) {
 		s_serverinfo.add.generic.flags |= QMF_GRAYED;
 	}
 
@@ -246,7 +246,7 @@ void UI_ServerInfoMenu( void )
 	s_serverinfo.back.height  		   = 64;
 	s_serverinfo.back.focuspic         = SERVERINFO_BACK1;
 
-	trap_GetConfigString( CS_SERVERINFO, s_serverinfo.info, MAX_INFO_STRING );
+	UI_trap_GetConfigString( CS_SERVERINFO, s_serverinfo.info, MAX_INFO_STRING );
 
 	s_serverinfo.numlines = 0;
 	s = s_serverinfo.info;
@@ -267,7 +267,7 @@ void UI_ServerInfoMenu( void )
 	Menu_AddItem( &s_serverinfo.menu, (void*) &s_serverinfo.add );
 	Menu_AddItem( &s_serverinfo.menu, (void*) &s_serverinfo.back );
 
-	UI_PushMenu( &s_serverinfo.menu );
+	Q3UI_PushMenu( &s_serverinfo.menu );
 }
 
 

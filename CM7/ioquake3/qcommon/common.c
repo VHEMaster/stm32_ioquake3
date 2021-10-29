@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "qcommon.h"
 #include <setjmp.h>
 #ifndef _WIN32
-#include <netinet/in.h>
+//#include <netinet/in.h>
 #include <sys/stat.h> // umask
 #else
 #include <winsock.h>
@@ -37,9 +37,15 @@ int demo_protocols[] =
 #define MAX_NUM_ARGVS	50
 
 #define MIN_DEDICATED_COMHUNKMEGS 1
-#define MIN_COMHUNKMEGS		56
-#define DEF_COMHUNKMEGS		64
-#define DEF_COMZONEMEGS		24
+#define MIN_COMHUNKMEGS   8
+#define DEF_COMHUNKMEGS   12
+#define DEF_COMZONEMEGS   8
+
+//Changed? Might not be workable... Unfortunately
+//#define MIN_COMHUNKMEGS   56
+//#define DEF_COMHUNKMEGS   64
+//#define DEF_COMZONEMEGS   24
+
 #define XSTRING(x)				STRING(x)
 #define STRING(x)					#x
 #define DEF_COMHUNKMEGS_S	XSTRING(DEF_COMHUNKMEGS)
@@ -51,7 +57,7 @@ char	*com_argv[MAX_NUM_ARGVS+1];
 jmp_buf abortframe;		// an ERR_DROP occured, exit the entire frame
 
 
-FILE *debuglogfile;
+FIL *debuglogfile;
 static fileHandle_t logfile;
 fileHandle_t	com_journalFile;			// events are written here
 fileHandle_t	com_journalDataFile;		// config files are written here
@@ -1387,7 +1393,7 @@ Com_InitZoneMemory
 */
 void Com_InitSmallZoneMemory( void ) {
 	s_smallZoneTotal = 512 * 1024;
-	smallzone = calloc( s_smallZoneTotal, 1 );
+	smallzone = pvPortMalloc( s_smallZoneTotal);
 	if ( !smallzone ) {
 		Com_Error( ERR_FATAL, "Small zone data failed to allocate %1.1f megs", (float)s_smallZoneTotal / (1024*1024) );
 	}
@@ -1412,7 +1418,7 @@ void Com_InitZoneMemory( void ) {
 		s_zoneTotal = cv->integer * 1024 * 1024;
 	}
 
-	mainzone = calloc( s_zoneTotal, 1 );
+	mainzone = pvPortMalloc( s_zoneTotal);
 	if ( !mainzone ) {
 		Com_Error( ERR_FATAL, "Zone data failed to allocate %i megs", s_zoneTotal / (1024*1024) );
 	}
@@ -1536,7 +1542,7 @@ void Com_InitHunkMemory( void ) {
 		s_hunkTotal = cv->integer * 1024 * 1024;
 	}
 
-	s_hunkData = calloc( s_hunkTotal + 31, 1 );
+	s_hunkData = pvPortMalloc( s_hunkTotal + 31 );
 	if ( !s_hunkData ) {
 		Com_Error( ERR_FATAL, "Hunk data failed to allocate %i megs", s_hunkTotal / (1024*1024) );
 	}
@@ -2458,13 +2464,10 @@ static void Com_WriteCDKey( const char *filename, const char *ikey ) {
 		return;
 	}
 
-#ifndef _WIN32
-	savedumask = umask(0077);
-#endif
 	f = FS_SV_FOpenFileWrite( fbuffer );
 	if ( !f ) {
 		Com_Printf ("Couldn't write CD key to %s.\n", fbuffer );
-		goto out;
+	  return;
 	}
 
 	FS_Write( key, 16, f );
@@ -2474,11 +2477,6 @@ static void Com_WriteCDKey( const char *filename, const char *ikey ) {
 	FS_Printf( f, "// id Software and Activision will NOT ask you to send this file to them.\r\n");
 
 	FS_FCloseFile( f );
-out:
-#ifndef _WIN32
-	umask(savedumask);
-#endif
-	return;
 }
 #endif
 

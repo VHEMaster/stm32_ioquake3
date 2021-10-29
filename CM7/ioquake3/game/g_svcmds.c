@@ -161,12 +161,12 @@ static void UpdateIPBans (void)
 		}
 		else
 		{
-			Com_Printf("g_banIPs overflowed at MAX_CVAR_VALUE_STRING\n");
+			G_Com_Printf("g_banIPs overflowed at MAX_CVAR_VALUE_STRING\n");
 			break;
 		}
 	}
 
-	trap_Cvar_Set( "g_banIPs", iplist_final );
+	G_trap_Cvar_Set( "g_banIPs", iplist_final );
 }
 
 /*
@@ -265,12 +265,12 @@ void Svcmd_AddIP_f (void)
 {
 	char		str[MAX_TOKEN_CHARS];
 
-	if ( trap_Argc() < 2 ) {
+	if ( G_trap_Argc() < 2 ) {
 		G_Printf("Usage:  addip <ip-mask>\n");
 		return;
 	}
 
-	trap_Argv( 1, str, sizeof( str ) );
+	G_trap_Argv( 1, str, sizeof( str ) );
 
 	AddIP( str );
 
@@ -287,12 +287,12 @@ void Svcmd_RemoveIP_f (void)
 	int			i;
 	char		str[MAX_TOKEN_CHARS];
 
-	if ( trap_Argc() < 2 ) {
+	if ( G_trap_Argc() < 2 ) {
 		G_Printf("Usage:  sv removeip <ip-mask>\n");
 		return;
 	}
 
-	trap_Argv( 1, str, sizeof( str ) );
+	G_trap_Argv( 1, str, sizeof( str ) );
 
 	if (!StringToFilter (str, &f))
 		return;
@@ -384,7 +384,7 @@ gclient_t	*ClientForString( const char *s ) {
 	if ( s[0] >= '0' && s[0] <= '9' ) {
 		idnum = atoi( s );
 		if ( idnum < 0 || idnum >= level.maxclients ) {
-			Com_Printf( "Bad client slot: %i\n", idnum );
+			G_Com_Printf( "Bad client slot: %i\n", idnum );
 			return NULL;
 		}
 
@@ -424,14 +424,14 @@ void	Svcmd_ForceTeam_f( void ) {
 	char		str[MAX_TOKEN_CHARS];
 
 	// find the player
-	trap_Argv( 1, str, sizeof( str ) );
+	G_trap_Argv( 1, str, sizeof( str ) );
 	cl = ClientForString( str );
 	if ( !cl ) {
 		return;
 	}
 
 	// set the team
-	trap_Argv( 2, str, sizeof( str ) );
+	G_trap_Argv( 2, str, sizeof( str ) );
 	SetTeam( &g_entities[cl - level.clients], str );
 }
 
@@ -446,7 +446,7 @@ ConsoleCommand
 qboolean	ConsoleCommand( void ) {
 	char	cmd[MAX_TOKEN_CHARS];
 
-	trap_Argv( 0, cmd, sizeof( cmd ) );
+	G_trap_Argv( 0, cmd, sizeof( cmd ) );
 
 	if ( Q_stricmp (cmd, "entitylist") == 0 ) {
 		Svcmd_EntityList_f();
@@ -489,17 +489,17 @@ qboolean	ConsoleCommand( void ) {
 	}
 
 	if (Q_stricmp (cmd, "listip") == 0) {
-		trap_SendConsoleCommand( EXEC_NOW, "g_banIPs\n" );
+		G_trap_SendConsoleCommand( EXEC_NOW, "g_banIPs\n" );
 		return qtrue;
 	}
 
 	if (g_dedicated.integer) {
 		if (Q_stricmp (cmd, "say") == 0) {
-			trap_SendServerCommand( -1, va("print \"server: %s\"", ConcatArgs(1) ) );
+			G_trap_SendServerCommand( -1, va("print \"server: %s\"", ConcatArgs(1) ) );
 			return qtrue;
 		}
 		// everything else will also be printed as a say command
-		trap_SendServerCommand( -1, va("print \"server: %s\"", ConcatArgs(0) ) );
+		G_trap_SendServerCommand( -1, va("print \"server: %s\"", ConcatArgs(0) ) );
 		return qtrue;
 	}
 

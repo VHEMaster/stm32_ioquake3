@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Defines.h"
+#include <Defines.hpp>
 
 // Datatypes
 typedef unsigned int GLenum;
@@ -16,8 +16,9 @@ typedef unsigned int GLuint;
 typedef int GLsizei;
 typedef float GLfloat;
 typedef float GLclampf;
-typedef double GLdouble;
-typedef double GLclampd;
+typedef float GLdouble;
+typedef float GLclampd;
+
 
 // Boolean values
 #define GL_FALSE                                0x0

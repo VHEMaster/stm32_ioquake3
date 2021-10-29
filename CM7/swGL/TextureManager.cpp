@@ -1,6 +1,7 @@
-﻿#include "TextureManager.h"
-#include "Log.h"
-#include "Context.h"
+﻿#include "TextureManager.hpp"
+
+#include "Context.hpp"
+#include "Log.hpp"
 
 #if 0
 // Just for debugging purposes

@@ -1,14 +1,16 @@
-﻿#include <array>
+﻿#include "Renderer.hpp"
+
+#include "AllocatedVector.hpp"
+#include <array>
 #include <vector>
-#include "Defines.h"
-#include "Context.h"
-#include "Log.h"
-#include "CommandClearColor.h"
-#include "CommandClearDepth.h"
-#include "CommandDrawTriangle.h"
-#include "CommandPoisonPill.h"
-#include "CommandSynchronize.h"
-#include "Renderer.h"
+#include "CommandClearColor.hpp"
+#include "Log.hpp"
+#include "Context.hpp"
+#include "CommandSynchronize.hpp"
+#include "CommandPoisonPill.hpp"
+#include "CommandDrawTriangle.hpp"
+#include "CommandClearDepth.hpp"
+#include "Defines.hpp"
 
 namespace SWGL {
 
@@ -128,7 +130,7 @@ namespace SWGL {
 
 
         // Figure out which triangle must be rendered by which thread
-        std::array<std::vector<int>, SWGL_NUM_DRAW_THREADS> bins;
+        std::array<AllocatedVector<int>, SWGL_NUM_DRAW_THREADS> bins;
 
         auto binWidth = m_drawSurface.getBufferWidth();
         auto binHeight = m_drawSurface.getBufferHeight();

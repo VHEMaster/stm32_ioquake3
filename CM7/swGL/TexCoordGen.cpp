@@ -1,8 +1,9 @@
-﻿#include "Defines.h"
-#include "Log.h"
-#include "Vertex.h"
-#include "MatrixStack.h"
-#include "TexCoordGen.h"
+﻿#include "TexCoordGen.hpp"
+
+#include "Defines.hpp"
+#include "Vertex.hpp"
+#include "MatrixStack.hpp"
+#include "Log.hpp"
 
 namespace SWGL {
     

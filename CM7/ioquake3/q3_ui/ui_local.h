@@ -20,18 +20,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 //
-#ifndef __UI_LOCAL_H__
-#define __UI_LOCAL_H__
+#ifndef __Q3UI_LOCAL_H__
+#define __Q3UI_LOCAL_H__
 
 #include "../qcommon/q_shared.h"
 #include "../renderer/tr_types.h"
 //NOTE: include the ui_public.h from the new UI
 #include "../ui/ui_public.h"
 //redefine to old API version
-#undef UI_API_VERSION
-#define UI_API_VERSION	4
+#undef Q3UI_API_VERSION
+#define Q3UI_API_VERSION	4
 #include "../client/keycodes.h"
 #include "../game/bg_public.h"
+
+void QDECL Q3UI_Com_Printf( const char *msg, ... );
+void QDECL Q3UI_Com_Error( int level, const char *error, ... );
 
 typedef void (*voidfunc_f)(void);
 
@@ -315,106 +318,106 @@ extern sfxHandle_t	MenuField_Key( menufield_s* m, int* key );
 // ui_menu.c
 //
 extern void MainMenu_Cache( void );
-extern void UI_MainMenu(void);
-extern void UI_RegisterCvars( void );
-extern void UI_UpdateCvars( void );
+extern void Q3UI_MainMenu(void);
+extern void Q3UI_RegisterCvars( void );
+extern void Q3UI_UpdateCvars( void );
 
 //
 // ui_credits.c
 //
-extern void UI_CreditMenu( void );
+extern void Q3UI_CreditMenu( void );
 
 //
 // ui_ingame.c
 //
 extern void InGame_Cache( void );
-extern void UI_InGameMenu(void);
+extern void Q3UI_InGameMenu(void);
 
 //
 // ui_confirm.c
 //
 extern void ConfirmMenu_Cache( void );
-extern void UI_ConfirmMenu( const char *question, void (*draw)( void ), void (*action)( qboolean result ) );
-extern void UI_ConfirmMenu_Style( const char *question, int style, void (*draw)( void ), void (*action)( qboolean result ) );
-extern void UI_Message( const char **lines );
+extern void Q3UI_ConfirmMenu( const char *question, void (*draw)( void ), void (*action)( qboolean result ) );
+extern void Q3UI_ConfirmMenu_Style( const char *question, int style, void (*draw)( void ), void (*action)( qboolean result ) );
+extern void Q3UI_Message( const char **lines );
 
 //
 // ui_setup.c
 //
-extern void UI_SetupMenu_Cache( void );
-extern void UI_SetupMenu(void);
+extern void Q3UI_SetupMenu_Cache( void );
+extern void Q3UI_SetupMenu(void);
 
 //
 // ui_team.c
 //
-extern void UI_TeamMainMenu( void );
+extern void Q3UI_TeamMainMenu( void );
 extern void TeamMain_Cache( void );
 
 //
 // ui_connect.c
 //
-extern void UI_DrawConnectScreen( qboolean overlay );
+extern void Q3UI_DrawConnectScreen( qboolean overlay );
 
 //
 // ui_controls2.c
 //
-extern void UI_ControlsMenu( void );
+extern void Q3UI_ControlsMenu( void );
 extern void Controls_Cache( void );
 
 //
 // ui_demo2.c
 //
-extern void UI_DemosMenu( void );
+extern void Q3UI_DemosMenu( void );
 extern void Demos_Cache( void );
 
 //
 // ui_cinematics.c
 //
-extern void UI_CinematicsMenu( void );
-extern void UI_CinematicsMenu_f( void );
-extern void UI_CinematicsMenu_Cache( void );
+extern void Q3UI_CinematicsMenu( void );
+extern void Q3UI_CinematicsMenu_f( void );
+extern void Q3UI_CinematicsMenu_Cache( void );
 
 //
 // ui_mods.c
 //
-extern void UI_ModsMenu( void );
-extern void UI_ModsMenu_Cache( void );
+extern void Q3UI_ModsMenu( void );
+extern void Q3UI_ModsMenu_Cache( void );
 
 //
 // ui_cdkey.c
 //
-extern void UI_CDKeyMenu( void );
-extern void UI_CDKeyMenu_Cache( void );
-extern void UI_CDKeyMenu_f( void );
+extern void Q3UI_CDKeyMenu( void );
+extern void Q3UI_CDKeyMenu_Cache( void );
+extern void Q3UI_CDKeyMenu_f( void );
 
 //
 // ui_playermodel.c
 //
-extern void UI_PlayerModelMenu( void );
+extern void Q3UI_PlayerModelMenu( void );
 extern void PlayerModel_Cache( void );
 
 //
 // ui_playersettings.c
 //
-extern void UI_PlayerSettingsMenu( void );
+extern void Q3UI_PlayerSettingsMenu( void );
 extern void PlayerSettings_Cache( void );
 
 //
 // ui_preferences.c
 //
-extern void UI_PreferencesMenu( void );
+extern void Q3UI_PreferencesMenu( void );
 extern void Preferences_Cache( void );
 
 //
 // ui_specifyleague.c
 //
-extern void UI_SpecifyLeagueMenu( void );
+extern void Q3UI_SpecifyLeagueMenu( void );
 extern void SpecifyLeague_Cache( void );
 
 //
 // ui_specifyserver.c
 //
-extern void UI_SpecifyServerMenu( void );
+extern void Q3UI_SpecifyServerMenu( void );
 extern void SpecifyServer_Cache( void );
 
 //
@@ -422,28 +425,28 @@ extern void SpecifyServer_Cache( void );
 //
 #define MAX_FAVORITESERVERS 16
 
-extern void UI_ArenaServersMenu( void );
+extern void Q3UI_ArenaServersMenu( void );
 extern void ArenaServers_Cache( void );
 
 //
 // ui_startserver.c
 //
-extern void UI_StartServerMenu( qboolean multiplayer );
+extern void Q3UI_StartServerMenu( qboolean multiplayer );
 extern void StartServer_Cache( void );
 extern void ServerOptions_Cache( void );
-extern void UI_BotSelectMenu( char *bot );
-extern void UI_BotSelectMenu_Cache( void );
+extern void Q3UI_BotSelectMenu( char *bot );
+extern void Q3UI_BotSelectMenu_Cache( void );
 
 //
 // ui_serverinfo.c
 //
-extern void UI_ServerInfoMenu( void );
+extern void Q3UI_ServerInfoMenu( void );
 extern void ServerInfo_Cache( void );
 
 //
 // ui_video.c
 //
-extern void UI_GraphicsOptionsMenu( void );
+extern void Q3UI_GraphicsOptionsMenu( void );
 extern void GraphicsOptions_Cache( void );
 extern void DriverInfo_Cache( void );
 
@@ -520,10 +523,10 @@ typedef struct {
 	int				realWeapon;
 } playerInfo_t;
 
-void UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int time );
-void UI_PlayerInfo_SetModel( playerInfo_t *pi, const char *model );
-void UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNum, qboolean chat );
-qboolean UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName );
+void Q3UI_DrawPlayer( float x, float y, float w, float h, playerInfo_t *pi, int time );
+void Q3UI_PlayerInfo_SetModel( playerInfo_t *pi, const char *model );
+void Q3UI_PlayerInfo_SetInfo( playerInfo_t *pi, int legsAnim, int torsoAnim, vec3_t viewAngles, vec3_t moveAngles, weapon_t weaponNum, qboolean chat );
+qboolean Q3UI_RegisterClientModelname( playerInfo_t *pi, const char *modelSkinName );
 
 //
 // ui_atoms.c
@@ -555,182 +558,182 @@ typedef struct {
 	qboolean			firstdraw;
 } uiStatic_t;
 
-extern void			UI_Init( void );
-extern void			UI_Shutdown( void );
-extern void			UI_KeyEvent( int key, int down );
-extern void			UI_MouseEvent( int dx, int dy );
-extern void			UI_Refresh( int realtime );
-extern qboolean		UI_ConsoleCommand( int realTime );
-extern float		UI_ClampCvar( float min, float max, float value );
-extern void			UI_DrawNamedPic( float x, float y, float width, float height, const char *picname );
-extern void			UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader ); 
-extern void			UI_FillRect( float x, float y, float width, float height, const float *color );
-extern void			UI_DrawRect( float x, float y, float width, float height, const float *color );
-extern void			UI_UpdateScreen( void );
-extern void			UI_SetColor( const float *rgba );
-extern void			UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, float t);
-extern void			UI_DrawBannerString( int x, int y, const char* str, int style, vec4_t color );
-extern float		UI_ProportionalSizeScale( int style );
-extern void			UI_DrawProportionalString( int x, int y, const char* str, int style, vec4_t color );
-extern void			UI_DrawProportionalString_AutoWrapped( int x, int ystart, int xmax, int ystep, const char* str, int style, vec4_t color );
-extern int			UI_ProportionalStringWidth( const char* str );
-extern void			UI_DrawString( int x, int y, const char* str, int style, vec4_t color );
-extern void			UI_DrawChar( int x, int y, int ch, int style, vec4_t color );
-extern qboolean 	UI_CursorInRect (int x, int y, int width, int height);
-extern void			UI_AdjustFrom640( float *x, float *y, float *w, float *h );
-extern void			UI_DrawTextBox (int x, int y, int width, int lines);
-extern qboolean		UI_IsFullscreen( void );
-extern void			UI_SetActiveMenu( uiMenuCommand_t menu );
-extern void			UI_PushMenu ( menuframework_s *menu );
-extern void			UI_PopMenu (void);
-extern void			UI_ForceMenuOff (void);
-extern char			*UI_Argv( int arg );
-extern char			*UI_Cvar_VariableString( const char *var_name );
-extern void			UI_Refresh( int time );
-extern void			UI_StartDemoLoop( void );
+extern void			Q3UI_Init( void );
+extern void			Q3UI_Shutdown( void );
+extern void			Q3UI_KeyEvent( int key, int down );
+extern void			Q3UI_MouseEvent( int dx, int dy );
+extern void			Q3UI_Refresh( int realtime );
+extern qboolean		Q3UI_ConsoleCommand( int realTime );
+extern float		Q3UI_ClampCvar( float min, float max, float value );
+extern void			Q3UI_DrawNamedPic( float x, float y, float width, float height, const char *picname );
+extern void			Q3UI_DrawHandlePic( float x, float y, float w, float h, qhandle_t hShader ); 
+extern void			Q3UI_FillRect( float x, float y, float width, float height, const float *color );
+extern void			Q3UI_DrawRect( float x, float y, float width, float height, const float *color );
+extern void			Q3UI_UpdateScreen( void );
+extern void			Q3UI_SetColor( const float *rgba );
+extern void			Q3UI_LerpColor(vec4_t a, vec4_t b, vec4_t c, float t);
+extern void			Q3UI_DrawBannerString( int x, int y, const char* str, int style, vec4_t color );
+extern float		Q3UI_ProportionalSizeScale( int style );
+extern void			Q3UI_DrawProportionalString( int x, int y, const char* str, int style, vec4_t color );
+extern void			Q3UI_DrawProportionalString_AutoWrapped( int x, int ystart, int xmax, int ystep, const char* str, int style, vec4_t color );
+extern int			Q3UI_ProportionalStringWidth( const char* str );
+extern void			Q3UI_DrawString( int x, int y, const char* str, int style, vec4_t color );
+extern void			Q3UI_DrawChar( int x, int y, int ch, int style, vec4_t color );
+extern qboolean 	Q3UI_CursorInRect (int x, int y, int width, int height);
+extern void			Q3UI_AdjustFrom640( float *x, float *y, float *w, float *h );
+extern void			Q3UI_DrawTextBox (int x, int y, int width, int lines);
+extern qboolean		Q3UI_IsFullscreen( void );
+extern void			Q3UI_SetActiveMenu( uiMenuCommand_t menu );
+extern void			Q3UI_PushMenu ( menuframework_s *menu );
+extern void			Q3UI_PopMenu (void);
+extern void			Q3UI_ForceMenuOff (void);
+extern char			*Q3UI_Argv( int arg );
+extern char			*Q3UI_Cvar_VariableString( const char *var_name );
+extern void			Q3UI_Refresh( int time );
+extern void			Q3UI_StartDemoLoop( void );
 extern qboolean		m_entersound;
 extern uiStatic_t	uis;
 
 //
 // ui_spLevel.c
 //
-void UI_SPLevelMenu_Cache( void );
-void UI_SPLevelMenu( void );
-void UI_SPLevelMenu_f( void );
-void UI_SPLevelMenu_ReInit( void );
+void Q3UI_SPLevelMenu_Cache( void );
+void Q3UI_SPLevelMenu( void );
+void Q3UI_SPLevelMenu_f( void );
+void Q3UI_SPLevelMenu_ReInit( void );
 
 //
 // ui_spArena.c
 //
-void UI_SPArena_Start( const char *arenaInfo );
+void Q3UI_SPArena_Start( const char *arenaInfo );
 
 //
 // ui_spPostgame.c
 //
-void UI_SPPostgameMenu_Cache( void );
-void UI_SPPostgameMenu_f( void );
+void Q3UI_SPPostgameMenu_Cache( void );
+void Q3UI_SPPostgameMenu_f( void );
 
 //
 // ui_spSkill.c
 //
-void UI_SPSkillMenu( const char *arenaInfo );
-void UI_SPSkillMenu_Cache( void );
+void Q3UI_SPSkillMenu( const char *arenaInfo );
+void Q3UI_SPSkillMenu_Cache( void );
 
 //
 // ui_syscalls.c
 //
-void			trap_Print( const char *string );
-void			trap_Error( const char *string );
-int				trap_Milliseconds( void );
-void			trap_Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags );
-void			trap_Cvar_Update( vmCvar_t *vmCvar );
-void			trap_Cvar_Set( const char *var_name, const char *value );
-float			trap_Cvar_VariableValue( const char *var_name );
-void			trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
-void			trap_Cvar_SetValue( const char *var_name, float value );
-void			trap_Cvar_Reset( const char *name );
-void			trap_Cvar_Create( const char *var_name, const char *var_value, int flags );
-void			trap_Cvar_InfoStringBuffer( int bit, char *buffer, int bufsize );
-int				trap_Argc( void );
-void			trap_Argv( int n, char *buffer, int bufferLength );
-void			trap_Cmd_ExecuteText( int exec_when, const char *text );	// don't use EXEC_NOW!
-int				trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
-void			trap_FS_Read( void *buffer, int len, fileHandle_t f );
-void			trap_FS_Write( const void *buffer, int len, fileHandle_t f );
-void			trap_FS_FCloseFile( fileHandle_t f );
-int				trap_FS_GetFileList(  const char *path, const char *extension, char *listbuf, int bufsize );
-int				trap_FS_Seek( fileHandle_t f, long offset, int origin ); // fsOrigin_t
-qhandle_t		trap_R_RegisterModel( const char *name );
-qhandle_t		trap_R_RegisterSkin( const char *name );
-qhandle_t		trap_R_RegisterShaderNoMip( const char *name );
-void			trap_R_ClearScene( void );
-void			trap_R_AddRefEntityToScene( const refEntity_t *re );
-void			trap_R_AddPolyToScene( qhandle_t hShader , int numVerts, const polyVert_t *verts );
-void			trap_R_AddLightToScene( const vec3_t org, float intensity, float r, float g, float b );
-void			trap_R_RenderScene( const refdef_t *fd );
-void			trap_R_SetColor( const float *rgba );
-void			trap_R_DrawStretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );
-void			trap_UpdateScreen( void );
-int				trap_CM_LerpTag( orientation_t *tag, clipHandle_t mod, int startFrame, int endFrame, float frac, const char *tagName );
-void			trap_S_StartLocalSound( sfxHandle_t sfx, int channelNum );
-sfxHandle_t	trap_S_RegisterSound( const char *sample, qboolean compressed );
-void			trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen );
-void			trap_Key_GetBindingBuf( int keynum, char *buf, int buflen );
-void			trap_Key_SetBinding( int keynum, const char *binding );
-qboolean		trap_Key_IsDown( int keynum );
-qboolean		trap_Key_GetOverstrikeMode( void );
-void			trap_Key_SetOverstrikeMode( qboolean state );
-void			trap_Key_ClearStates( void );
-int				trap_Key_GetCatcher( void );
-void			trap_Key_SetCatcher( int catcher );
-void			trap_GetClipboardData( char *buf, int bufsize );
-void			trap_GetClientState( uiClientState_t *state );
-void			trap_GetGlconfig( glconfig_t *glconfig );
-int				trap_GetConfigString( int index, char* buff, int buffsize );
-int				trap_LAN_GetServerCount( int source );
-void			trap_LAN_GetServerAddressString( int source, int n, char *buf, int buflen );
-void			trap_LAN_GetServerInfo( int source, int n, char *buf, int buflen );
-int				trap_LAN_GetPingQueueCount( void );
-int				trap_LAN_ServerStatus( const char *serverAddress, char *serverStatus, int maxLen );
-void			trap_LAN_ClearPing( int n );
-void			trap_LAN_GetPing( int n, char *buf, int buflen, int *pingtime );
-void			trap_LAN_GetPingInfo( int n, char *buf, int buflen );
-int				trap_MemoryRemaining( void );
-void			trap_GetCDKey( char *buf, int buflen );
-void			trap_SetCDKey( char *buf );
+void			UI_trap_Print( const char *string );
+void			UI_trap_Error( const char *string );
+int				UI_trap_Milliseconds( void );
+void			UI_trap_Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags );
+void			UI_trap_Cvar_Update( vmCvar_t *vmCvar );
+void			UI_trap_Cvar_Set( const char *var_name, const char *value );
+float			UI_trap_Cvar_VariableValue( const char *var_name );
+void			UI_trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
+void			UI_trap_Cvar_SetValue( const char *var_name, float value );
+void			UI_trap_Cvar_Reset( const char *name );
+void			UI_trap_Cvar_Create( const char *var_name, const char *var_value, int flags );
+void			UI_trap_Cvar_InfoStringBuffer( int bit, char *buffer, int bufsize );
+int				UI_trap_Argc( void );
+void			UI_trap_Argv( int n, char *buffer, int bufferLength );
+void			UI_trap_Cmd_ExecuteText( int exec_when, const char *text );	// don't use EXEC_NOW!
+int				UI_trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
+void			UI_trap_FS_Read( void *buffer, int len, fileHandle_t f );
+void			UI_trap_FS_Write( const void *buffer, int len, fileHandle_t f );
+void			UI_trap_FS_FCloseFile( fileHandle_t f );
+int				UI_trap_FS_GetFileList(  const char *path, const char *extension, char *listbuf, int bufsize );
+int				UI_trap_FS_Seek( fileHandle_t f, long offset, int origin ); // fsOrigin_t
+qhandle_t		UI_trap_R_RegisterModel( const char *name );
+qhandle_t		UI_trap_R_RegisterSkin( const char *name );
+qhandle_t		UI_trap_R_RegisterShaderNoMip( const char *name );
+void			UI_trap_R_ClearScene( void );
+void			UI_trap_R_AddRefEntityToScene( const refEntity_t *re );
+void			UI_trap_R_AddPolyToScene( qhandle_t hShader , int numVerts, const polyVert_t *verts );
+void			UI_trap_R_AddLightToScene( const vec3_t org, float intensity, float r, float g, float b );
+void			UI_trap_R_RenderScene( const refdef_t *fd );
+void			UI_trap_R_SetColor( const float *rgba );
+void			UI_trap_R_DrawStretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );
+void			UI_trap_UpdateScreen( void );
+int				UI_trap_CM_LerpTag( orientation_t *tag, clipHandle_t mod, int startFrame, int endFrame, float frac, const char *tagName );
+void			UI_trap_S_StartLocalSound( sfxHandle_t sfx, int channelNum );
+sfxHandle_t	UI_trap_S_RegisterSound( const char *sample, qboolean compressed );
+void			UI_trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen );
+void			UI_trap_Key_GetBindingBuf( int keynum, char *buf, int buflen );
+void			UI_trap_Key_SetBinding( int keynum, const char *binding );
+qboolean		UI_trap_Key_IsDown( int keynum );
+qboolean		UI_trap_Key_GetOverstrikeMode( void );
+void			UI_trap_Key_SetOverstrikeMode( qboolean state );
+void			UI_trap_Key_ClearStates( void );
+int				UI_trap_Key_GetCatcher( void );
+void			UI_trap_Key_SetCatcher( int catcher );
+void			UI_trap_GetClipboardData( char *buf, int bufsize );
+void			UI_trap_GetClientState( uiClientState_t *state );
+void			UI_trap_GetGlconfig( glconfig_t *glconfig );
+int				UI_trap_GetConfigString( int index, char* buff, int buffsize );
+int				UI_trap_LAN_GetServerCount( int source );
+void			UI_trap_LAN_GetServerAddressString( int source, int n, char *buf, int buflen );
+void			UI_trap_LAN_GetServerInfo( int source, int n, char *buf, int buflen );
+int				UI_trap_LAN_GetPingQueueCount( void );
+int				UI_trap_LAN_ServerStatus( const char *serverAddress, char *serverStatus, int maxLen );
+void			UI_trap_LAN_ClearPing( int n );
+void			UI_trap_LAN_GetPing( int n, char *buf, int buflen, int *pingtime );
+void			UI_trap_LAN_GetPingInfo( int n, char *buf, int buflen );
+int				UI_trap_MemoryRemaining( void );
+void			UI_trap_GetCDKey( char *buf, int buflen );
+void			UI_trap_SetCDKey( char *buf );
 
-qboolean               trap_VerifyCDKey( const char *key, const char *chksum);
+qboolean               UI_trap_VerifyCDKey( const char *key, const char *chksum);
 
-void			trap_SetPbClStatus( int status );
+void			UI_trap_SetPbClStatus( int status );
 
 //
 // ui_addbots.c
 //
-void UI_AddBots_Cache( void );
-void UI_AddBotsMenu( void );
+void Q3UI_AddBots_Cache( void );
+void Q3UI_AddBotsMenu( void );
 
 //
 // ui_removebots.c
 //
-void UI_RemoveBots_Cache( void );
-void UI_RemoveBotsMenu( void );
+void Q3UI_RemoveBots_Cache( void );
+void Q3UI_RemoveBotsMenu( void );
 
 //
 // ui_teamorders.c
 //
-extern void UI_TeamOrdersMenu( void );
-extern void UI_TeamOrdersMenu_f( void );
-extern void UI_TeamOrdersMenu_Cache( void );
+extern void Q3UI_TeamOrdersMenu( void );
+extern void Q3UI_TeamOrdersMenu_f( void );
+extern void Q3UI_TeamOrdersMenu_Cache( void );
 
 //
 // ui_loadconfig.c
 //
-void UI_LoadConfig_Cache( void );
-void UI_LoadConfigMenu( void );
+void Q3UI_LoadConfig_Cache( void );
+void Q3UI_LoadConfigMenu( void );
 
 //
 // ui_saveconfig.c
 //
-void UI_SaveConfigMenu_Cache( void );
-void UI_SaveConfigMenu( void );
+void Q3UI_SaveConfigMenu_Cache( void );
+void Q3UI_SaveConfigMenu( void );
 
 //
 // ui_display.c
 //
-void UI_DisplayOptionsMenu_Cache( void );
-void UI_DisplayOptionsMenu( void );
+void Q3UI_DisplayOptionsMenu_Cache( void );
+void Q3UI_DisplayOptionsMenu( void );
 
 //
 // ui_sound.c
 //
-void UI_SoundOptionsMenu_Cache( void );
-void UI_SoundOptionsMenu( void );
+void Q3UI_SoundOptionsMenu_Cache( void );
+void Q3UI_SoundOptionsMenu( void );
 
 //
 // ui_network.c
 //
-void UI_NetworkOptionsMenu_Cache( void );
-void UI_NetworkOptionsMenu( void );
+void Q3UI_NetworkOptionsMenu_Cache( void );
+void Q3UI_NetworkOptionsMenu( void );
 
 //
 // ui_gameinfo.c
@@ -744,31 +747,31 @@ typedef enum {
 	AWARD_PERFECT
 } awardType_t;
 
-const char *UI_GetArenaInfoByNumber( int num );
-const char *UI_GetArenaInfoByMap( const char *map );
-const char *UI_GetSpecialArenaInfo( const char *tag );
-int UI_GetNumArenas( void );
-int UI_GetNumSPArenas( void );
-int UI_GetNumSPTiers( void );
+const char *Q3UI_GetArenaInfoByNumber( int num );
+const char *Q3UI_GetArenaInfoByMap( const char *map );
+const char *Q3UI_GetSpecialArenaInfo( const char *tag );
+int Q3UI_GetNumArenas( void );
+int Q3UI_GetNumSPArenas( void );
+int Q3UI_GetNumSPTiers( void );
 
-char *UI_GetBotInfoByNumber( int num );
-char *UI_GetBotInfoByName( const char *name );
-int UI_GetNumBots( void );
+char *Q3UI_GetBotInfoByNumber( int num );
+char *Q3UI_GetBotInfoByName( const char *name );
+int Q3UI_GetNumBots( void );
 
-void UI_GetBestScore( int level, int *score, int *skill );
-void UI_SetBestScore( int level, int score );
-int UI_TierCompleted( int levelWon );
-qboolean UI_ShowTierVideo( int tier );
-qboolean UI_CanShowTierVideo( int tier );
-int  UI_GetCurrentGame( void );
-void UI_NewGame( void );
-void UI_LogAwardData( int award, int data );
-int UI_GetAwardLevel( int award );
+void Q3UI_GetBestScore( int level, int *score, int *skill );
+void Q3UI_SetBestScore( int level, int score );
+int Q3UI_TierCompleted( int levelWon );
+qboolean Q3UI_ShowTierVideo( int tier );
+qboolean Q3UI_CanShowTierVideo( int tier );
+int  Q3UI_GetCurrentGame( void );
+void Q3UI_NewGame( void );
+void Q3UI_LogAwardData( int award, int data );
+int Q3UI_GetAwardLevel( int award );
 
-void UI_SPUnlock_f( void );
-void UI_SPUnlockMedals_f( void );
+void Q3UI_SPUnlock_f( void );
+void Q3UI_SPUnlockMedals_f( void );
 
-void UI_InitGameinfo( void );
+void Q3UI_InitGameinfo( void );
 
 //GRank
 
@@ -779,24 +782,24 @@ void Rankings_DrawText( void* self );
 void Rankings_DrawName( void* self );
 void Rankings_DrawPassword( void* self );
 void Rankings_Cache( void );
-void UI_RankingsMenu( void );
+void Q3UI_RankingsMenu( void );
 
 //
 // ui_login.c
 //
 void Login_Cache( void );
-void UI_LoginMenu( void );
+void Q3UI_LoginMenu( void );
 
 //
 // ui_signup.c
 //
 void Signup_Cache( void );
-void UI_SignupMenu( void );
+void Q3UI_SignupMenu( void );
 
 //
 // ui_rankstatus.c
 //
 void RankStatus_Cache( void );
-void UI_RankStatusMenu( void );
+void Q3UI_RankStatusMenu( void );
 
 #endif

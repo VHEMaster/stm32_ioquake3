@@ -105,23 +105,23 @@ static const char *teamMessages[] = {
 
 /*
 ===============
-UI_TeamOrdersMenu_BackEvent
+Q3UI_TeamOrdersMenu_BackEvent
 ===============
 */
-static void UI_TeamOrdersMenu_BackEvent( void *ptr, int event ) {
+static void Q3UI_TeamOrdersMenu_BackEvent( void *ptr, int event ) {
 	if( event != QM_ACTIVATED ) {
 		return;
 	}
-	UI_PopMenu();
+	Q3UI_PopMenu();
 }
 
 
 /*
 ===============
-UI_TeamOrdersMenu_SetList
+Q3UI_TeamOrdersMenu_SetList
 ===============
 */
-static void UI_TeamOrdersMenu_SetList( int id ) {
+static void Q3UI_TeamOrdersMenu_SetList( int id ) {
 	switch( id ) {
 	default:
 	case ID_LIST_BOTS:
@@ -149,10 +149,10 @@ static void UI_TeamOrdersMenu_SetList( int id ) {
 
 /*
 =================
-UI_TeamOrdersMenu_Key
+Q3UI_TeamOrdersMenu_Key
 =================
 */
-sfxHandle_t UI_TeamOrdersMenu_Key( int key ) {
+sfxHandle_t Q3UI_TeamOrdersMenu_Key( int key ) {
 	menulist_s	*l;
 	int	x;
 	int	y;
@@ -167,7 +167,7 @@ sfxHandle_t UI_TeamOrdersMenu_Key( int key ) {
 		case K_MOUSE1:
 			x = l->generic.left;
 			y = l->generic.top;
-			if( UI_CursorInRect( x, y, l->generic.right - x, l->generic.bottom - y ) ) {
+			if( Q3UI_CursorInRect( x, y, l->generic.right - x, l->generic.bottom - y ) ) {
 				index = (uis.cursory - y) / PROP_HEIGHT;
 				l->oldvalue = l->curvalue;
 				l->curvalue = index;
@@ -210,10 +210,10 @@ sfxHandle_t UI_TeamOrdersMenu_Key( int key ) {
 
 /*
 =================
-UI_TeamOrdersMenu_ListDraw
+Q3UI_TeamOrdersMenu_ListDraw
 =================
 */
-static void UI_TeamOrdersMenu_ListDraw( void *self ) {
+static void Q3UI_TeamOrdersMenu_ListDraw( void *self ) {
 	menulist_s	*l;
 	int			x;
 	int			y;
@@ -240,7 +240,7 @@ static void UI_TeamOrdersMenu_ListDraw( void *self ) {
 			color = color_orange;
 		}
 
-		UI_DrawProportionalString( x, y, l->itemnames[i], style, color );
+		Q3UI_DrawProportionalString( x, y, l->itemnames[i], style, color );
 		y += PROP_HEIGHT;
 	}
 }
@@ -248,10 +248,10 @@ static void UI_TeamOrdersMenu_ListDraw( void *self ) {
 
 /*
 ===============
-UI_TeamOrdersMenu_ListEvent
+Q3UI_TeamOrdersMenu_ListEvent
 ===============
 */
-static void UI_TeamOrdersMenu_ListEvent( void *ptr, int event ) {
+static void Q3UI_TeamOrdersMenu_ListEvent( void *ptr, int event ) {
 	int		id;
 	int		selection;
 	char	message[256];
@@ -265,10 +265,10 @@ static void UI_TeamOrdersMenu_ListEvent( void *ptr, int event ) {
 	if( id == ID_LIST_BOTS ) {
 		teamOrdersMenuInfo.selectedBot = selection;
 		if( teamOrdersMenuInfo.gametype == GT_CTF ) {
-			UI_TeamOrdersMenu_SetList( ID_LIST_CTF_ORDERS );
+			Q3UI_TeamOrdersMenu_SetList( ID_LIST_CTF_ORDERS );
 		}
 		else {
-			UI_TeamOrdersMenu_SetList( ID_LIST_TEAM_ORDERS );
+			Q3UI_TeamOrdersMenu_SetList( ID_LIST_TEAM_ORDERS );
 		}
 		return;
 	}
@@ -280,17 +280,17 @@ static void UI_TeamOrdersMenu_ListEvent( void *ptr, int event ) {
 		Com_sprintf( message, sizeof(message), teamMessages[selection], teamOrdersMenuInfo.botNames[teamOrdersMenuInfo.selectedBot] );
 	}
 
-	trap_Cmd_ExecuteText( EXEC_APPEND, va( "say_team \"%s\"\n", message ) );
-	UI_PopMenu();
+	UI_trap_Cmd_ExecuteText( EXEC_APPEND, va( "say_team \"%s\"\n", message ) );
+	Q3UI_PopMenu();
 }
 
 
 /*
 ===============
-UI_TeamOrdersMenu_BuildBotList
+Q3UI_TeamOrdersMenu_BuildBotList
 ===============
 */
-static void UI_TeamOrdersMenu_BuildBotList( void ) {
+static void Q3UI_TeamOrdersMenu_BuildBotList( void ) {
 	uiClientState_t	cs;
 	int		numPlayers;
 	int		isBot;
@@ -303,17 +303,17 @@ static void UI_TeamOrdersMenu_BuildBotList( void ) {
 		teamOrdersMenuInfo.bots[n] = teamOrdersMenuInfo.botNames[n];
 	}
 
-	trap_GetClientState( &cs );
+	UI_trap_GetClientState( &cs );
 
 	Q_strncpyz( teamOrdersMenuInfo.botNames[0], "Everyone", 16 );
 	teamOrdersMenuInfo.numBots = 1;
 
-	trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
+	UI_trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
 	numPlayers = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 	teamOrdersMenuInfo.gametype = atoi( Info_ValueForKey( info, "g_gametype" ) );
 
 	for( n = 0; n < numPlayers && teamOrdersMenuInfo.numBots < 9; n++ ) {
-		trap_GetConfigString( CS_PLAYERS + n, info, MAX_INFO_STRING );
+		UI_trap_GetConfigString( CS_PLAYERS + n, info, MAX_INFO_STRING );
 
 		if( n == cs.clientNum ) {
 			playerTeam = *Info_ValueForKey( info, "t" );
@@ -339,17 +339,17 @@ static void UI_TeamOrdersMenu_BuildBotList( void ) {
 
 /*
 ===============
-UI_TeamOrdersMenu_Init
+Q3UI_TeamOrdersMenu_Init
 ===============
 */
-static void UI_TeamOrdersMenu_Init( void ) {
-	UI_TeamOrdersMenu_Cache();
+static void Q3UI_TeamOrdersMenu_Init( void ) {
+	Q3UI_TeamOrdersMenu_Cache();
 
 	memset( &teamOrdersMenuInfo, 0, sizeof(teamOrdersMenuInfo) );
 	teamOrdersMenuInfo.menu.fullscreen = qfalse;
-	teamOrdersMenuInfo.menu.key = UI_TeamOrdersMenu_Key;
+	teamOrdersMenuInfo.menu.key = Q3UI_TeamOrdersMenu_Key;
 
-	UI_TeamOrdersMenu_BuildBotList();
+	Q3UI_TeamOrdersMenu_BuildBotList();
 
 	teamOrdersMenuInfo.banner.generic.type		= MTYPE_BTEXT;
 	teamOrdersMenuInfo.banner.generic.x			= 320;
@@ -368,15 +368,15 @@ static void UI_TeamOrdersMenu_Init( void ) {
 
 	teamOrdersMenuInfo.list.generic.type		= MTYPE_SCROLLLIST;
 	teamOrdersMenuInfo.list.generic.flags		= QMF_PULSEIFFOCUS;
-	teamOrdersMenuInfo.list.generic.ownerdraw	= UI_TeamOrdersMenu_ListDraw;
-	teamOrdersMenuInfo.list.generic.callback	= UI_TeamOrdersMenu_ListEvent;
+	teamOrdersMenuInfo.list.generic.ownerdraw	= Q3UI_TeamOrdersMenu_ListDraw;
+	teamOrdersMenuInfo.list.generic.callback	= Q3UI_TeamOrdersMenu_ListEvent;
 	teamOrdersMenuInfo.list.generic.x			= 320-64;
 	teamOrdersMenuInfo.list.generic.y			= 120;
 
 	teamOrdersMenuInfo.back.generic.type		= MTYPE_BITMAP;
 	teamOrdersMenuInfo.back.generic.name		= ART_BACK0;
 	teamOrdersMenuInfo.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
-	teamOrdersMenuInfo.back.generic.callback	= UI_TeamOrdersMenu_BackEvent;
+	teamOrdersMenuInfo.back.generic.callback	= Q3UI_TeamOrdersMenu_BackEvent;
 	teamOrdersMenuInfo.back.generic.x			= 0;
 	teamOrdersMenuInfo.back.generic.y			= 480-64;
 	teamOrdersMenuInfo.back.width				= 128;
@@ -391,57 +391,57 @@ static void UI_TeamOrdersMenu_Init( void ) {
 	teamOrdersMenuInfo.list.generic.left = 220;
 	teamOrdersMenuInfo.list.generic.top = teamOrdersMenuInfo.list.generic.y;
 	teamOrdersMenuInfo.list.generic.right = 420;
-	UI_TeamOrdersMenu_SetList( ID_LIST_BOTS );
+	Q3UI_TeamOrdersMenu_SetList( ID_LIST_BOTS );
 }
 
 
 /*
 =================
-UI_TeamOrdersMenu_Cache
+Q3UI_TeamOrdersMenu_Cache
 =================
 */
-void UI_TeamOrdersMenu_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_FRAME );
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
+void Q3UI_TeamOrdersMenu_Cache( void ) {
+	UI_trap_R_RegisterShaderNoMip( ART_FRAME );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK0 );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK1 );
 }
 
 
 /*
 ===============
-UI_TeamOrdersMenu
+Q3UI_TeamOrdersMenu
 ===============
 */
-void UI_TeamOrdersMenu( void ) {
-	UI_TeamOrdersMenu_Init();
-	UI_PushMenu( &teamOrdersMenuInfo.menu );
+void Q3UI_TeamOrdersMenu( void ) {
+	Q3UI_TeamOrdersMenu_Init();
+	Q3UI_PushMenu( &teamOrdersMenuInfo.menu );
 }
 
 
 /*
 ===============
-UI_TeamOrdersMenu_f
+Q3UI_TeamOrdersMenu_f
 ===============
 */
-void UI_TeamOrdersMenu_f( void ) {
+void Q3UI_TeamOrdersMenu_f( void ) {
 	uiClientState_t	cs;
 	char	info[MAX_INFO_STRING];
 	int		team;
 
 	// make sure it's a team game
-	trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
+	UI_trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
 	teamOrdersMenuInfo.gametype = atoi( Info_ValueForKey( info, "g_gametype" ) );
 	if( teamOrdersMenuInfo.gametype < GT_TEAM ) {
 		return;
 	}
 
 	// not available to spectators
-	trap_GetClientState( &cs );
-	trap_GetConfigString( CS_PLAYERS + cs.clientNum, info, MAX_INFO_STRING );
+	UI_trap_GetClientState( &cs );
+	UI_trap_GetConfigString( CS_PLAYERS + cs.clientNum, info, MAX_INFO_STRING );
 	team = atoi( Info_ValueForKey( info, "t" ) );
 	if( team == TEAM_SPECTATOR ) {
 		return;
 	}
 
-	UI_TeamOrdersMenu();
+	Q3UI_TeamOrdersMenu();
 }

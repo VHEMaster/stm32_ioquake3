@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 //
 /**********************************************************************
-	UI_QMENU.C
+	Q3UI_QMENU.C
 
 	Quake's menu framework system.
 **********************************************************************/
@@ -132,7 +132,7 @@ static void Text_Draw( menutext_s *t )
 	else
 		color = t->color;
 
-	UI_DrawString( x, y, buff, t->style, color );
+	Q3UI_DrawString( x, y, buff, t->style, color );
 }
 
 /*
@@ -164,7 +164,7 @@ static void BText_Draw( menutext_s *t )
 	else
 		color = t->color;
 
-	UI_DrawBannerString( x, y, t->string, t->style, color );
+	Q3UI_DrawBannerString( x, y, t->string, t->style, color );
 }
 
 /*
@@ -180,11 +180,11 @@ static void PText_Init( menutext_s *t )
 	int	h;
 	float	sizeScale;
 
-	sizeScale = UI_ProportionalSizeScale( t->style );
+	sizeScale = Q3UI_ProportionalSizeScale( t->style );
 
 	x = t->generic.x;
 	y = t->generic.y;
-	w = UI_ProportionalStringWidth( t->string ) * sizeScale;
+	w = Q3UI_ProportionalStringWidth( t->string ) * sizeScale;
 	h =	PROP_HEIGHT * sizeScale;
 
 	if( t->generic.flags & QMF_RIGHT_JUSTIFY ) {
@@ -230,7 +230,7 @@ static void PText_Draw( menutext_s *t )
 		}
 	}
 
-	UI_DrawProportionalString( x, y, t->string, style, color );
+	Q3UI_DrawProportionalString( x, y, t->string, style, color );
 }
 
 /*
@@ -305,27 +305,27 @@ void Bitmap_Draw( menubitmap_s *b )
 	// used to refresh shader
 	if (b->generic.name && !b->shader)
 	{
-		b->shader = trap_R_RegisterShaderNoMip( b->generic.name );
+		b->shader = UI_trap_R_RegisterShaderNoMip( b->generic.name );
 		if (!b->shader && b->errorpic)
-			b->shader = trap_R_RegisterShaderNoMip( b->errorpic );
+			b->shader = UI_trap_R_RegisterShaderNoMip( b->errorpic );
 	}
 
 	if (b->focuspic && !b->focusshader)
-		b->focusshader = trap_R_RegisterShaderNoMip( b->focuspic );
+		b->focusshader = UI_trap_R_RegisterShaderNoMip( b->focuspic );
 
 	if (b->generic.flags & QMF_GRAYED)
 	{
 		if (b->shader)
 		{
-			trap_R_SetColor( colorMdGrey );
-			UI_DrawHandlePic( x, y, w, h, b->shader );
-			trap_R_SetColor( NULL );
+			UI_trap_R_SetColor( colorMdGrey );
+			Q3UI_DrawHandlePic( x, y, w, h, b->shader );
+			UI_trap_R_SetColor( NULL );
 		}
 	}
 	else
 	{
 		if (b->shader)
-			UI_DrawHandlePic( x, y, w, h, b->shader );
+			Q3UI_DrawHandlePic( x, y, w, h, b->shader );
 
 		if (  ( (b->generic.flags & QMF_PULSE) 
 			|| (b->generic.flags & QMF_PULSEIFFOCUS) )
@@ -342,20 +342,20 @@ void Bitmap_Draw( menubitmap_s *b )
 				color = pulse_color;
 			color[3] = 0.5+0.5*sin(uis.realtime/PULSE_DIVISOR);
 
-			trap_R_SetColor( color );
-			UI_DrawHandlePic( x, y, w, h, b->focusshader );
-			trap_R_SetColor( NULL );
+			UI_trap_R_SetColor( color );
+			Q3UI_DrawHandlePic( x, y, w, h, b->focusshader );
+			UI_trap_R_SetColor( NULL );
 		}
 		else if ((b->generic.flags & QMF_HIGHLIGHT) || ((b->generic.flags & QMF_HIGHLIGHT_IF_FOCUS) && (Menu_ItemAtCursor( b->generic.parent ) == b)))
 		{	
 			if (b->focuscolor)
 			{
-				trap_R_SetColor( b->focuscolor );
-				UI_DrawHandlePic( x, y, w, h, b->focusshader );
-				trap_R_SetColor( NULL );
+				UI_trap_R_SetColor( b->focuscolor );
+				Q3UI_DrawHandlePic( x, y, w, h, b->focusshader );
+				UI_trap_R_SetColor( NULL );
 			}
 			else
-				UI_DrawHandlePic( x, y, w, h, b->focusshader );
+				Q3UI_DrawHandlePic( x, y, w, h, b->focusshader );
 		}
 	}
 }
@@ -417,12 +417,12 @@ static void Action_Draw( menuaction_s *a )
 	x = a->generic.x;
 	y = a->generic.y;
 
-	UI_DrawString( x, y, a->generic.name, UI_LEFT|style, color );
+	Q3UI_DrawString( x, y, a->generic.name, UI_LEFT|style, color );
 
 	if ( a->generic.parent->cursor == a->generic.menuPosition )
 	{
 		// draw cursor
-		UI_DrawChar( x - BIGCHAR_WIDTH, y, 13, UI_LEFT|UI_BLINK, color);
+		Q3UI_DrawChar( x - BIGCHAR_WIDTH, y, 13, UI_LEFT|UI_BLINK, color);
 	}
 }
 
@@ -518,22 +518,22 @@ static void RadioButton_Draw( menuradiobutton_s *rb )
 	if ( focus )
 	{
 		// draw cursor
-		UI_FillRect( rb->generic.left, rb->generic.top, rb->generic.right-rb->generic.left+1, rb->generic.bottom-rb->generic.top+1, listbar_color ); 
-		UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color);
+		Q3UI_FillRect( rb->generic.left, rb->generic.top, rb->generic.right-rb->generic.left+1, rb->generic.bottom-rb->generic.top+1, listbar_color ); 
+		Q3UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color);
 	}
 
 	if ( rb->generic.name )
-		UI_DrawString( x - SMALLCHAR_WIDTH, y, rb->generic.name, UI_RIGHT|UI_SMALLFONT, color );
+		Q3UI_DrawString( x - SMALLCHAR_WIDTH, y, rb->generic.name, UI_RIGHT|UI_SMALLFONT, color );
 
 	if ( !rb->curvalue )
 	{
-		UI_DrawHandlePic( x + SMALLCHAR_WIDTH, y + 2, 16, 16, uis.rb_off);
-		UI_DrawString( x + SMALLCHAR_WIDTH + 16, y, "off", style, color );
+		Q3UI_DrawHandlePic( x + SMALLCHAR_WIDTH, y + 2, 16, 16, uis.rb_off);
+		Q3UI_DrawString( x + SMALLCHAR_WIDTH + 16, y, "off", style, color );
 	}
 	else
 	{
-		UI_DrawHandlePic( x + SMALLCHAR_WIDTH, y + 2, 16, 16, uis.rb_on );
-		UI_DrawString( x + SMALLCHAR_WIDTH + 16, y, "on", style, color );
+		Q3UI_DrawHandlePic( x + SMALLCHAR_WIDTH, y + 2, 16, 16, uis.rb_on );
+		Q3UI_DrawString( x + SMALLCHAR_WIDTH + 16, y, "on", style, color );
 	}
 }
 
@@ -652,12 +652,12 @@ static void Slider_Draw( menuslider_s *s ) {
 	}
 
 	// draw label
-	UI_DrawString( x - SMALLCHAR_WIDTH, y, s->generic.name, UI_RIGHT|style, color );
+	Q3UI_DrawString( x - SMALLCHAR_WIDTH, y, s->generic.name, UI_RIGHT|style, color );
 
 	// draw slider
-	UI_SetColor( color );
-	UI_DrawHandlePic( x + SMALLCHAR_WIDTH, y, 96, 16, sliderBar );
-	UI_SetColor( NULL );
+	Q3UI_SetColor( color );
+	Q3UI_DrawHandlePic( x + SMALLCHAR_WIDTH, y, 96, 16, sliderBar );
+	Q3UI_SetColor( NULL );
 
 	// clamp thumb
 	if( s->maxvalue > s->minvalue )	{
@@ -681,7 +681,7 @@ static void Slider_Draw( menuslider_s *s ) {
 		button = sliderButton_0;
 	}
 
-	UI_DrawHandlePic( (int)( x + 2*SMALLCHAR_WIDTH + (SLIDER_RANGE-1)*SMALLCHAR_WIDTH* s->range ) - 2, y - 2, 12, 20, button );
+	Q3UI_DrawHandlePic( (int)( x + 2*SMALLCHAR_WIDTH + (SLIDER_RANGE-1)*SMALLCHAR_WIDTH* s->range ) - 2, y - 2, 12, 20, button );
 }
 #else
 /*
@@ -720,18 +720,18 @@ static void Slider_Draw( menuslider_s *s )
 	if ( focus )
 	{
 		// draw cursor
-		UI_FillRect( s->generic.left, s->generic.top, s->generic.right-s->generic.left+1, s->generic.bottom-s->generic.top+1, listbar_color ); 
-		UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color);
+		Q3UI_FillRect( s->generic.left, s->generic.top, s->generic.right-s->generic.left+1, s->generic.bottom-s->generic.top+1, listbar_color ); 
+		Q3UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color);
 	}
 
 	// draw label
-	UI_DrawString( x - SMALLCHAR_WIDTH, y, s->generic.name, UI_RIGHT|style, color );
+	Q3UI_DrawString( x - SMALLCHAR_WIDTH, y, s->generic.name, UI_RIGHT|style, color );
 
 	// draw slider
-	UI_DrawChar( x + SMALLCHAR_WIDTH, y, 128, UI_LEFT|style, color);
+	Q3UI_DrawChar( x + SMALLCHAR_WIDTH, y, 128, UI_LEFT|style, color);
 	for ( i = 0; i < SLIDER_RANGE; i++ )
-		UI_DrawChar( x + (i+2)*SMALLCHAR_WIDTH, y, 129, UI_LEFT|style, color);
-	UI_DrawChar( x + (i+2)*SMALLCHAR_WIDTH, y, 130, UI_LEFT|style, color);
+		Q3UI_DrawChar( x + (i+2)*SMALLCHAR_WIDTH, y, 129, UI_LEFT|style, color);
+	Q3UI_DrawChar( x + (i+2)*SMALLCHAR_WIDTH, y, 130, UI_LEFT|style, color);
 
 	// clamp thumb
 	if (s->maxvalue > s->minvalue)
@@ -750,7 +750,7 @@ static void Slider_Draw( menuslider_s *s )
 		style &= ~UI_PULSE;
 		style |= UI_BLINK;
 	}
-	UI_DrawChar( (int)( x + 2*SMALLCHAR_WIDTH + (SLIDER_RANGE-1)*SMALLCHAR_WIDTH* s->range ), y, 131, UI_LEFT|style, color);
+	Q3UI_DrawChar( (int)( x + 2*SMALLCHAR_WIDTH + (SLIDER_RANGE-1)*SMALLCHAR_WIDTH* s->range ), y, 131, UI_LEFT|style, color);
 }
 #endif
 
@@ -870,12 +870,12 @@ static void SpinControl_Draw( menulist_s *s )
 	if ( focus )
 	{
 		// draw cursor
-		UI_FillRect( s->generic.left, s->generic.top, s->generic.right-s->generic.left+1, s->generic.bottom-s->generic.top+1, listbar_color ); 
-		UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color);
+		Q3UI_FillRect( s->generic.left, s->generic.top, s->generic.right-s->generic.left+1, s->generic.bottom-s->generic.top+1, listbar_color ); 
+		Q3UI_DrawChar( x, y, 13, UI_CENTER|UI_BLINK|UI_SMALLFONT, color);
 	}
 
-	UI_DrawString( x - SMALLCHAR_WIDTH, y, s->generic.name, style|UI_RIGHT, color );
-	UI_DrawString( x + SMALLCHAR_WIDTH, y, s->itemnames[s->curvalue], style|UI_LEFT, color );
+	Q3UI_DrawString( x - SMALLCHAR_WIDTH, y, s->generic.name, style|UI_RIGHT, color );
+	Q3UI_DrawString( x + SMALLCHAR_WIDTH, y, s->itemnames[s->curvalue], style|UI_LEFT, color );
 }
 
 /*
@@ -942,7 +942,7 @@ sfxHandle_t ScrollList_Key( menulist_s *l, int key )
 				if( l->generic.flags & QMF_CENTER_JUSTIFY ) {
 					x -= w / 2;
 				}
-				if (UI_CursorInRect( x, y, w, l->height*SMALLCHAR_HEIGHT ))
+				if (Q3UI_CursorInRect( x, y, w, l->height*SMALLCHAR_HEIGHT ))
 				{
 					cursorx = (uis.cursorx - x)/SMALLCHAR_WIDTH;
 					column = cursorx / (l->width + l->seperation);
@@ -1227,7 +1227,7 @@ void ScrollList_Draw( menulist_s *l )
 					u -= (l->width * SMALLCHAR_WIDTH) / 2 + 1;
 				}
 
-				UI_FillRect(u,y,l->width*SMALLCHAR_WIDTH,SMALLCHAR_HEIGHT+2,listbar_color);
+				Q3UI_FillRect(u,y,l->width*SMALLCHAR_WIDTH,SMALLCHAR_HEIGHT+2,listbar_color);
 				color = text_color_highlight;
 
 				if (hasfocus)
@@ -1244,7 +1244,7 @@ void ScrollList_Draw( menulist_s *l )
 				style |= UI_CENTER;
 			}
 
-			UI_DrawString(
+			Q3UI_DrawString(
 				x,
 				y,
 				l->itemnames[i],
@@ -1267,7 +1267,7 @@ void Menu_AddItem( menuframework_s *menu, void *item )
 	menucommon_s	*itemptr;
 
 	if (menu->nitems >= MAX_MENUITEMS)
-		trap_Error ("Menu_AddItem: excessive items");
+		UI_trap_Error ("Menu_AddItem: excessive items");
 
 	menu->items[menu->nitems] = item;
 	((menucommon_s*)menu->items[menu->nitems])->parent        = menu;
@@ -1321,7 +1321,7 @@ void Menu_AddItem( menuframework_s *menu, void *item )
 				break;
 
 			default:
-				trap_Error( va("Menu_Init: unknown type %d", itemptr->type) );
+				UI_trap_Error( va("Menu_Init: unknown type %d", itemptr->type) );
 		}
 	}
 
@@ -1513,7 +1513,7 @@ void Menu_Draw( menuframework_s *menu )
 					break;
 
 				default:
-					trap_Error( va("Menu_Draw: unknown type %d", itemptr->type) );
+					UI_trap_Error( va("Menu_Draw: unknown type %d", itemptr->type) );
 			}
 		}
 #ifndef NDEBUG
@@ -1530,10 +1530,10 @@ void Menu_Draw( menuframework_s *menu )
 				h =	itemptr->bottom - itemptr->top + 1;
 
 				if (itemptr->flags & QMF_HASMOUSEFOCUS) {
-					UI_DrawRect(x, y, w, h, colorYellow );
+					Q3UI_DrawRect(x, y, w, h, colorYellow );
 				}
 				else {
-					UI_DrawRect(x, y, w, h, colorWhite );
+					Q3UI_DrawRect(x, y, w, h, colorWhite );
 				}
 			}
 		}
@@ -1590,7 +1590,7 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
 	{
 		case K_MOUSE2:
 		case K_ESCAPE:
-			UI_PopMenu();
+			Q3UI_PopMenu();
 			return menu_out_sound;
 	}
 
@@ -1639,7 +1639,7 @@ sfxHandle_t Menu_DefaultKey( menuframework_s *m, int key )
 			break;
 
 		case K_F12:
-			trap_Cmd_ExecuteText(EXEC_APPEND, "screenshot\n");
+			UI_trap_Cmd_ExecuteText(EXEC_APPEND, "screenshot\n");
 			break;
 #endif
 		case K_KP_UPARROW:
@@ -1712,34 +1712,34 @@ Menu_Cache
 */
 void Menu_Cache( void )
 {
-	uis.charset			= trap_R_RegisterShaderNoMip( "gfx/2d/bigchars" );
-	uis.charsetProp		= trap_R_RegisterShaderNoMip( "menu/art/font1_prop.tga" );
-	uis.charsetPropGlow	= trap_R_RegisterShaderNoMip( "menu/art/font1_prop_glo.tga" );
-	uis.charsetPropB	= trap_R_RegisterShaderNoMip( "menu/art/font2_prop.tga" );
-	uis.cursor          = trap_R_RegisterShaderNoMip( "menu/art/3_cursor2" );
-	uis.rb_on           = trap_R_RegisterShaderNoMip( "menu/art/switch_on" );
-	uis.rb_off          = trap_R_RegisterShaderNoMip( "menu/art/switch_off" );
+	uis.charset			= UI_trap_R_RegisterShaderNoMip( "gfx/2d/bigchars" );
+	uis.charsetProp		= UI_trap_R_RegisterShaderNoMip( "menu/art/font1_prop.tga" );
+	uis.charsetPropGlow	= UI_trap_R_RegisterShaderNoMip( "menu/art/font1_prop_glo.tga" );
+	uis.charsetPropB	= UI_trap_R_RegisterShaderNoMip( "menu/art/font2_prop.tga" );
+	uis.cursor          = UI_trap_R_RegisterShaderNoMip( "menu/art/3_cursor2" );
+	uis.rb_on           = UI_trap_R_RegisterShaderNoMip( "menu/art/switch_on" );
+	uis.rb_off          = UI_trap_R_RegisterShaderNoMip( "menu/art/switch_off" );
 
-	uis.whiteShader = trap_R_RegisterShaderNoMip( "white" );
+	uis.whiteShader = UI_trap_R_RegisterShaderNoMip( "white" );
 	if ( uis.glconfig.hardwareType == GLHW_RAGEPRO ) {
 		// the blend effect turns to shit with the normal 
-		uis.menuBackShader	= trap_R_RegisterShaderNoMip( "menubackRagePro" );
+		uis.menuBackShader	= UI_trap_R_RegisterShaderNoMip( "menubackRagePro" );
 	} else {
-		uis.menuBackShader	= trap_R_RegisterShaderNoMip( "menuback" );
+		uis.menuBackShader	= UI_trap_R_RegisterShaderNoMip( "menuback" );
 	}
-	uis.menuBackNoLogoShader = trap_R_RegisterShaderNoMip( "menubacknologo" );
+	uis.menuBackNoLogoShader = UI_trap_R_RegisterShaderNoMip( "menubacknologo" );
 
-	menu_in_sound	= trap_S_RegisterSound( "sound/misc/menu1.wav", qfalse );
-	menu_move_sound	= trap_S_RegisterSound( "sound/misc/menu2.wav", qfalse );
-	menu_out_sound	= trap_S_RegisterSound( "sound/misc/menu3.wav", qfalse );
-	menu_buzz_sound	= trap_S_RegisterSound( "sound/misc/menu4.wav", qfalse );
-	weaponChangeSound	= trap_S_RegisterSound( "sound/weapons/change.wav", qfalse );
+	menu_in_sound	= UI_trap_S_RegisterSound( "sound/misc/menu1.wav", qfalse );
+	menu_move_sound	= UI_trap_S_RegisterSound( "sound/misc/menu2.wav", qfalse );
+	menu_out_sound	= UI_trap_S_RegisterSound( "sound/misc/menu3.wav", qfalse );
+	menu_buzz_sound	= UI_trap_S_RegisterSound( "sound/misc/menu4.wav", qfalse );
+	weaponChangeSound	= UI_trap_S_RegisterSound( "sound/weapons/change.wav", qfalse );
 
 	// need a nonzero sound, make an empty sound for this
 	menu_null_sound = -1;
 
-	sliderBar = trap_R_RegisterShaderNoMip( "menu/art/slider2" );
-	sliderButton_0 = trap_R_RegisterShaderNoMip( "menu/art/sliderbutt_0" );
-	sliderButton_1 = trap_R_RegisterShaderNoMip( "menu/art/sliderbutt_1" );
+	sliderBar = UI_trap_R_RegisterShaderNoMip( "menu/art/slider2" );
+	sliderButton_0 = UI_trap_R_RegisterShaderNoMip( "menu/art/sliderbutt_0" );
+	sliderButton_1 = UI_trap_R_RegisterShaderNoMip( "menu/art/sliderbutt_1" );
 }
 	

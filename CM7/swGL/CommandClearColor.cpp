@@ -1,6 +1,6 @@
-﻿#include "DrawThread.h"
-#include "CommandClearColor.h"
+﻿#include "CommandClearColor.hpp"
 
+#include "DrawThread.hpp"
 namespace SWGL {
 
     bool CommandClearColor::execute(DrawThread *thread) {

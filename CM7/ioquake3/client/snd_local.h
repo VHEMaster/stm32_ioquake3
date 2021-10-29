@@ -26,9 +26,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/qcommon.h"
 #include "snd_public.h"
 
-#define	PAINTBUFFER_SIZE		4096					// this is in samples
+#define	PAINTBUFFER_SIZE		1024					// this is in samples - 4096
 
-#define SND_CHUNK_SIZE			1024					// samples
+#define SND_CHUNK_SIZE			256					// samples - 1024
 #define SND_CHUNK_SIZE_FLOAT	(SND_CHUNK_SIZE/2)		// floats
 #define SND_CHUNK_SIZE_BYTE		(SND_CHUNK_SIZE*2)		// floats
 
@@ -173,7 +173,7 @@ void	SNDDMA_Submit(void);
 
 //====================================================================
 
-#define	MAX_CHANNELS			96
+#define	MAX_CHANNELS			16
 
 extern	channel_t   s_channels[MAX_CHANNELS];
 extern	channel_t   loop_channels[MAX_CHANNELS];
@@ -185,8 +185,8 @@ extern	vec3_t	listener_right;
 extern	vec3_t	listener_up;
 extern	dma_t	dma;
 
-#define	MAX_RAW_SAMPLES	16384
-#define MAX_RAW_STREAMS 128
+#define	MAX_RAW_SAMPLES	4096
+#define MAX_RAW_STREAMS 32
 extern	portable_samplepair_t s_rawsamples[MAX_RAW_STREAMS][MAX_RAW_SAMPLES];
 extern	int		s_rawend[MAX_RAW_STREAMS];
 

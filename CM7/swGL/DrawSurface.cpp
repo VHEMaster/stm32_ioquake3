@@ -1,7 +1,11 @@
-﻿#include <memory>
+﻿#include "DrawSurface.hpp"
+
+#include <memory>
 #include <algorithm>
-#include "Defines.h"
-#include "DrawSurface.h"
+#include "Defines.hpp"
+#include "Windows.h"
+
+#include <string.h>
 
 namespace SWGL {
 

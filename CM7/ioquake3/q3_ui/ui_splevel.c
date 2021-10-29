@@ -140,7 +140,7 @@ static void PlayerIcon( const char *modelAndSkin, char *iconName, int iconNameMa
 
 	Com_sprintf(iconName, iconNameMaxSize, "models/players/%s/icon_%s.tga", model, skin );
 
-	if( !trap_R_RegisterShaderNoMip( iconName ) && Q_stricmp( skin, "default" ) != 0 ) {
+	if( !UI_trap_R_RegisterShaderNoMip( iconName ) && Q_stricmp( skin, "default" ) != 0 ) {
 		Com_sprintf(iconName, iconNameMaxSize, "models/players/%s/icon_default.tga", model );
 	}
 }
@@ -155,16 +155,16 @@ static qhandle_t PlayerIconHandle( const char *modelAndSkin ) {
 	char	iconName[MAX_QPATH];
 
 	PlayerIcon( modelAndSkin, iconName, sizeof(iconName) );
-	return trap_R_RegisterShaderNoMip( iconName );
+	return UI_trap_R_RegisterShaderNoMip( iconName );
 }
 
 
 /*
 =================
-UI_SPLevelMenu_SetBots
+Q3UI_SPLevelMenu_SetBots
 =================
 */
-static void UI_SPLevelMenu_SetBots( void ) {
+static void Q3UI_SPLevelMenu_SetBots( void ) {
 	char	*p;
 	char	*bot;
 	char	*botInfo;
@@ -198,7 +198,7 @@ static void UI_SPLevelMenu_SetBots( void ) {
 			*p++ = 0;
 		}
 
-		botInfo = UI_GetBotInfoByName( bot );
+		botInfo = Q3UI_GetBotInfoByName( bot );
 		if( botInfo ) {
 			levelMenuInfo.botPics[levelMenuInfo.numBots] = PlayerIconHandle( Info_ValueForKey( botInfo, "model" ) );
 			Q_strncpyz( levelMenuInfo.botNames[levelMenuInfo.numBots], Info_ValueForKey( botInfo, "name" ), 10 );
@@ -215,10 +215,10 @@ static void UI_SPLevelMenu_SetBots( void ) {
 
 /*
 =================
-UI_SPLevelMenu_SetMenuItems
+Q3UI_SPLevelMenu_SetMenuItems
 =================
 */
-static void UI_SPLevelMenu_SetMenuArena( int n, int level, const char *arenaInfo ) {
+static void Q3UI_SPLevelMenu_SetMenuArena( int n, int level, const char *arenaInfo ) {
 	char		map[MAX_QPATH];
 
 	Q_strncpyz( map, Info_ValueForKey( arenaInfo, "map" ), sizeof(map) );
@@ -226,13 +226,13 @@ static void UI_SPLevelMenu_SetMenuArena( int n, int level, const char *arenaInfo
 	Q_strncpyz( levelMenuInfo.levelNames[n], map, sizeof(levelMenuInfo.levelNames[n]) );
 	Q_strupr( levelMenuInfo.levelNames[n] );
 
-	UI_GetBestScore( level, &levelMenuInfo.levelScores[n], &levelMenuInfo.levelScoresSkill[n] );
+	Q3UI_GetBestScore( level, &levelMenuInfo.levelScores[n], &levelMenuInfo.levelScoresSkill[n] );
 	if( levelMenuInfo.levelScores[n] > 8 ) {
 		levelMenuInfo.levelScores[n] = 8;
 	}
 
 	strcpy( levelMenuInfo.levelPicNames[n], va( "levelshots/%s.tga", map ) );
-	if( !trap_R_RegisterShaderNoMip( levelMenuInfo.levelPicNames[n] ) ) {
+	if( !UI_trap_R_RegisterShaderNoMip( levelMenuInfo.levelPicNames[n] ) ) {
 		strcpy( levelMenuInfo.levelPicNames[n], ART_MAP_UNKNOWN );
 	}
 	levelMenuInfo.item_maps[n].shader = 0;
@@ -246,7 +246,7 @@ static void UI_SPLevelMenu_SetMenuArena( int n, int level, const char *arenaInfo
 	levelMenuInfo.item_maps[n].generic.flags &= ~QMF_INACTIVE;
 }
 
-static void UI_SPLevelMenu_SetMenuItems( void ) {
+static void Q3UI_SPLevelMenu_SetMenuItems( void ) {
 	int			n;
 	int			level;
 	const char	*arenaInfo;
@@ -263,13 +263,13 @@ static void UI_SPLevelMenu_SetMenuItems( void ) {
 	}
 
 	if( selectedArena != -1 ) {
-		trap_Cvar_SetValue( "ui_spSelection", selectedArenaSet * ARENAS_PER_TIER + selectedArena );
+		UI_trap_Cvar_SetValue( "ui_spSelection", selectedArenaSet * ARENAS_PER_TIER + selectedArena );
 	}
 
 	if( selectedArenaSet == trainingTier ) {
-		arenaInfo = UI_GetSpecialArenaInfo( "training" );
+		arenaInfo = Q3UI_GetSpecialArenaInfo( "training" );
 		level = atoi( Info_ValueForKey( arenaInfo, "num" ) );
-		UI_SPLevelMenu_SetMenuArena( 0, level, arenaInfo );
+		Q3UI_SPLevelMenu_SetMenuArena( 0, level, arenaInfo );
 		levelMenuInfo.selectedArenaInfo = arenaInfo;
 
 		levelMenuInfo.item_maps[0].generic.x = 256;
@@ -288,9 +288,9 @@ static void UI_SPLevelMenu_SetMenuItems( void ) {
 		levelMenuInfo.item_maps[3].shader = 0;
 	}
 	else if( selectedArenaSet == finalTier ) {
-		arenaInfo = UI_GetSpecialArenaInfo( "final" );
+		arenaInfo = Q3UI_GetSpecialArenaInfo( "final" );
 		level = atoi( Info_ValueForKey( arenaInfo, "num" ) );
-		UI_SPLevelMenu_SetMenuArena( 0, level, arenaInfo );
+		Q3UI_SPLevelMenu_SetMenuArena( 0, level, arenaInfo );
 		levelMenuInfo.selectedArenaInfo = arenaInfo;
 
 		levelMenuInfo.item_maps[0].generic.x = 256;
@@ -316,12 +316,12 @@ static void UI_SPLevelMenu_SetMenuItems( void ) {
 
 		for ( n = 0; n < 4; n++ ) {
 			level = selectedArenaSet * ARENAS_PER_TIER + n;
-			arenaInfo = UI_GetArenaInfoByNumber( level );
-			UI_SPLevelMenu_SetMenuArena( n, level, arenaInfo );
+			arenaInfo = Q3UI_GetArenaInfoByNumber( level );
+			Q3UI_SPLevelMenu_SetMenuArena( n, level, arenaInfo );
 		}
 
 		if( selectedArena != -1 ) {
-			levelMenuInfo.selectedArenaInfo = UI_GetArenaInfoByNumber( selectedArenaSet * ARENAS_PER_TIER + selectedArena );
+			levelMenuInfo.selectedArenaInfo = Q3UI_GetArenaInfoByNumber( selectedArenaSet * ARENAS_PER_TIER + selectedArena );
 		}
 	}
 
@@ -340,52 +340,52 @@ static void UI_SPLevelMenu_SetMenuItems( void ) {
 		levelMenuInfo.item_rightarrow.generic.flags &= ~( QMF_INACTIVE | QMF_HIDDEN );
 	}
 
-	UI_SPLevelMenu_SetBots();
+	Q3UI_SPLevelMenu_SetBots();
 }
 
 
 /*
 =================
-UI_SPLevelMenu_ResetEvent
+Q3UI_SPLevelMenu_ResetEvent
 =================
 */
-static void UI_SPLevelMenu_ResetDraw( void ) {
-	UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 0, "WARNING: This resets all of the", UI_CENTER|UI_SMALLFONT, color_yellow );
-	UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 1, "single player game variables.", UI_CENTER|UI_SMALLFONT, color_yellow );
-	UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 2, "Do this only if you want to", UI_CENTER|UI_SMALLFONT, color_yellow );
-	UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 3, "start over from the beginning.", UI_CENTER|UI_SMALLFONT, color_yellow );
+static void Q3UI_SPLevelMenu_ResetDraw( void ) {
+	Q3UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 0, "WARNING: This resets all of the", UI_CENTER|UI_SMALLFONT, color_yellow );
+	Q3UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 1, "single player game variables.", UI_CENTER|UI_SMALLFONT, color_yellow );
+	Q3UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 2, "Do this only if you want to", UI_CENTER|UI_SMALLFONT, color_yellow );
+	Q3UI_DrawProportionalString( SCREEN_WIDTH/2, 356 + PROP_HEIGHT * 3, "start over from the beginning.", UI_CENTER|UI_SMALLFONT, color_yellow );
 }
 
-static void UI_SPLevelMenu_ResetAction( qboolean result ) {
+static void Q3UI_SPLevelMenu_ResetAction( qboolean result ) {
 	if( !result ) {
 		return;
 	}
 
 	// clear game variables
-	UI_NewGame();
-	trap_Cvar_SetValue( "ui_spSelection", -4 );
+	Q3UI_NewGame();
+	UI_trap_Cvar_SetValue( "ui_spSelection", -4 );
 
 	// make the level select menu re-initialize
-	UI_PopMenu();
-	UI_SPLevelMenu();
+	Q3UI_PopMenu();
+	Q3UI_SPLevelMenu();
 }
 
-static void UI_SPLevelMenu_ResetEvent( void* ptr, int event )
+static void Q3UI_SPLevelMenu_ResetEvent( void* ptr, int event )
 {
 	if (event != QM_ACTIVATED) {
 		return;
 	}
 
-	UI_ConfirmMenu( "RESET GAME?", UI_SPLevelMenu_ResetDraw, UI_SPLevelMenu_ResetAction );
+	Q3UI_ConfirmMenu( "RESET GAME?", Q3UI_SPLevelMenu_ResetDraw, Q3UI_SPLevelMenu_ResetAction );
 }
 
 
 /*
 =================
-UI_SPLevelMenu_LevelEvent
+Q3UI_SPLevelMenu_LevelEvent
 =================
 */
-static void UI_SPLevelMenu_LevelEvent( void* ptr, int notification ) {
+static void Q3UI_SPLevelMenu_LevelEvent( void* ptr, int notification ) {
 	if (notification != QM_ACTIVATED) {
 		return;
 	}
@@ -395,19 +395,19 @@ static void UI_SPLevelMenu_LevelEvent( void* ptr, int notification ) {
 	}
 
 	selectedArena = ((menucommon_s*)ptr)->id - ID_PICTURE0;
-	levelMenuInfo.selectedArenaInfo = UI_GetArenaInfoByNumber( selectedArenaSet * ARENAS_PER_TIER + selectedArena );
-	UI_SPLevelMenu_SetBots();
+	levelMenuInfo.selectedArenaInfo = Q3UI_GetArenaInfoByNumber( selectedArenaSet * ARENAS_PER_TIER + selectedArena );
+	Q3UI_SPLevelMenu_SetBots();
 
-	trap_Cvar_SetValue( "ui_spSelection", selectedArenaSet * ARENAS_PER_TIER + selectedArena );
+	UI_trap_Cvar_SetValue( "ui_spSelection", selectedArenaSet * ARENAS_PER_TIER + selectedArena );
 }
 
 
 /*
 =================
-UI_SPLevelMenu_LeftArrowEvent
+Q3UI_SPLevelMenu_LeftArrowEvent
 =================
 */
-static void UI_SPLevelMenu_LeftArrowEvent( void* ptr, int notification ) {
+static void Q3UI_SPLevelMenu_LeftArrowEvent( void* ptr, int notification ) {
 	if (notification != QM_ACTIVATED) {
 		return;
 	}
@@ -417,16 +417,16 @@ static void UI_SPLevelMenu_LeftArrowEvent( void* ptr, int notification ) {
 	}
 
 	selectedArenaSet--;
-	UI_SPLevelMenu_SetMenuItems();
+	Q3UI_SPLevelMenu_SetMenuItems();
 }
 
 
 /*
 =================
-UI_SPLevelMenu_RightArrowEvent
+Q3UI_SPLevelMenu_RightArrowEvent
 =================
 */
-static void UI_SPLevelMenu_RightArrowEvent( void* ptr, int notification ) {
+static void Q3UI_SPLevelMenu_RightArrowEvent( void* ptr, int notification ) {
 	if (notification != QM_ACTIVATED) {
 		return;
 	}
@@ -436,30 +436,30 @@ static void UI_SPLevelMenu_RightArrowEvent( void* ptr, int notification ) {
 	}
 
 	selectedArenaSet++;
-	UI_SPLevelMenu_SetMenuItems();
+	Q3UI_SPLevelMenu_SetMenuItems();
 }
 
 
 /*
 =================
-UI_SPLevelMenu_PlayerEvent
+Q3UI_SPLevelMenu_PlayerEvent
 =================
 */
-static void UI_SPLevelMenu_PlayerEvent( void* ptr, int notification ) {
+static void Q3UI_SPLevelMenu_PlayerEvent( void* ptr, int notification ) {
 	if (notification != QM_ACTIVATED) {
 		return;
 	}
 
-	UI_PlayerSettingsMenu();
+	Q3UI_PlayerSettingsMenu();
 }
 
 
 /*
 =================
-UI_SPLevelMenu_AwardEvent
+Q3UI_SPLevelMenu_AwardEvent
 =================
 */
-static void UI_SPLevelMenu_AwardEvent( void* ptr, int notification ) {
+static void Q3UI_SPLevelMenu_AwardEvent( void* ptr, int notification ) {
 	int		n;
 
 	if (notification != QM_ACTIVATED) {
@@ -467,16 +467,16 @@ static void UI_SPLevelMenu_AwardEvent( void* ptr, int notification ) {
 	}
 
 	n = ((menucommon_s*)ptr)->id - ID_AWARD1;
-	trap_S_StartLocalSound( levelMenuInfo.awardSounds[n], CHAN_ANNOUNCER );
+	UI_trap_S_StartLocalSound( levelMenuInfo.awardSounds[n], CHAN_ANNOUNCER );
 }
 
 
 /*
 =================
-UI_SPLevelMenu_NextEvent
+Q3UI_SPLevelMenu_NextEvent
 =================
 */
-static void UI_SPLevelMenu_NextEvent( void* ptr, int notification ) {
+static void Q3UI_SPLevelMenu_NextEvent( void* ptr, int notification ) {
 	if (notification != QM_ACTIVATED) {
 		return;
 	}
@@ -489,16 +489,16 @@ static void UI_SPLevelMenu_NextEvent( void* ptr, int notification ) {
 		selectedArena = 0;
 	}
 
-	UI_SPSkillMenu( levelMenuInfo.selectedArenaInfo );
+	Q3UI_SPSkillMenu( levelMenuInfo.selectedArenaInfo );
 }
 
 
 /*
 =================
-UI_SPLevelMenu_BackEvent
+Q3UI_SPLevelMenu_BackEvent
 =================
 */
-static void UI_SPLevelMenu_BackEvent( void* ptr, int notification ) {
+static void Q3UI_SPLevelMenu_BackEvent( void* ptr, int notification ) {
 	if (notification != QM_ACTIVATED) {
 		return;
 	}
@@ -507,32 +507,32 @@ static void UI_SPLevelMenu_BackEvent( void* ptr, int notification ) {
 		selectedArena = 0;
 	}
 
-	UI_PopMenu();
+	Q3UI_PopMenu();
 }
 
 
 /*
 =================
-UI_SPLevelMenu_CustomEvent
+Q3UI_SPLevelMenu_CustomEvent
 =================
 */
-static void UI_SPLevelMenu_CustomEvent( void* ptr, int notification ) {
+static void Q3UI_SPLevelMenu_CustomEvent( void* ptr, int notification ) {
 	if (notification != QM_ACTIVATED) {
 		return;
 	}
 
-	UI_StartServerMenu( qfalse );
+	Q3UI_StartServerMenu( qfalse );
 }
 
 
 /*
 =================
-UI_SPLevelMenu_MenuDraw
+Q3UI_SPLevelMenu_MenuDraw
 =================
 */
 #define LEVEL_DESC_LEFT_MARGIN		332
 
-static void UI_SPLevelMenu_MenuDraw( void ) {
+static void Q3UI_SPLevelMenu_MenuDraw( void ) {
 	int				n, i;
 	int				x, y;
 	vec4_t			color;
@@ -543,18 +543,18 @@ static void UI_SPLevelMenu_MenuDraw( void ) {
 	char			string[64];
 
 	if(	levelMenuInfo.reinit ) {
-		UI_PopMenu();
-		UI_SPLevelMenu();
+		Q3UI_PopMenu();
+		Q3UI_SPLevelMenu();
 		return;
 	}
 
 	// draw player name
-	trap_Cvar_VariableStringBuffer( "name", string, 32 );
+	UI_trap_Cvar_VariableStringBuffer( "name", string, 32 );
 	Q_CleanStr( string );
-	UI_DrawProportionalString( 320, PLAYER_Y, string, UI_CENTER|UI_SMALLFONT, color_orange );
+	Q3UI_DrawProportionalString( 320, PLAYER_Y, string, UI_CENTER|UI_SMALLFONT, color_orange );
 
 	// check for model changes
-	trap_Cvar_VariableStringBuffer( "model", buf, sizeof(buf) );
+	UI_trap_Cvar_VariableStringBuffer( "model", buf, sizeof(buf) );
 	if( Q_stricmp( buf, levelMenuInfo.playerModel ) != 0 ) {
 		Q_strncpyz( levelMenuInfo.playerModel, buf, sizeof(levelMenuInfo.playerModel) );
 		PlayerIcon( levelMenuInfo.playerModel, levelMenuInfo.playerPicName, sizeof(levelMenuInfo.playerPicName) );
@@ -592,20 +592,20 @@ static void UI_SPLevelMenu_MenuDraw( void ) {
 				Com_sprintf( string, sizeof(string), "%i", level );
 			}
 
-			UI_DrawString( x + 24, y + 48, string, UI_CENTER, color_yellow );
+			Q3UI_DrawString( x + 24, y + 48, string, UI_CENTER, color_yellow );
 		}
 	}
 
-	UI_DrawProportionalString( 18, 38, va( "Tier %i", selectedArenaSet + 1 ), UI_LEFT|UI_SMALLFONT, color_orange );
+	Q3UI_DrawProportionalString( 18, 38, va( "Tier %i", selectedArenaSet + 1 ), UI_LEFT|UI_SMALLFONT, color_orange );
 
 	for ( n = 0; n < levelMenuInfo.numMaps; n++ ) {
 		x = levelMenuInfo.item_maps[n].generic.x;
 		y = levelMenuInfo.item_maps[n].generic.y;
-		UI_FillRect( x, y + 96, 128, 18, color_black );
+		Q3UI_FillRect( x, y + 96, 128, 18, color_black );
 	}
 
 	if ( selectedArenaSet > currentSet ) {
-		UI_DrawProportionalString( 320, 216, "ACCESS DENIED", UI_CENTER|UI_BIGFONT, color_red );
+		Q3UI_DrawProportionalString( 320, 216, "ACCESS DENIED", UI_CENTER|UI_BIGFONT, color_red );
 		return;
 	}
 
@@ -616,23 +616,23 @@ static void UI_SPLevelMenu_MenuDraw( void ) {
 		x = levelMenuInfo.item_maps[n].generic.x;
 		y = levelMenuInfo.item_maps[n].generic.y;
 
-		UI_DrawString( x + 64, y + 96, levelMenuInfo.levelNames[n], UI_CENTER|UI_SMALLFONT, color_orange );
+		Q3UI_DrawString( x + 64, y + 96, levelMenuInfo.levelNames[n], UI_CENTER|UI_SMALLFONT, color_orange );
 
 		if( levelMenuInfo.levelScores[n] == 1 ) {
-			UI_DrawHandlePic( x, y, 128, 96, levelMenuInfo.levelCompletePic[levelMenuInfo.levelScoresSkill[n] - 1] ); 
+			Q3UI_DrawHandlePic( x, y, 128, 96, levelMenuInfo.levelCompletePic[levelMenuInfo.levelScoresSkill[n] - 1] ); 
 		}
 
 		if ( n == selectedArena ) {
 			if( Menu_ItemAtCursor( &levelMenuInfo.menu ) == &levelMenuInfo.item_maps[n] ) {
-				trap_R_SetColor( color );
+				UI_trap_R_SetColor( color );
 			}
-			UI_DrawHandlePic( x-1, y-1, 130, 130 - 14, levelMenuInfo.levelSelectedPic ); 
-			trap_R_SetColor( NULL );
+			Q3UI_DrawHandlePic( x-1, y-1, 130, 130 - 14, levelMenuInfo.levelSelectedPic ); 
+			UI_trap_R_SetColor( NULL );
 		}
 		else if( Menu_ItemAtCursor( &levelMenuInfo.menu ) == &levelMenuInfo.item_maps[n] ) {
-			trap_R_SetColor( color );
-			UI_DrawHandlePic( x-31, y-30, 256, 256-27, levelMenuInfo.levelFocusPic); 
-			trap_R_SetColor( NULL );
+			UI_trap_R_SetColor( color );
+			Q3UI_DrawHandlePic( x-31, y-30, 256, 256-27, levelMenuInfo.levelFocusPic); 
+			UI_trap_R_SetColor( NULL );
 		}
 	}
 
@@ -641,10 +641,10 @@ static void UI_SPLevelMenu_MenuDraw( void ) {
 	Q_strncpyz( buf, Info_ValueForKey( levelMenuInfo.selectedArenaInfo, "map" ), 20 );
 	Q_strupr( buf );
 	Com_sprintf( string, sizeof(string), "%s: %s", buf, Info_ValueForKey( levelMenuInfo.selectedArenaInfo, "longname" ) );
-	UI_DrawProportionalString( 320, y, string, UI_CENTER|UI_SMALLFONT, color_orange );
+	Q3UI_DrawProportionalString( 320, y, string, UI_CENTER|UI_SMALLFONT, color_orange );
 
 //	fraglimit = atoi( Info_ValueForKey( levelMenuInfo.selectedArenaInfo, "fraglimit" ) );
-//	UI_DrawString( 18, 212, va("Frags %i", fraglimit) , UI_LEFT|UI_SMALLFONT, color_orange );
+//	Q3UI_DrawString( 18, 212, va("Frags %i", fraglimit) , UI_LEFT|UI_SMALLFONT, color_orange );
 
 	// draw bot opponents
 	y += 24;
@@ -652,83 +652,83 @@ static void UI_SPLevelMenu_MenuDraw( void ) {
 	for( n = 0; n < levelMenuInfo.numBots; n++ ) {
 		x = 18 + pad + (64 + 26) * n;
 		if( levelMenuInfo.botPics[n] ) {
-			UI_DrawHandlePic( x, y, 64, 64, levelMenuInfo.botPics[n]);
+			Q3UI_DrawHandlePic( x, y, 64, 64, levelMenuInfo.botPics[n]);
 		}
 		else {
-			UI_FillRect( x, y, 64, 64, color_black );
-			UI_DrawProportionalString( x+22, y+18, "?", UI_BIGFONT, color_orange );
+			Q3UI_FillRect( x, y, 64, 64, color_black );
+			Q3UI_DrawProportionalString( x+22, y+18, "?", UI_BIGFONT, color_orange );
 		}
-		UI_DrawString( x, y + 64, levelMenuInfo.botNames[n], UI_SMALLFONT|UI_LEFT, color_orange );
+		Q3UI_DrawString( x, y + 64, levelMenuInfo.botNames[n], UI_SMALLFONT|UI_LEFT, color_orange );
 	}
 }
 
 
 /*
 =================
-UI_SPLevelMenu_Cache
+Q3UI_SPLevelMenu_Cache
 =================
 */
-void UI_SPLevelMenu_Cache( void ) {
+void Q3UI_SPLevelMenu_Cache( void ) {
 	int				n;
 
-	trap_R_RegisterShaderNoMip( ART_LEVELFRAME_FOCUS );
-	trap_R_RegisterShaderNoMip( ART_LEVELFRAME_SELECTED );
-	trap_R_RegisterShaderNoMip( ART_ARROW );
-	trap_R_RegisterShaderNoMip( ART_ARROW_FOCUS );
-	trap_R_RegisterShaderNoMip( ART_MAP_UNKNOWN );
-	trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE1 );
-	trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE2 );
-	trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE3 );
-	trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE4 );
-	trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE5 );
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
-	trap_R_RegisterShaderNoMip( ART_FIGHT0 );
-	trap_R_RegisterShaderNoMip( ART_FIGHT1 );
-	trap_R_RegisterShaderNoMip( ART_RESET0 );
-	trap_R_RegisterShaderNoMip( ART_RESET1 );
-	trap_R_RegisterShaderNoMip( ART_CUSTOM0 );
-	trap_R_RegisterShaderNoMip( ART_CUSTOM1 );
+	UI_trap_R_RegisterShaderNoMip( ART_LEVELFRAME_FOCUS );
+	UI_trap_R_RegisterShaderNoMip( ART_LEVELFRAME_SELECTED );
+	UI_trap_R_RegisterShaderNoMip( ART_ARROW );
+	UI_trap_R_RegisterShaderNoMip( ART_ARROW_FOCUS );
+	UI_trap_R_RegisterShaderNoMip( ART_MAP_UNKNOWN );
+	UI_trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE1 );
+	UI_trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE2 );
+	UI_trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE3 );
+	UI_trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE4 );
+	UI_trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE5 );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK0 );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK1 );
+	UI_trap_R_RegisterShaderNoMip( ART_FIGHT0 );
+	UI_trap_R_RegisterShaderNoMip( ART_FIGHT1 );
+	UI_trap_R_RegisterShaderNoMip( ART_RESET0 );
+	UI_trap_R_RegisterShaderNoMip( ART_RESET1 );
+	UI_trap_R_RegisterShaderNoMip( ART_CUSTOM0 );
+	UI_trap_R_RegisterShaderNoMip( ART_CUSTOM1 );
 
 	for( n = 0; n < 6; n++ ) {
-		trap_R_RegisterShaderNoMip( ui_medalPicNames[n] );
-		levelMenuInfo.awardSounds[n] = trap_S_RegisterSound( ui_medalSounds[n], qfalse );
+		UI_trap_R_RegisterShaderNoMip( ui_medalPicNames[n] );
+		levelMenuInfo.awardSounds[n] = UI_trap_S_RegisterSound( ui_medalSounds[n], qfalse );
 	}
 
-	levelMenuInfo.levelSelectedPic = trap_R_RegisterShaderNoMip( ART_LEVELFRAME_SELECTED );
-	levelMenuInfo.levelFocusPic = trap_R_RegisterShaderNoMip( ART_LEVELFRAME_FOCUS );
-	levelMenuInfo.levelCompletePic[0] = trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE1 );
-	levelMenuInfo.levelCompletePic[1] = trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE2 );
-	levelMenuInfo.levelCompletePic[2] = trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE3 );
-	levelMenuInfo.levelCompletePic[3] = trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE4 );
-	levelMenuInfo.levelCompletePic[4] = trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE5 );
+	levelMenuInfo.levelSelectedPic = UI_trap_R_RegisterShaderNoMip( ART_LEVELFRAME_SELECTED );
+	levelMenuInfo.levelFocusPic = UI_trap_R_RegisterShaderNoMip( ART_LEVELFRAME_FOCUS );
+	levelMenuInfo.levelCompletePic[0] = UI_trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE1 );
+	levelMenuInfo.levelCompletePic[1] = UI_trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE2 );
+	levelMenuInfo.levelCompletePic[2] = UI_trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE3 );
+	levelMenuInfo.levelCompletePic[3] = UI_trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE4 );
+	levelMenuInfo.levelCompletePic[4] = UI_trap_R_RegisterShaderNoMip( ART_MAP_COMPLETE5 );
 }
 
 
 /*
 =================
-UI_SPLevelMenu_Init
+Q3UI_SPLevelMenu_Init
 =================
 */
-static void UI_SPLevelMenu_Init( void ) {
+static void Q3UI_SPLevelMenu_Init( void ) {
 	int		skill;
 	int		n;
 	int		x, y;
 	int		count;
 	char	buf[MAX_QPATH];
 
-	skill = (int)trap_Cvar_VariableValue( "g_spSkill" );
+	skill = (int)UI_trap_Cvar_VariableValue( "g_spSkill" );
 	if( skill < 1 || skill > 5 ) {
-		trap_Cvar_Set( "g_spSkill", "2" );
+		UI_trap_Cvar_Set( "g_spSkill", "2" );
 		skill = 2;
 	}
 
 	memset( &levelMenuInfo, 0, sizeof(levelMenuInfo) );
 	levelMenuInfo.menu.fullscreen = qtrue;
 	levelMenuInfo.menu.wrapAround = qtrue;
-	levelMenuInfo.menu.draw = UI_SPLevelMenu_MenuDraw;
+	levelMenuInfo.menu.draw = Q3UI_SPLevelMenu_MenuDraw;
 
-	UI_SPLevelMenu_Cache();
+	Q3UI_SPLevelMenu_Cache();
 
 	levelMenuInfo.item_banner.generic.type			= MTYPE_BTEXT;
 	levelMenuInfo.item_banner.generic.x				= 320;
@@ -742,7 +742,7 @@ static void UI_SPLevelMenu_Init( void ) {
 	levelMenuInfo.item_leftarrow.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	levelMenuInfo.item_leftarrow.generic.x			= 18;
 	levelMenuInfo.item_leftarrow.generic.y			= 64;
-	levelMenuInfo.item_leftarrow.generic.callback	= UI_SPLevelMenu_LeftArrowEvent;
+	levelMenuInfo.item_leftarrow.generic.callback	= Q3UI_SPLevelMenu_LeftArrowEvent;
 	levelMenuInfo.item_leftarrow.generic.id			= ID_LEFTARROW;
 	levelMenuInfo.item_leftarrow.width				= 16;
 	levelMenuInfo.item_leftarrow.height				= 114;
@@ -754,7 +754,7 @@ static void UI_SPLevelMenu_Init( void ) {
 	levelMenuInfo.item_maps[0].generic.x			= 46;
 	levelMenuInfo.item_maps[0].generic.y			= 64;
 	levelMenuInfo.item_maps[0].generic.id			= ID_PICTURE0;
-	levelMenuInfo.item_maps[0].generic.callback		= UI_SPLevelMenu_LevelEvent;
+	levelMenuInfo.item_maps[0].generic.callback		= Q3UI_SPLevelMenu_LevelEvent;
 	levelMenuInfo.item_maps[0].width				= 128;
 	levelMenuInfo.item_maps[0].height				= 96;
 
@@ -764,7 +764,7 @@ static void UI_SPLevelMenu_Init( void ) {
 	levelMenuInfo.item_maps[1].generic.x			= 186;
 	levelMenuInfo.item_maps[1].generic.y			= 64;
 	levelMenuInfo.item_maps[1].generic.id			= ID_PICTURE1;
-	levelMenuInfo.item_maps[1].generic.callback		= UI_SPLevelMenu_LevelEvent;
+	levelMenuInfo.item_maps[1].generic.callback		= Q3UI_SPLevelMenu_LevelEvent;
 	levelMenuInfo.item_maps[1].width				= 128;
 	levelMenuInfo.item_maps[1].height				= 96;
 
@@ -774,7 +774,7 @@ static void UI_SPLevelMenu_Init( void ) {
 	levelMenuInfo.item_maps[2].generic.x			= 326;
 	levelMenuInfo.item_maps[2].generic.y			= 64;
 	levelMenuInfo.item_maps[2].generic.id			= ID_PICTURE2;
-	levelMenuInfo.item_maps[2].generic.callback		= UI_SPLevelMenu_LevelEvent;
+	levelMenuInfo.item_maps[2].generic.callback		= Q3UI_SPLevelMenu_LevelEvent;
 	levelMenuInfo.item_maps[2].width				= 128;
 	levelMenuInfo.item_maps[2].height				= 96;
 
@@ -784,7 +784,7 @@ static void UI_SPLevelMenu_Init( void ) {
 	levelMenuInfo.item_maps[3].generic.x			= 466;
 	levelMenuInfo.item_maps[3].generic.y			= 64;
 	levelMenuInfo.item_maps[3].generic.id			= ID_PICTURE3;
-	levelMenuInfo.item_maps[3].generic.callback		= UI_SPLevelMenu_LevelEvent;
+	levelMenuInfo.item_maps[3].generic.callback		= Q3UI_SPLevelMenu_LevelEvent;
 	levelMenuInfo.item_maps[3].width				= 128;
 	levelMenuInfo.item_maps[3].height				= 96;
 
@@ -793,13 +793,13 @@ static void UI_SPLevelMenu_Init( void ) {
 	levelMenuInfo.item_rightarrow.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	levelMenuInfo.item_rightarrow.generic.x			= 606;
 	levelMenuInfo.item_rightarrow.generic.y			= 64;
-	levelMenuInfo.item_rightarrow.generic.callback	= UI_SPLevelMenu_RightArrowEvent;
+	levelMenuInfo.item_rightarrow.generic.callback	= Q3UI_SPLevelMenu_RightArrowEvent;
 	levelMenuInfo.item_rightarrow.generic.id		= ID_RIGHTARROW;
 	levelMenuInfo.item_rightarrow.width				= -16;
 	levelMenuInfo.item_rightarrow.height			= 114;
 	levelMenuInfo.item_rightarrow.focuspic			= ART_ARROW_FOCUS;
 
-	trap_Cvar_VariableStringBuffer( "model", levelMenuInfo.playerModel, sizeof(levelMenuInfo.playerModel) );
+	UI_trap_Cvar_VariableStringBuffer( "model", levelMenuInfo.playerModel, sizeof(levelMenuInfo.playerModel) );
 	PlayerIcon( levelMenuInfo.playerModel, levelMenuInfo.playerPicName, sizeof(levelMenuInfo.playerPicName) );
 	levelMenuInfo.item_player.generic.type			= MTYPE_BITMAP;
 	levelMenuInfo.item_player.generic.name			= levelMenuInfo.playerPicName;
@@ -807,12 +807,12 @@ static void UI_SPLevelMenu_Init( void ) {
 	levelMenuInfo.item_player.generic.x				= 288;
 	levelMenuInfo.item_player.generic.y				= AWARDS_Y;
 	levelMenuInfo.item_player.generic.id			= ID_PLAYERPIC;
-	levelMenuInfo.item_player.generic.callback		= UI_SPLevelMenu_PlayerEvent;
+	levelMenuInfo.item_player.generic.callback		= Q3UI_SPLevelMenu_PlayerEvent;
 	levelMenuInfo.item_player.width					= 64;
 	levelMenuInfo.item_player.height				= 64;
 
 	for( n = 0; n < 6; n++ ) {
-		levelMenuInfo.awardLevels[n] = UI_GetAwardLevel( n );
+		levelMenuInfo.awardLevels[n] = Q3UI_GetAwardLevel( n );
 	}
 	levelMenuInfo.awardLevels[AWARD_FRAGS] = 100 * (levelMenuInfo.awardLevels[AWARD_FRAGS] / 100);
 
@@ -833,7 +833,7 @@ static void UI_SPLevelMenu_Init( void ) {
 			levelMenuInfo.item_awards[count].generic.x			= x;
 			levelMenuInfo.item_awards[count].generic.y			= y;
 			levelMenuInfo.item_awards[count].generic.id			= ID_AWARD1 + n;
-			levelMenuInfo.item_awards[count].generic.callback	= UI_SPLevelMenu_AwardEvent;
+			levelMenuInfo.item_awards[count].generic.callback	= Q3UI_SPLevelMenu_AwardEvent;
 			levelMenuInfo.item_awards[count].width				= 48;
 			levelMenuInfo.item_awards[count].height				= 48;
 			count++;
@@ -845,7 +845,7 @@ static void UI_SPLevelMenu_Init( void ) {
 	levelMenuInfo.item_back.generic.flags			= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	levelMenuInfo.item_back.generic.x				= 0;
 	levelMenuInfo.item_back.generic.y				= 480-64;
-	levelMenuInfo.item_back.generic.callback		= UI_SPLevelMenu_BackEvent;
+	levelMenuInfo.item_back.generic.callback		= Q3UI_SPLevelMenu_BackEvent;
 	levelMenuInfo.item_back.generic.id				= ID_BACK;
 	levelMenuInfo.item_back.width					= 128;
 	levelMenuInfo.item_back.height					= 64;
@@ -856,7 +856,7 @@ static void UI_SPLevelMenu_Init( void ) {
 	levelMenuInfo.item_reset.generic.flags			= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	levelMenuInfo.item_reset.generic.x				= 170;
 	levelMenuInfo.item_reset.generic.y				= 480-64;
-	levelMenuInfo.item_reset.generic.callback		= UI_SPLevelMenu_ResetEvent;
+	levelMenuInfo.item_reset.generic.callback		= Q3UI_SPLevelMenu_ResetEvent;
 	levelMenuInfo.item_reset.generic.id				= ID_RESET;
 	levelMenuInfo.item_reset.width					= 128;
 	levelMenuInfo.item_reset.height					= 64;
@@ -867,7 +867,7 @@ static void UI_SPLevelMenu_Init( void ) {
 	levelMenuInfo.item_custom.generic.flags			= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	levelMenuInfo.item_custom.generic.x				= 342;
 	levelMenuInfo.item_custom.generic.y				= 480-64;
-	levelMenuInfo.item_custom.generic.callback		= UI_SPLevelMenu_CustomEvent;
+	levelMenuInfo.item_custom.generic.callback		= Q3UI_SPLevelMenu_CustomEvent;
 	levelMenuInfo.item_custom.generic.id			= ID_CUSTOM;
 	levelMenuInfo.item_custom.width					= 128;
 	levelMenuInfo.item_custom.height				= 64;
@@ -878,7 +878,7 @@ static void UI_SPLevelMenu_Init( void ) {
 	levelMenuInfo.item_next.generic.flags			= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	levelMenuInfo.item_next.generic.x				= 640;
 	levelMenuInfo.item_next.generic.y				= 480-64;
-	levelMenuInfo.item_next.generic.callback		= UI_SPLevelMenu_NextEvent;
+	levelMenuInfo.item_next.generic.callback		= Q3UI_SPLevelMenu_NextEvent;
 	levelMenuInfo.item_next.generic.id				= ID_NEXT;
 	levelMenuInfo.item_next.width					= 128;
 	levelMenuInfo.item_next.height					= 64;
@@ -915,7 +915,7 @@ static void UI_SPLevelMenu_Init( void ) {
 	Menu_AddItem( &levelMenuInfo.menu, &levelMenuInfo.item_next );
 	Menu_AddItem( &levelMenuInfo.menu, &levelMenuInfo.item_null );
 
-	trap_Cvar_VariableStringBuffer( "ui_spSelection", buf, sizeof(buf) );
+	UI_trap_Cvar_VariableStringBuffer( "ui_spSelection", buf, sizeof(buf) );
 	if( *buf ) {
 		n = atoi( buf );
 		selectedArenaSet = n / ARENAS_PER_TIER;
@@ -926,22 +926,22 @@ static void UI_SPLevelMenu_Init( void ) {
 		selectedArena = currentGame;
 	}
 
-	UI_SPLevelMenu_SetMenuItems();
+	Q3UI_SPLevelMenu_SetMenuItems();
 }
 
 
 /*
 =================
-UI_SPLevelMenu
+Q3UI_SPLevelMenu
 =================
 */
-void UI_SPLevelMenu( void ) {
+void Q3UI_SPLevelMenu( void ) {
 	int			level;
 	int			trainingLevel;
 	const char	*arenaInfo;
 
 	trainingTier = -1;
-	arenaInfo = UI_GetSpecialArenaInfo( "training" );
+	arenaInfo = Q3UI_GetSpecialArenaInfo( "training" );
 	if( arenaInfo ) {
 		minTier = trainingTier;
 		trainingLevel = atoi( Info_ValueForKey( arenaInfo, "num" ) );
@@ -951,8 +951,8 @@ void UI_SPLevelMenu( void ) {
 		trainingLevel = -2;
 	}
 
-	finalTier = UI_GetNumSPTiers();
-	arenaInfo = UI_GetSpecialArenaInfo( "final" );
+	finalTier = Q3UI_GetNumSPTiers();
+	arenaInfo = Q3UI_GetSpecialArenaInfo( "final" );
 	if( arenaInfo ) {
 		maxTier = finalTier;
 	}
@@ -963,9 +963,9 @@ void UI_SPLevelMenu( void ) {
 		}
 	}
 
-	level = UI_GetCurrentGame();
+	level = Q3UI_GetCurrentGame();
 	if ( level == -1 ) {
-		level = UI_GetNumSPArenas() - 1;
+		level = Q3UI_GetNumSPArenas() - 1;
 		if( maxTier == finalTier ) {
 			level++;
 		}
@@ -980,29 +980,29 @@ void UI_SPLevelMenu( void ) {
 		currentGame = level % ARENAS_PER_TIER;
 	}
 
-	UI_SPLevelMenu_Init();
-	UI_PushMenu( &levelMenuInfo.menu );
+	Q3UI_SPLevelMenu_Init();
+	Q3UI_PushMenu( &levelMenuInfo.menu );
 	Menu_SetCursorToItem( &levelMenuInfo.menu, &levelMenuInfo.item_next );
 }
 
 
 /*
 =================
-UI_SPLevelMenu_f
+Q3UI_SPLevelMenu_f
 =================
 */
-void UI_SPLevelMenu_f( void ) {
-	trap_Key_SetCatcher( KEYCATCH_UI );
+void Q3UI_SPLevelMenu_f( void ) {
+	UI_trap_Key_SetCatcher( KEYCATCH_UI );
 	uis.menusp = 0;
-	UI_SPLevelMenu();
+	Q3UI_SPLevelMenu();
 }
 
 
 /*
 =================
-UI_SPLevelMenu_ReInit
+Q3UI_SPLevelMenu_ReInit
 =================
 */
-void UI_SPLevelMenu_ReInit( void ) {
+void Q3UI_SPLevelMenu_ReInit( void ) {
 	levelMenuInfo.reinit = qtrue;
 }

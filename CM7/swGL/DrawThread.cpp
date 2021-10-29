@@ -1,106 +1,99 @@
-﻿#include <stdexcept>
-#include "Log.h"
-#include "DrawThread.h"
+﻿#include "DrawThread.hpp"
+
+#include <cstring>
+
+#include "Log.hpp"
+
+
+  const osMutexAttr_t mutex_attributes = {
+    .name = "SwGLMutex",
+    .attr_bits = osMutexRecursive,
+    .cb_mem = NULL,
+    .cb_size = 0
+  };
 
 namespace SWGL {
-
     DrawThread::DrawThread(DrawBufferPtr drawBuffer)
 
         : m_drawBuffer(drawBuffer) {
+      m_commandQueue = osMessageQueueNew(32, sizeof(CommandPtr), NULL);
+      m_mutex = osMutexNew(&mutex_attributes);
 
     }
-
-
 
     void DrawThread::start() {
 
-        m_workloadEstimate = 0;
-        m_isWorkAvailable = false;
+      osThreadAttr_t taskAttrs;
+      memset(&taskAttrs, 0, sizeof(osThreadAttr_t));
+      taskAttrs.name = "SwGLRender";
+      taskAttrs.priority = (osPriority_t) osPriorityAboveNormal;
+      taskAttrs.stack_size = 8192;
 
-        m_thread = std::thread(&DrawThread::run, this);
+      m_workloadEstimate = 0;
+      m_isWorkAvailable = false;
+      m_thread = osThreadNew(DrawThread::run, static_cast<void*>(this), &taskAttrs);
+
     }
 
     void DrawThread::join() {
+      //osThreadJoin(m_thread);
 
-        try {
-
-            if (m_thread.joinable()) {
-
-                m_thread.join();
-            }
-        }
-        catch (std::runtime_error ex) {
-
-            LOG("std::thread::join() failed: %s", ex.what());
-        }
+      eTaskState state;
+      if(m_thread == NULL)
+        return;
+      do
+      {
+        osDelay(1);
+        state = eTaskGetState((TaskHandle_t)m_thread);
+      } while(state == eRunning);
     }
 
 
 
     void DrawThread::addCommand(CommandPtr command) {
 
-        auto isFlushingQueue = command->isFlushingQueue();
-        auto workloadEstimate = command->getWorkLoadEstimate();
+        osStatus_t status;
+        //auto isFlushingQueue = command->isFlushingQueue();
+        int workloadEstimate = command->getWorkLoadEstimate();
 
         // This is used to not overburden or starve the threads with too many / too few triangles.
         // If it goes beyond a certain threshold the drawing process is forced to start. It's only
         // a hack until something more sophisticated will replace this - but it isn't "bad" as it
         // increases the FPS by a significant amount.
+
         m_workloadEstimate += workloadEstimate;
 
-        for (;;) {
+        do
+        {
+          status = osMessageQueuePut(m_commandQueue, (const void *)&command, 0, 5);
+        } while(status != osOK);
+
+        if (m_workloadEstimate >= 32) {
         
-            bool couldPush = m_commandQueue.push(command);
-
-            // Tell the draw thread that there is work to do
-            if (!couldPush || m_workloadEstimate >= 32 || isFlushingQueue) {
-
-                {
-                    std::lock_guard<std::mutex> cs(m_mutex);
-                    m_isWorkAvailable = true;
-                }
-                m_workAvailable.notify_one();
-
-                if (!couldPush) { continue; }
-            }
-
-            if (couldPush) {
-
-                if (m_workloadEstimate >= 32) {
-                
-                    m_workloadEstimate = 0;
-                }
-                break;
-            }
+            m_workloadEstimate = 0;
         }
     }
 
 
 
-    void DrawThread::run() {
-
-        std::unique_lock<std::mutex> cs(m_mutex, std::defer_lock);
-
+    void DrawThread::run(void *argument)
+    {
+        DrawThread* thread = static_cast<DrawThread*>(argument);
+        osStatus_t status;
         CommandPtr cmd;
-        for (;;) {
-
-            // Wait for work
-            cs.lock();
-            m_workAvailable.wait(cs, [this] {
-
-                return m_isWorkAvailable;
-            });
-            m_isWorkAvailable = false;
-            cs.unlock();
-
-            // Execute the commands
-            while (m_commandQueue.pop(cmd)) {
-
-                if (!cmd->execute(this)) {
-
-                    return;
+        for (;;)
+        {
+            do
+            {
+              status = osMessageQueueGet(thread->m_commandQueue, (void *)&cmd, NULL, 1000);
+              if(status == osOK)
+              {
+                if (!cmd->execute(thread))
+                {
+                   vTaskDelete(NULL);
                 }
-            }
+              }
+            } while(status == osOK);
         }
     }
 }

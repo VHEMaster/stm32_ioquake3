@@ -769,10 +769,10 @@ void CL_ParseVoip ( msg_t *msg ) {
 		                 &clc.speexDecoderBits[sender], decoded + written);
 
 		#if 0
-		static FILE *encio = NULL;
+		static FIL *encio = NULL;
 		if (encio == NULL) encio = fopen("voip-incoming-encoded.bin", "wb");
 		if (encio != NULL) { fwrite(encoded, len, 1, encio); fflush(encio); }
-		static FILE *decio = NULL;
+		static FIL *decio = NULL;
 		if (decio == NULL) decio = fopen("voip-incoming-decoded.bin", "wb");
 		if (decio != NULL) { fwrite(decoded+written, clc.speexFrameSize*2, 1, decio); fflush(decio); }
 		#endif

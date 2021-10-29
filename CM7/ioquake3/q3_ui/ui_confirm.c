@@ -69,7 +69,7 @@ static void ConfirmMenu_Event( void* ptr, int event ) {
 		return;
 	}
 
-	UI_PopMenu();
+	Q3UI_PopMenu();
 
 	if( ((menucommon_s*)ptr)->id == ID_CONFIRM_NO ) {
 		result = qfalse;
@@ -121,12 +121,12 @@ MessaheMenu_Draw
 static void MessageMenu_Draw( void ) {
 	int i,y;
 	
-	UI_DrawNamedPic( 142, 118, 359, 256, ART_CONFIRM_FRAME );
+	Q3UI_DrawNamedPic( 142, 118, 359, 256, ART_CONFIRM_FRAME );
 	
 	y = 188;
 	for(i=0; s_confirm.lines[i]; i++)
 	{
-		UI_DrawProportionalString( 320, y, s_confirm.lines[i], s_confirm.style, color_red );
+		Q3UI_DrawProportionalString( 320, y, s_confirm.lines[i], s_confirm.style, color_red );
 		y += 18;
 	}
 
@@ -143,9 +143,9 @@ ConfirmMenu_Draw
 =================
 */
 static void ConfirmMenu_Draw( void ) {
-	UI_DrawNamedPic( 142, 118, 359, 256, ART_CONFIRM_FRAME );
-	UI_DrawProportionalString( 320, 204, s_confirm.question, s_confirm.style, color_red );
-	UI_DrawProportionalString( s_confirm.slashX, 265, "/", UI_LEFT|UI_INVERSE, color_red );
+	Q3UI_DrawNamedPic( 142, 118, 359, 256, ART_CONFIRM_FRAME );
+	Q3UI_DrawProportionalString( 320, 204, s_confirm.question, s_confirm.style, color_red );
+	Q3UI_DrawProportionalString( s_confirm.slashX, 265, "/", UI_LEFT|UI_INVERSE, color_red );
 
 	Menu_Draw( &s_confirm.menu );
 
@@ -161,16 +161,16 @@ ConfirmMenu_Cache
 =================
 */
 void ConfirmMenu_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_CONFIRM_FRAME );
+	UI_trap_R_RegisterShaderNoMip( ART_CONFIRM_FRAME );
 }
 
 
 /*
 =================
-UI_ConfirmMenu_Stlye
+Q3UI_ConfirmMenu_Stlye
 =================
 */
-void UI_ConfirmMenu_Style( const char *question, int style, void (*draw)( void ), void (*action)( qboolean result ) ) {
+void Q3UI_ConfirmMenu_Style( const char *question, int style, void (*draw)( void ), void (*action)( qboolean result ) ) {
 	uiClientState_t	cstate;
 	int	n1, n2, n3;
 	int	l1, l2, l3;
@@ -180,9 +180,9 @@ void UI_ConfirmMenu_Style( const char *question, int style, void (*draw)( void )
 
 	ConfirmMenu_Cache();
 
-	n1 = UI_ProportionalStringWidth( "YES/NO" );
-	n2 = UI_ProportionalStringWidth( "YES" ) + PROP_GAP_WIDTH;
-	n3 = UI_ProportionalStringWidth( "/" )  + PROP_GAP_WIDTH;
+	n1 = Q3UI_ProportionalStringWidth( "YES/NO" );
+	n2 = Q3UI_ProportionalStringWidth( "YES" ) + PROP_GAP_WIDTH;
+	n3 = Q3UI_ProportionalStringWidth( "/" )  + PROP_GAP_WIDTH;
 	l1 = 320 - ( n1 / 2 );
 	l2 = l1 + n2;
 	l3 = l2 + n3;
@@ -197,7 +197,7 @@ void UI_ConfirmMenu_Style( const char *question, int style, void (*draw)( void )
 	s_confirm.menu.key        = ConfirmMenu_Key;
 	s_confirm.menu.wrapAround = qtrue;
 
-	trap_GetClientState( &cstate );
+	UI_trap_GetClientState( &cstate );
 	if ( cstate.connState >= CA_CONNECTED ) {
 		s_confirm.menu.fullscreen = qfalse;
 	}
@@ -228,27 +228,27 @@ void UI_ConfirmMenu_Style( const char *question, int style, void (*draw)( void )
 	Menu_AddItem( &s_confirm.menu,	&s_confirm.yes );             
 	Menu_AddItem( &s_confirm.menu,	&s_confirm.no );
 
-	UI_PushMenu( &s_confirm.menu );
+	Q3UI_PushMenu( &s_confirm.menu );
 
 	Menu_SetCursorToItem( &s_confirm.menu, &s_confirm.no );
 }
 
 /*
 =================
-UI_ConfirmMenu
+Q3UI_ConfirmMenu
 =================
 */
-void UI_ConfirmMenu( const char *question, void (*draw)( void ), void (*action)( qboolean result ) ) {
-	UI_ConfirmMenu_Style(question, UI_CENTER|UI_INVERSE, draw, action);
+void Q3UI_ConfirmMenu( const char *question, void (*draw)( void ), void (*action)( qboolean result ) ) {
+	Q3UI_ConfirmMenu_Style(question, UI_CENTER|UI_INVERSE, draw, action);
 }
 
 /*
 =================
-UI_Message
+Q3UI_Message
 hacked over from Confirm stuff
 =================
 */
-void UI_Message( const char **lines ) {
+void Q3UI_Message( const char **lines ) {
 	uiClientState_t	cstate;
 	int n1, l1;
 	
@@ -257,7 +257,7 @@ void UI_Message( const char **lines ) {
 
 	ConfirmMenu_Cache();
 
-	n1 = UI_ProportionalStringWidth( "OK" );
+	n1 = Q3UI_ProportionalStringWidth( "OK" );
 	l1 = 320 - ( n1 / 2 );
 	
 	s_confirm.lines = lines;
@@ -267,7 +267,7 @@ void UI_Message( const char **lines ) {
 	s_confirm.menu.key        = ConfirmMenu_Key;
 	s_confirm.menu.wrapAround = qtrue;
 	
-	trap_GetClientState( &cstate );
+	UI_trap_GetClientState( &cstate );
 	if ( cstate.connState >= CA_CONNECTED ) {
 		s_confirm.menu.fullscreen = qfalse;
 	}
@@ -287,7 +287,7 @@ void UI_Message( const char **lines ) {
 
 	Menu_AddItem( &s_confirm.menu,	&s_confirm.yes );
 	
-	UI_PushMenu( &s_confirm.menu );
+	Q3UI_PushMenu( &s_confirm.menu );
 
 	Menu_SetCursorToItem( &s_confirm.menu, &s_confirm.yes );
 }

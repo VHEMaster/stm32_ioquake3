@@ -1,5 +1,6 @@
-﻿#include <cmath>
-#include "Vector.h"
+﻿#include "Vector.hpp"
+
+#include <cmath>
 
 namespace SWGL {
 

@@ -59,23 +59,23 @@ static void TeamMain_MenuEvent( void* ptr, int event ) {
 
 	switch( ((menucommon_s*)ptr)->id ) {
 	case ID_JOINRED:
-		trap_Cmd_ExecuteText( EXEC_APPEND, "cmd team red\n" );
-		UI_ForceMenuOff();
+		UI_trap_Cmd_ExecuteText( EXEC_APPEND, "cmd team red\n" );
+		Q3UI_ForceMenuOff();
 		break;
 
 	case ID_JOINBLUE:
-		trap_Cmd_ExecuteText( EXEC_APPEND, "cmd team blue\n" );
-		UI_ForceMenuOff();
+		UI_trap_Cmd_ExecuteText( EXEC_APPEND, "cmd team blue\n" );
+		Q3UI_ForceMenuOff();
 		break;
 
 	case ID_JOINGAME:
-		trap_Cmd_ExecuteText( EXEC_APPEND, "cmd team free\n" );
-		UI_ForceMenuOff();
+		UI_trap_Cmd_ExecuteText( EXEC_APPEND, "cmd team free\n" );
+		Q3UI_ForceMenuOff();
 		break;
 
 	case ID_SPECTATE:
-		trap_Cmd_ExecuteText( EXEC_APPEND, "cmd team spectator\n" );
-		UI_ForceMenuOff();
+		UI_trap_Cmd_ExecuteText( EXEC_APPEND, "cmd team spectator\n" );
+		Q3UI_ForceMenuOff();
 		break;
 	}
 }
@@ -152,7 +152,7 @@ void TeamMain_MenuInit( void ) {
 	s_teammain.spectate.color            = colorRed;
 	y += 20;
 
-	trap_GetConfigString(CS_SERVERINFO, info, MAX_INFO_STRING);   
+	UI_trap_GetConfigString(CS_SERVERINFO, info, MAX_INFO_STRING);   
 	gametype = atoi( Info_ValueForKey( info,"g_gametype" ) );
 			      
 	// set initial states
@@ -185,16 +185,16 @@ TeamMain_Cache
 ===============
 */
 void TeamMain_Cache( void ) {
-	trap_R_RegisterShaderNoMip( TEAMMAIN_FRAME );
+	UI_trap_R_RegisterShaderNoMip( TEAMMAIN_FRAME );
 }
 
 
 /*
 ===============
-UI_TeamMainMenu
+Q3UI_TeamMainMenu
 ===============
 */
-void UI_TeamMainMenu( void ) {
+void Q3UI_TeamMainMenu( void ) {
 	TeamMain_MenuInit();
-	UI_PushMenu ( &s_teammain.menu );
+	Q3UI_PushMenu ( &s_teammain.menu );
 }

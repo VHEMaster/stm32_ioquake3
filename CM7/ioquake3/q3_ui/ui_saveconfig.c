@@ -57,24 +57,24 @@ static saveConfig_t		saveConfig;
 
 /*
 ===============
-UI_SaveConfigMenu_BackEvent
+Q3UI_SaveConfigMenu_BackEvent
 ===============
 */
-static void UI_SaveConfigMenu_BackEvent( void *ptr, int event ) {
+static void Q3UI_SaveConfigMenu_BackEvent( void *ptr, int event ) {
 	if( event != QM_ACTIVATED ) {
 		return;
 	}
 
-	UI_PopMenu();
+	Q3UI_PopMenu();
 }
 
 
 /*
 ===============
-UI_SaveConfigMenu_SaveEvent
+Q3UI_SaveConfigMenu_SaveEvent
 ===============
 */
-static void UI_SaveConfigMenu_SaveEvent( void *ptr, int event ) {
+static void Q3UI_SaveConfigMenu_SaveEvent( void *ptr, int event ) {
 	char	configname[MAX_QPATH];
 
 	if( event != QM_ACTIVATED ) {
@@ -86,17 +86,17 @@ static void UI_SaveConfigMenu_SaveEvent( void *ptr, int event ) {
 	}
 
 	COM_StripExtension(saveConfig.savename.field.buffer, configname, sizeof(configname));
-	trap_Cmd_ExecuteText( EXEC_APPEND, va( "writeconfig %s.cfg\n", configname ) );
-	UI_PopMenu();
+	UI_trap_Cmd_ExecuteText( EXEC_APPEND, va( "writeconfig %s.cfg\n", configname ) );
+	Q3UI_PopMenu();
 }
 
 
 /*
 ===============
-UI_SaveConfigMenu_SavenameDraw
+Q3UI_SaveConfigMenu_SavenameDraw
 ===============
 */
-static void UI_SaveConfigMenu_SavenameDraw( void *self ) {
+static void Q3UI_SaveConfigMenu_SavenameDraw( void *self ) {
 	menufield_s		*f;
 	int				style;
 	float			*color;
@@ -112,21 +112,21 @@ static void UI_SaveConfigMenu_SavenameDraw( void *self ) {
 		color = colorRed;
 	}
 
-	UI_DrawProportionalString( 320, 192, "Enter filename:", UI_CENTER|UI_SMALLFONT, color_orange );
-	UI_FillRect( f->generic.x, f->generic.y, f->field.widthInChars*SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, colorBlack );
+	Q3UI_DrawProportionalString( 320, 192, "Enter filename:", UI_CENTER|UI_SMALLFONT, color_orange );
+	Q3UI_FillRect( f->generic.x, f->generic.y, f->field.widthInChars*SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, colorBlack );
 	MField_Draw( &f->field, f->generic.x, f->generic.y, style, color );
 }
 
 
 /*
 =================
-UI_SaveConfigMenu_Init
+Q3UI_SaveConfigMenu_Init
 =================
 */
-static void UI_SaveConfigMenu_Init( void ) {
+static void Q3UI_SaveConfigMenu_Init( void ) {
 	memset( &saveConfig, 0, sizeof(saveConfig) );
 
-	UI_SaveConfigMenu_Cache();
+	Q3UI_SaveConfigMenu_Cache();
 	saveConfig.menu.wrapAround = qtrue;
 	saveConfig.menu.fullscreen = qtrue;
 
@@ -147,7 +147,7 @@ static void UI_SaveConfigMenu_Init( void ) {
 
 	saveConfig.savename.generic.type		= MTYPE_FIELD;
 	saveConfig.savename.generic.flags		= QMF_NODEFAULTINIT|QMF_UPPERCASE;
-	saveConfig.savename.generic.ownerdraw	= UI_SaveConfigMenu_SavenameDraw;
+	saveConfig.savename.generic.ownerdraw	= Q3UI_SaveConfigMenu_SavenameDraw;
 	saveConfig.savename.field.widthInChars	= 20;
 	saveConfig.savename.field.maxchars		= 20;
 	saveConfig.savename.generic.x			= 240;
@@ -161,7 +161,7 @@ static void UI_SaveConfigMenu_Init( void ) {
 	saveConfig.back.generic.name		= ART_BACK0;
 	saveConfig.back.generic.flags		= QMF_LEFT_JUSTIFY|QMF_PULSEIFFOCUS;
 	saveConfig.back.generic.id			= ID_BACK;
-	saveConfig.back.generic.callback	= UI_SaveConfigMenu_BackEvent;
+	saveConfig.back.generic.callback	= Q3UI_SaveConfigMenu_BackEvent;
 	saveConfig.back.generic.x			= 0;
 	saveConfig.back.generic.y			= 480-64;
 	saveConfig.back.width				= 128;
@@ -172,7 +172,7 @@ static void UI_SaveConfigMenu_Init( void ) {
 	saveConfig.save.generic.name		= ART_SAVE0;
 	saveConfig.save.generic.flags		= QMF_RIGHT_JUSTIFY|QMF_PULSEIFFOCUS;
 	saveConfig.save.generic.id			= ID_SAVE;
-	saveConfig.save.generic.callback	= UI_SaveConfigMenu_SaveEvent;
+	saveConfig.save.generic.callback	= Q3UI_SaveConfigMenu_SaveEvent;
 	saveConfig.save.generic.x			= 640;
 	saveConfig.save.generic.y			= 480-64;
 	saveConfig.save.width  				= 128;
@@ -189,24 +189,24 @@ static void UI_SaveConfigMenu_Init( void ) {
 
 /*
 =================
-UI_SaveConfigMenu_Cache
+Q3UI_SaveConfigMenu_Cache
 =================
 */
-void UI_SaveConfigMenu_Cache( void ) {
-	trap_R_RegisterShaderNoMip( ART_BACK0 );
-	trap_R_RegisterShaderNoMip( ART_BACK1 );
-	trap_R_RegisterShaderNoMip( ART_SAVE0 );
-	trap_R_RegisterShaderNoMip( ART_SAVE1 );
-	trap_R_RegisterShaderNoMip( ART_BACKGROUND );
+void Q3UI_SaveConfigMenu_Cache( void ) {
+	UI_trap_R_RegisterShaderNoMip( ART_BACK0 );
+	UI_trap_R_RegisterShaderNoMip( ART_BACK1 );
+	UI_trap_R_RegisterShaderNoMip( ART_SAVE0 );
+	UI_trap_R_RegisterShaderNoMip( ART_SAVE1 );
+	UI_trap_R_RegisterShaderNoMip( ART_BACKGROUND );
 }
 
 
 /*
 ===============
-UI_SaveConfigMenu
+Q3UI_SaveConfigMenu
 ===============
 */
-void UI_SaveConfigMenu( void ) {
-	UI_SaveConfigMenu_Init();
-	UI_PushMenu( &saveConfig.menu );
+void Q3UI_SaveConfigMenu( void ) {
+	Q3UI_SaveConfigMenu_Init();
+	Q3UI_PushMenu( &saveConfig.menu );
 }
